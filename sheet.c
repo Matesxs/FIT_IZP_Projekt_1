@@ -22,6 +22,8 @@ const char *TABLE_EDIT_COMS[] = {"irow", "arow", "drow", "drows", "icol", "acol"
 #define NUMBER_OF_TABLE_EDIT_COMS 8
 const char *DATA_EDIT_COMS[] = {"cset", "tolower", "toupper", "round", "int", "copy", "swap", "move"};
 #define NUMBER_OF_DATA_EDIT_COMS 8
+const char *AREA_SELECTOR_COMS[] = {"rows", "beginswith", "contains"};
+#define NUMBER_OF_AREA_SELECTOR_COMS 3
 
 enum Mode {PASS, TABLE_EDIT, DATA_EDIT};
 
@@ -46,6 +48,14 @@ int get_operating_mode(char *input_array[], int array_len)
       if (strcmp(input_array[i], TABLE_EDIT_COMS[j]) == 0)
       {
         return TABLE_EDIT;
+      }
+    }
+
+    for (int j=0; j < NUMBER_OF_AREA_SELECTOR_COMS; j++)
+    {
+      if (strcmp(input_array[i], AREA_SELECTOR_COMS[j]) == 0)
+      {
+        return DATA_EDIT;
       }
     }
 
