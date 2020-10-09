@@ -265,6 +265,7 @@ int get_sub_string(char *string, char delim, int index, char *substring, int max
 
   if (index == 0)
   {
+    // if we want first substring there is no delim before substring then we are starting from first char of string
     start_index = 0;
   }
   else
@@ -280,12 +281,15 @@ int get_sub_string(char *string, char delim, int index, char *substring, int max
   }
   else
   {
+    // last character of substring is one char before position of wanted delim
     end_index = get_position_of_character(string, delim, index) - 1;
   }
 
+  // return if length of substring is larger than maximum size of one cell
   if ((end_index - start_index) > max_length) return -1;
   
-  for (int i=0; i < max_length; i++)
+  // iterate over whole substring (we are recycling one and then we want to clear it)
+  for (int i=0; i < max_length; i++, start_index++)
   {
     if (start_index <= end_index)
     {
@@ -295,8 +299,6 @@ int get_sub_string(char *string, char delim, int index, char *substring, int max
     {
       substring[i] = 0;
     }
-    
-    start_index++;
   }
 
   return 0;
