@@ -27,6 +27,42 @@ const char *AREA_SELECTOR_COMS[] = {"rows", "beginswith", "contains"};
 
 enum Mode {PASS, TABLE_EDIT, DATA_EDIT};
 
+int get_table_edit_com_index(char *com)
+{
+  for (int i=0; i < NUMBER_OF_TABLE_EDIT_COMS; i++)
+  {
+    if (strcmp(com, TABLE_EDIT_COMS[i]) == 0)
+    {
+      return i;
+    }
+  }
+  return -1;
+}
+
+int get_data_edit_com_index(char *com)
+{
+  for (int i=0; i < NUMBER_OF_DATA_EDIT_COMS; i++)
+  {
+    if (strcmp(com, DATA_EDIT_COMS[i]) == 0)
+    {
+      return i;
+    }
+  }
+  return -1;
+}
+
+int get_area_selector_com_index(char *com)
+{
+  for (int i=0; i < NUMBER_OF_AREA_SELECTOR_COMS; i++)
+  {
+    if (strcmp(com, AREA_SELECTOR_COMS[i]) == 0)
+    {
+      return i;
+    }
+  }
+  return -1;
+}
+
 int get_operating_mode(char *input_array[], int array_len)
 {
   /*
@@ -43,43 +79,17 @@ int get_operating_mode(char *input_array[], int array_len)
 
   for (int i=1; i < array_len; i++)
   {
-    for (int j=0; j < NUMBER_OF_TABLE_EDIT_COMS; j++)
-    {
-      if (strcmp(input_array[i], TABLE_EDIT_COMS[j]) == 0)
-      {
-        return TABLE_EDIT;
-      }
-    }
+    if (get_table_edit_com_index(input_array[i]) >= 0)
+      return TABLE_EDIT;
 
-    for (int j=0; j < NUMBER_OF_AREA_SELECTOR_COMS; j++)
-    {
-      if (strcmp(input_array[i], AREA_SELECTOR_COMS[j]) == 0)
-      {
-        return DATA_EDIT;
-      }
-    }
+    if (get_data_edit_com_index(input_array[i]) >= 0)
+      return DATA_EDIT;
 
-    for (int j=0; j < NUMBER_OF_DATA_EDIT_COMS; j++)
-    {
-      if (strcmp(input_array[i], DATA_EDIT_COMS[j]) == 0)
-      {
-        return DATA_EDIT;
-      }
-    }
+    if (get_area_selector_com_index(input_array[i]) >= 0)
+      return DATA_EDIT;
   }
+  
   return PASS;
-}
-
-int get_edit_com_index(char *com)
-{
-  for (int i=0; i < NUMBER_OF_TABLE_EDIT_COMS; i++)
-  {
-    if (strcmp(com, TABLE_EDIT_COMS[i]) == 0)
-    {
-      return i;
-    }
-  }
-  return -1;
 }
 
 void remove_newline_character(char *s) {
@@ -389,73 +399,26 @@ int main(int argc, char *argv[])
   int number_of_columns = 0;
   int line_index = 0;
 
-  int mode = get_operating_mode(argv, argc);
+  // int mode = get_operating_mode(argv, argc);
 
   // Iterate over lines
   while (fgets(line, (MAX_LINE_LEN + LINE_TEST_OFFSET), stdin) != NULL)
   {
+    // Get number of cols from first line
     if (line_index == 0)
     {
       number_of_columns = get_number_of_cells(line, delims[0]);
     }
 
-    remove_newline_character(line);
-    replace_unused_delims(line, delims);
-
-
-    for (int j=0; j < argc; j++)
-    {
-      if (mode == TABLE_EDIT)
-      {
-        switch (get_edit_com_index(argv[j]))
-        {
-        case 0:
-          if ((argument_to_int(argv, argc, j+1) > 0) && (argument_to_int(argv, argc, j+1) == (line_index + 1)))
-          {
-            for (int i=0; i < number_of_columns; i++)
-            {
-              if (i < (number_of_columns - 1))
-                printf("%c", delims[0]);
-            }
-            printf("\n");
-            line_index++;
-          }
-          break;
-
-        case 2:
-          if ((argument_to_int(argv, argc, j+1) > 0) && (argument_to_int(argv, argc, j+1) == (line_index + 1)))
-          {
-            strcpy(line, "");
-            line_index++;
-          }
-          break;
-
-        case 3:
-          if ((argument_to_int(argv, argc, j+1) > 0) && (argument_to_int(argv, argc, j+2) > 0))
-          {
-            if ((line_index + 1) >= argument_to_int(argv, argc, j+1) && (line_index + 1) <= argument_to_int(argv, argc, j+2))
-            {
-              strcpy(line, "");
-              line_index++;
-            }
-          }
-          break;
-      
-        default:
-          break;
-        }
-      }
-    }
-
-    // Register entire line
-    if (strlen(line) == 0)
-      continue;
-
+    // Check if length of line isnt larger than max size of line
     if (strlen(line) > MAX_LINE_LEN)
     {
       fprintf(stderr, "\nLine %d exceded max memory size! Max length of line is %d characters (including delims)\n", line_index+1, MAX_LINE_LEN);
       return -4;
     }
+
+    remove_newline_character(line);
+    replace_unused_delims(line, delims);
 
     // Iterate over cells in line
     for (int i=0; i < number_of_columns; i++)
@@ -478,20 +441,6 @@ int main(int argc, char *argv[])
         break;
       }
 
-      // i = cell index
-
-      // double double_val = 0;
-      // if(string_to_double(cell, &double_val) == 0)
-      // {
-      //   printf("%s - %lf\n", cell, double_val);
-      // }
-
-      // int int_val = 0;
-      // if(string_to_int(cell, &int_val) == 0)
-      // {
-      //   printf("%s - %d\n", cell, int_val);
-      // }
-
       if (i < (number_of_columns - 1))
       {
         printf("%s%c", cell, delims[0]);
@@ -512,27 +461,6 @@ int main(int argc, char *argv[])
     printf("Input cant be empty");
     return -5;
   }
-
-  for (int j=0; j < argc; j++)
-    {
-      if (mode == TABLE_EDIT)
-      {
-        switch (get_edit_com_index(argv[j]))
-        {
-        case 1:
-          for (int i=0; i < (number_of_columns - 1); i++)
-          {
-            if (i < (number_of_columns - 1))
-              printf("%c", delims[0]);
-          }
-          printf("\n");
-          break;
-      
-        default:
-          break;
-        }
-      }
-    }
 
   //Debug
   printf("\n\nDebug:\n");
