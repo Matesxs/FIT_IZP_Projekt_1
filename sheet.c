@@ -32,9 +32,10 @@ struct line_struct
   char *line_string;
   int line_index;
   int num_of_cols;
+  int final_cols;
   char delim;
   int last_line;
-  int del_offset;
+  int deleted;
 };
 
 // Get index of commands used for switching between different editing functions
@@ -278,7 +279,7 @@ int get_start_of_substring(struct line_struct *line, int index)
   else
   {
     // get position of delim before that substring
-    return get_position_of_character(line->line_string, line->delim, index - 1);
+    return get_position_of_character(line->line_string, line->delim, index - 1) + 1;
   }
 }
 
@@ -294,7 +295,7 @@ int get_end_of_substring(struct line_struct *line, int index)
   else
   {
     // position of end delim
-    return get_position_of_character(line->line_string, line->delim, index);
+    return get_position_of_character(line->line_string, line->delim, index) - 1;
   }
 }
 
@@ -321,16 +322,7 @@ int get_sub_string(struct line_struct *line, int index, char *substring)
     return -1;
 
   int start_index = get_start_of_substring(line, index);
-  if (index > 0)
-  {
-    start_index += 1;
-  }
-
   int end_index = get_end_of_substring(line, index);
-  if (index != (number_of_cells - 1))
-  {
-    end_index -= 1;
-  }
 
   if (start_index < 0 || end_index < 0)
     return -2;
@@ -477,40 +469,6 @@ void create_empty_row(struct line_struct *line)
   }
 }
 
-void print_line(struct line_struct *line)
-{
-  /*
-  Print line and clear it from buffer
-
-  params:
-  :line - structure with line data
-  */
-
-  if (line->line_string[0] != 0)
-  {
-    printf("%s\n", line->line_string);
-  }
-
-  line->line_string[0] = 0;
-  line->line_index++;
-}
-
-void delete_current_line(struct line_struct *line)
-{
-  /*
-  Delete current line from buffer and increment delete offset
-
-  params:
-  :line - structure with line data
-  */
-
-  if (line->line_string[0] != 0)
-  {
-    line->line_string[0] = 0;
-    line->del_offset++;
-  }
-}
-
 int is_line_empty(struct line_struct *line)
 {
   /*
@@ -522,7 +480,41 @@ int is_line_empty(struct line_struct *line)
   :return - 1 if line is empty else 0
   */
 
-  return line->line_string[0] == 0 ? 1 : 0;
+  return (line->deleted || (line->final_cols == 0));
+}
+
+void print_line(struct line_struct *line)
+{
+  /*
+  Print line and clear it from buffer
+
+  params:
+  :line - structure with line data
+  */
+
+  if (!is_line_empty(line))
+  {
+    printf("%s\n", line->line_string);
+  }
+
+  line->line_index++;
+  line->line_string[0] = 0;
+}
+
+void delete_current_line(struct line_struct *line)
+{
+  /*
+  Delete current line from buffer and increment delete offset
+
+  params:
+  :line - structure with line data
+  */
+
+  if (!is_line_empty(line))
+  {
+    line->line_string[0] = 0;
+    line->deleted = 1;
+  }
 }
 
 int insert_string(char *base_string, char *insert_string, int index)
@@ -548,24 +540,50 @@ int insert_string(char *base_string, char *insert_string, int index)
   size_t pos = ((size_t)index < base_string_length) ? (size_t)index : base_string_length;
 
   char final_string[MAX_LINE_LEN];
-  size_t i;
 
   // Add first part of base string
-  for (i=0; i<pos; ++i)
+  for (size_t i=0; i < pos; ++i)
     final_string[i] = base_string[i];
 
   // Add insert string
-  for (i=0; i < insert_string_length; ++i)
+  for (size_t i=0; i < insert_string_length; ++i)
     final_string[pos+i] = insert_string[i];
 
   // Add rest of base string
-  for (i=pos; i < base_string_length; ++i)
+  for (size_t i=pos; i < base_string_length; ++i)
     final_string[i + insert_string_length] = base_string[i];
 
   // Add terminate character to the end
   final_string[base_string_length + insert_string_length] = 0;
 
   // Copy new string to base string
+  strcpy(base_string, final_string);
+  return 0;
+}
+
+int remove_substring(char *base_string, int start_index, int end_index)
+{
+  if (start_index < 0 || end_index < 0)
+    return -1;
+
+  size_t string_len = strlen(base_string);
+
+  char final_string[MAX_LINE_LEN];
+  int i;
+  size_t j;
+
+  for (i=0; i < start_index; i++)
+  {
+    final_string[i] = base_string[i];
+  }
+
+  for (j=end_index + 1; j < string_len; ++j, ++i)
+  {
+    final_string[i] = base_string[j];
+  }
+
+  final_string[i] = 0;
+
   strcpy(base_string, final_string);
   return 0;
 }
@@ -596,6 +614,19 @@ int append_empty_col(struct line_struct *line)
   return insert_string(line->line_string, empty_col, index);
 }
 
+int remove_col(struct line_struct *line, int index)
+{
+  int start_index = get_start_of_substring(line, index);
+  // offset to delim in front of substring if there is any to delete it
+  if (index != 0 && (get_number_of_cells(line->line_string, line->delim) - 1) == index)
+    start_index -= 1;
+
+  // offset to delim char after the substring
+  int end_index = get_end_of_substring(line, index) + 1;
+
+  return remove_substring(line->line_string, start_index, end_index);
+}
+
 void process_line(struct line_struct *line, int argc, char *argv[], int operating_mode, int last_line_executed)
 {
   // Check if line length is in boundaries
@@ -603,6 +634,11 @@ void process_line(struct line_struct *line, int argc, char *argv[], int operatin
 
   // Create buffer for cases when we are inserting new line
   char line_buffer[MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET];
+
+  line->deleted = 0;
+  line->final_cols = line->num_of_cols;
+
+  // printf("%d\n", line->line_index);
 
   for (int i=1; i < argc; i++)
   {
@@ -620,24 +656,24 @@ void process_line(struct line_struct *line, int argc, char *argv[], int operatin
         }
         break;
 
-      // In delete row functions there is offset to correct line index relative to position relative to NEW positions in case of another delete
       case 2:
-        if (argument_to_int(argv, argc, i+1) > 0 && (argument_to_int(argv, argc, i+1) == (line->line_index + 1 + line->del_offset)))
+        if (argument_to_int(argv, argc, i+1) > 0 && !is_line_empty(line) && (argument_to_int(argv, argc, i+1) == (line->line_index + 1)))
         {
           delete_current_line(line);
         }
         break;
 
       case 3:
-        if ((argument_to_int(argv, argc, i+1) > 0) && (argument_to_int(argv, argc, i+2) > 0))
+        if ((argument_to_int(argv, argc, i+1) > 0) && !is_line_empty(line) && (argument_to_int(argv, argc, i+2) > 0))
         {
-          if ((argument_to_int(argv, argc, i+1) <= (line->line_index + 1)) && (argument_to_int(argv, argc, i+2) >= (line->line_index + 1 + line->del_offset)))
+          if ((argument_to_int(argv, argc, i+1) <= (line->line_index + 1)) && (argument_to_int(argv, argc, i+2) >= (line->line_index + 1)))
           {
             delete_current_line(line);
           }
         }
         break;
 
+      // TODO: Rework colms to work with relative position to input not per step!
       case 4:
         if ((argument_to_int(argv, argc, i+1) > 0) && !is_line_empty(line) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
         {
@@ -646,21 +682,42 @@ void process_line(struct line_struct *line, int argc, char *argv[], int operatin
             fprintf(stderr, "\nLine %d exceded max memory size! Max length of line is %d characters (including delims)\n", line->line_index+1, MAX_LINE_LEN);
             exit(MAX_LINE_LEN_EXCEDED);
           }
+
+          line->final_cols++;
         }
         break;
 
       case 5:
-        if (!is_line_empty(line))
+        if (append_empty_col(line) < 0 && !is_line_empty(line))
         {
-          if (append_empty_col(line) < 0)
+          fprintf(stderr, "\nLine %d exceded max memory size! Max length of line is %d characters (including delims)\n", line->line_index+1, MAX_LINE_LEN);
+          exit(MAX_LINE_LEN_EXCEDED);
+        }
+
+        line->final_cols++;
+        break;
+
+      case 6:
+        if ((argument_to_int(argv, argc, i+1) > 0) && !is_line_empty(line) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
+        {
+          if (remove_col(line, (argument_to_int(argv, argc, i+1) - 1)) == 0)
           {
-            fprintf(stderr, "\nLine %d exceded max memory size! Max length of line is %d characters (including delims)\n", line->line_index+1, MAX_LINE_LEN);
-            exit(MAX_LINE_LEN_EXCEDED);
+            line->final_cols--;
           }
         }
         break;
 
-      case 6:
+      case 7:
+        if ((argument_to_int(argv, argc, i+1) > 0) && (argument_to_int(argv, argc, i+2) > 0) && !is_line_empty(line))
+        {
+          for (int j=argument_to_int(argv, argc, i+1); j <= argument_to_int(argv, argc, i+2); j++)
+          {
+            if (remove_col(line, argument_to_int(argv, argc, i+1) - 1) == 0)
+            {
+              line->final_cols--;
+            }
+          }
+        }
         break;
       
       default:
@@ -698,9 +755,6 @@ void process_line(struct line_struct *line, int argc, char *argv[], int operatin
         if (get_table_edit_com_index(argv[i]) == 1)
         {
           create_empty_row(line);
-
-          line->line_index++;
-
           process_line(line, argc, argv, operating_mode, 1);
         }
       }
@@ -737,8 +791,9 @@ int main(int argc, char *argv[])
 
   // Create buffer strings for line and cell
   char line[MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET];
+  char buffer_line[MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET];
 
-  if (fgets(line, (MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET), stdin) == NULL)
+  if (fgets(buffer_line, (MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET), stdin) == NULL)
   {
     printf("Input cant be empty");
     return INPUT_ERROR;
@@ -748,26 +803,19 @@ int main(int argc, char *argv[])
 
   struct line_struct line_holder;
   line_holder.delim = delims[0];
-  line_holder.num_of_cols = get_number_of_cells(line, delims[0]);
+  line_holder.num_of_cols = get_number_of_cells(buffer_line, delims[0]);
 
   // Iterate over lines
   while (!line_holder.last_line)
   {
+    strcpy(line, buffer_line);
+    line_holder.last_line = fgets(buffer_line, (MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET), stdin) == NULL;
+
     remove_newline_character(line);
     replace_unused_delims(line, delims);
     line_holder.line_string = line;
 
     process_line(&line_holder, argc, argv, operating_mode, 0);
-
-    // After last line is loaded process it
-    if ((line_holder.last_line = fgets(line, (MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET), stdin) == NULL))
-    {
-      remove_newline_character(line);
-      replace_unused_delims(line, delims);
-      line_holder.line_string = line;
-
-      process_line(&line_holder, argc, argv, operating_mode, 0);
-    }
   }
 
   //Debug
