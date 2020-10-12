@@ -268,6 +268,36 @@ int get_position_of_character(char *string, char ch, int index)
   return -1;
 }
 
+int get_start_of_substring(struct line_struct *line, int index)
+{
+  if (index == 0)
+  {
+    // if we want first substring there is no delim before substring then we are starting from first char of string
+    return 0;
+  }
+  else
+  {
+    // get position of delim before that substring
+    return get_position_of_character(line->line_string, line->delim, index - 1);
+  }
+}
+
+int get_end_of_substring(struct line_struct *line, int index)
+{
+  int number_of_cells = get_number_of_cells(line->line_string, line->delim);
+
+  if (index == (number_of_cells - 1))
+  {
+    // if we are on the last cell we are going to the end of that line
+    return strlen(line->line_string);
+  }
+  else
+  {
+    // position of end delim
+    return get_position_of_character(line->line_string, line->delim, index);
+  }
+}
+
 int get_sub_string(struct line_struct *line, int index, char *substring)
 {
   /*
@@ -287,34 +317,23 @@ int get_sub_string(struct line_struct *line, int index, char *substring)
 
   int number_of_cells = get_number_of_cells(line->line_string, line->delim);
 
-  if (index > (number_of_cells - 1) || index < 0) return -1;
+  if (index > (number_of_cells - 1) || index < 0)
+    return -1;
 
-  int start_index;
-  int end_index;
-
-  if (index == 0)
+  int start_index = get_start_of_substring(line, index);
+  if (index > 0)
   {
-    // if we want first substring there is no delim before substring then we are starting from first char of string
-    start_index = 0;
-  }
-  else
-  {
-    // get position of delim before that substring and offset to char after that delim
-    start_index = get_position_of_character(line->line_string, line->delim, index - 1) + 1;
+    start_index += 1;
   }
 
-  if (index == (number_of_cells - 1))
+  int end_index = get_end_of_substring(line, index);
+  if (index != (number_of_cells - 1))
   {
-    // if we are on the last cell we are going to the end of that line
-    end_index = strlen(line->line_string);
-  }
-  else
-  {
-    // last character of substring is one char before position of wanted delim
-    end_index = get_position_of_character(line->line_string, line->delim, index) - 1;
+    end_index -= 1;
   }
 
-  if (start_index < 0 || end_index < 0) return -2;
+  if (start_index < 0 || end_index < 0)
+    return -2;
 
   // exit if length of substring is larger than maximum size of one cell
   if ((end_index - start_index) > MAX_CELL_LEN)
@@ -371,7 +390,9 @@ int string_to_double(char *string, double *val)
   char *foo;
   (*val) = strtod(string, &foo);
 
-  if (foo == string) return -1;
+  if (foo == string)
+    return -1;
+
   return 0;
 }
 
@@ -389,7 +410,8 @@ int string_to_int(char *string, int *val)
 
   for (size_t i=0; i < strlen(string); i++)
   {
-    if(string[i] < '0' || string[i] > '9') return -1;
+    if(string[i] < '0' || string[i] > '9')
+      return -1;
   }
 
   (*val) = atoi(string);
@@ -412,9 +434,15 @@ int argument_to_int(char *input_array[], int array_len, int index)
   */
 
   int val;
-  if (index > (array_len + 1)) return 0;
-  if (string_to_int(input_array[index], &val) != 0) return 0;
-  if (val <= 0) return 0;
+
+  if (index > (array_len - 1))
+    return 0;
+
+  if (string_to_int(input_array[index], &val) != 0)
+    return 0;
+
+  if (val <= 0)
+    return 0;
 
   return val;
 }
@@ -513,7 +541,8 @@ int insert_string(char *base_string, char *insert_string, int index)
   size_t base_string_length = strlen(base_string);
   size_t insert_string_length = strlen(insert_string);
 
-  if ((base_string_length + insert_string_length) > MAX_LINE_LEN) return -1;
+  if ((base_string_length + insert_string_length) > MAX_LINE_LEN)
+    return -1;
 
   // If index is larger than basestring lenght then insert position is lenght of base string
   size_t pos = ((size_t)index < base_string_length) ? (size_t)index : base_string_length;
@@ -539,6 +568,32 @@ int insert_string(char *base_string, char *insert_string, int index)
   // Copy new string to base string
   strcpy(base_string, final_string);
   return 0;
+}
+
+int insert_empty_col(struct line_struct *line, int index)
+{
+  char empty_col[2] = {line->delim, '\0'};
+
+  // Offset to to place before index col
+  if (index > 0)
+    index -= 1;
+
+  index = get_start_of_substring(line, index);
+  if (index < 0)
+    return 0;
+
+  return insert_string(line->line_string, empty_col, index);
+}
+
+int append_empty_col(struct line_struct *line)
+{
+  char empty_col[2] = {line->delim, '\0'};
+
+  int index = get_end_of_substring(line, get_number_of_cells(line->line_string, line->delim) - 1);
+  if (index < 0)
+    return 0;
+
+  return insert_string(line->line_string, empty_col, index);
 }
 
 void process_line(struct line_struct *line, int argc, char *argv[], int operating_mode, int last_line_executed)
@@ -586,11 +641,26 @@ void process_line(struct line_struct *line, int argc, char *argv[], int operatin
       case 4:
         if ((argument_to_int(argv, argc, i+1) > 0) && !is_line_empty(line) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
         {
-          // TODO: Insert new col to line
+          if (insert_empty_col(line, argument_to_int(argv, argc, i+1)) < 0)
+          {
+            fprintf(stderr, "\nLine %d exceded max memory size! Max length of line is %d characters (including delims)\n", line->line_index+1, MAX_LINE_LEN);
+            exit(MAX_LINE_LEN_EXCEDED);
+          }
         }
         break;
 
       case 5:
+        if (!is_line_empty(line))
+        {
+          if (append_empty_col(line) < 0)
+          {
+            fprintf(stderr, "\nLine %d exceded max memory size! Max length of line is %d characters (including delims)\n", line->line_index+1, MAX_LINE_LEN);
+            exit(MAX_LINE_LEN_EXCEDED);
+          }
+        }
+        break;
+
+      case 6:
         break;
       
       default:
