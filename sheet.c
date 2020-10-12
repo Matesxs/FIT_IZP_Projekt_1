@@ -25,6 +25,7 @@ const char *AREA_SELECTOR_COMS[] = {"rows", "beginswith", "contains"};
 #define NUMBER_OF_AREA_SELECTOR_COMS 3
 
 enum Mode {PASS, TABLE_EDIT, DATA_EDIT};
+enum ReturnCodes {SUCESS, MAX_LINE_LEN_EXCEDED, MAX_CELL_LEN_EXCEDED, ARG_ERROR, INPUT_ERROR};
 
 struct line_struct
 {
@@ -36,6 +37,7 @@ struct line_struct
   int del_offset;
 };
 
+// Get index of commands used for switching between different editing functions
 int get_table_edit_com_index(char *com)
 {
   for (int i=0; i < NUMBER_OF_TABLE_EDIT_COMS; i++)
@@ -266,7 +268,7 @@ int get_position_of_character(char *string, char ch, int index)
   return -1;
 }
 
-int get_sub_string(char *string, char delim, int index, char *substring, int max_length)
+int get_sub_string(struct line_struct *line, int index, char *substring)
 {
   /*
   Extract substring from string
@@ -277,11 +279,15 @@ int get_sub_string(char *string, char delim, int index, char *substring, int max
   :index - index of substring
   :substring - string for saving result
   :max_length - maximal length of one cell
+
+  :return - 0 on success
+          - -1 on invalid index
+          - -2 failed to get substring boundaries
   */
 
-  int number_of_cells = get_number_of_cells(string, delim);
+  int number_of_cells = get_number_of_cells(line->line_string, line->delim);
 
-  if (index > (number_of_cells - 1)) return -2;
+  if (index > (number_of_cells - 1) || index < 0) return -1;
 
   int start_index;
   int end_index;
@@ -294,29 +300,35 @@ int get_sub_string(char *string, char delim, int index, char *substring, int max
   else
   {
     // get position of delim before that substring and offset to char after that delim
-    start_index = get_position_of_character(string, delim, index - 1) + 1;
+    start_index = get_position_of_character(line->line_string, line->delim, index - 1) + 1;
   }
 
   if (index == (number_of_cells - 1))
   {
     // if we are on the last cell we are going to the end of that line
-    end_index = strlen(string);
+    end_index = strlen(line->line_string);
   }
   else
   {
     // last character of substring is one char before position of wanted delim
-    end_index = get_position_of_character(string, delim, index) - 1;
+    end_index = get_position_of_character(line->line_string, line->delim, index) - 1;
   }
 
-  // return if length of substring is larger than maximum size of one cell
-  if ((end_index - start_index) > max_length) return -1;
+  if (start_index < 0 || end_index < 0) return -2;
+
+  // exit if length of substring is larger than maximum size of one cell
+  if ((end_index - start_index) > MAX_CELL_LEN)
+  {
+    fprintf(stderr, "\nCell %d on line %d exceded max memory size! Max length of cell is %d characters (exclude delims)\n", index + 1, line->line_index + 1, MAX_CELL_LEN);
+    exit(MAX_CELL_LEN_EXCEDED);
+  }
   
   // iterate over whole substring (we are recycling one and then we want to clear it)
-  for (int i=0; i < max_length; i++, start_index++)
+  for (int i=0; i < MAX_CELL_LEN; i++, start_index++)
   {
     if (start_index <= end_index)
     {
-      substring[i] = string[start_index];
+      substring[i] = line->line_string[start_index];
     }
     else
     {
@@ -330,11 +342,17 @@ int get_sub_string(char *string, char delim, int index, char *substring, int max
 
 void check_line_length(struct line_struct line)
 {
-  // Check if length of line isnt larger than max size of line
+  /*
+  Check if line is no longer than maximum allowed length of one line
+
+  params:
+  :line - structure with line data
+  */
+
   if (strlen(line.line_string) > MAX_LINE_LEN)
   {
     fprintf(stderr, "\nLine %d exceded max memory size! Max length of line is %d characters (including delims)\n", line.line_index+1, MAX_LINE_LEN);
-    exit(-5);
+    exit(MAX_LINE_LEN_EXCEDED);
   }
 }
 
@@ -379,32 +397,52 @@ int string_to_int(char *string, int *val)
   return 0;
 }
 
-int argument_to_unsigned_int(char *input_array[], int array_len, int index)
+int argument_to_int(char *input_array[], int array_len, int index)
 {
+  /*
+  Try to convert argument to int
+
+  params:
+  :input_array - array with all arguments
+  :array_len - lenght of array with arguments
+  :index - index of argument we want convert to int
+  
+  :return - int value of argument
+          - on error 0
+  */
+
   int val;
-  if (index > (array_len + 1)) return -1;
-  if (string_to_int(input_array[index], &val) != 0) return -2;
-  if (val <= 0) return -3;
+  if (index > (array_len + 1)) return 0;
+  if (string_to_int(input_array[index], &val) != 0) return 0;
+  if (val <= 0) return 0;
 
   return val;
 }
 
-void create_empty_row(int length, char delim, char *return_string)
+void create_empty_row(struct line_struct *line)
 {
-  if (length <= 0)
+  /*
+  Create string with empty line format based on wanted line length and delim char
+  Empty line is saved to line structure instead of current line string
+
+  params:
+  :line - structure with line data
+  */
+
+  if (line->num_of_cols <= 0)
   {
-    return_string[0] = 0;
+    line->line_string[0] = 0;
     return;
   }
 
   int i = 0;
-  for (; i < length; i++)
+  for (; i < line->num_of_cols; i++)
   {
-    if (i < (length - 1))
-      return_string[i] = delim;
+    if (i < (line->num_of_cols - 1))
+      line->line_string[i] = line->delim;
     else
     {
-      return_string[i] = 0;
+      line->line_string[i] = 0;
       break;
     }
     
@@ -413,6 +451,13 @@ void create_empty_row(int length, char delim, char *return_string)
 
 void print_line(struct line_struct *line)
 {
+  /*
+  Print line and clear it from buffer
+
+  params:
+  :line - structure with line data
+  */
+
   if (line->line_string[0] != 0)
   {
     printf("%s\n", line->line_string);
@@ -424,6 +469,13 @@ void print_line(struct line_struct *line)
 
 void delete_current_line(struct line_struct *line)
 {
+  /*
+  Delete current line from buffer and increment delete offset
+
+  params:
+  :line - structure with line data
+  */
+
   if (line->line_string[0] != 0)
   {
     line->line_string[0] = 0;
@@ -431,8 +483,33 @@ void delete_current_line(struct line_struct *line)
   }
 }
 
-int insert_string(char base_string[], const char insert_string[], int index)
+int is_line_empty(struct line_struct *line)
 {
+  /*
+  Check if currentl line is empty
+
+  params:
+  :line - structure with line data
+
+  :return - 1 if line is empty else 0
+  */
+
+  return line->line_string[0] == 0 ? 1 : 0;
+}
+
+int insert_string(char *base_string, char *insert_string, int index)
+{
+  /*
+  Insert one string to another to index position in base string
+
+  params:
+  :base_string - string to which we will insert string
+  :insert_string - string that will be inserted to base_string
+  :index - index of character from which insert_string will be inserted to base_string
+
+  :return - 0 on success, -1 on fail
+  */
+
   size_t base_string_length = strlen(base_string);
   size_t insert_string_length = strlen(insert_string);
 
@@ -470,7 +547,7 @@ void process_line(struct line_struct *line, int argc, char *argv[], int operatin
   check_line_length(*line);
 
   // Create buffer for cases when we are inserting new line
-  char line_buffer[MAX_LINE_LEN + 1 + LINE_LENGTH_TEST_OFFSET];
+  char line_buffer[MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET];
 
   for (int i=1; i < argc; i++)
   {
@@ -481,25 +558,25 @@ void process_line(struct line_struct *line, int argc, char *argv[], int operatin
       switch (get_table_edit_com_index(argv[i]))
       {
       case 0:
-        if (argument_to_unsigned_int(argv, argc, i+1) > 0 && argument_to_unsigned_int(argv, argc, i+1) == (line->line_index + 1))
+        if (argument_to_int(argv, argc, i+1) > 0 && argument_to_int(argv, argc, i+1) == (line->line_index + 1))
         {
           strcpy(line_buffer, line->line_string);
-          create_empty_row(line->num_of_cols, line->delim, line->line_string);
+          create_empty_row(line);
         }
         break;
 
       // In delete row functions there is offset to correct line index relative to position relative to NEW positions in case of another delete
       case 2:
-        if (argument_to_unsigned_int(argv, argc, i+1) > 0 && (argument_to_unsigned_int(argv, argc, i+1) == (line->line_index + 1 + line->del_offset)))
+        if (argument_to_int(argv, argc, i+1) > 0 && (argument_to_int(argv, argc, i+1) == (line->line_index + 1 + line->del_offset)))
         {
           delete_current_line(line);
         }
         break;
 
       case 3:
-        if ((argument_to_unsigned_int(argv, argc, i+1) > 0) && (argument_to_unsigned_int(argv, argc, i+2) > 0))
+        if ((argument_to_int(argv, argc, i+1) > 0) && (argument_to_int(argv, argc, i+2) > 0))
         {
-          if ((argument_to_unsigned_int(argv, argc, i+1) <= (line->line_index + 1)) && (argument_to_unsigned_int(argv, argc, i+2) >= (line->line_index + 1 + line->del_offset)))
+          if ((argument_to_int(argv, argc, i+1) <= (line->line_index + 1)) && (argument_to_int(argv, argc, i+2) >= (line->line_index + 1 + line->del_offset)))
           {
             delete_current_line(line);
           }
@@ -507,6 +584,10 @@ void process_line(struct line_struct *line, int argc, char *argv[], int operatin
         break;
 
       case 4:
+        if ((argument_to_int(argv, argc, i+1) > 0) && !is_line_empty(line) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
+        {
+          // TODO: Insert new col to line
+        }
         break;
 
       case 5:
@@ -546,7 +627,7 @@ void process_line(struct line_struct *line, int argc, char *argv[], int operatin
       {
         if (get_table_edit_com_index(argv[i]) == 1)
         {
-          create_empty_row(line->num_of_cols, line->delim, line->line_string);
+          create_empty_row(line);
 
           line->line_index++;
 
@@ -567,11 +648,11 @@ int main(int argc, char *argv[])
   {
   case -1:
     fprintf(stderr, "Found delimiter flag without any value\n");
-    return -1;
+    return ARG_ERROR;
 
   case -2:
     fprintf(stderr, "Delimiter string max length exceded! Max length is %d characters\n", MAX_CELL_LEN);
-    return -2;
+    return MAX_CELL_LEN_EXCEDED;
   
   default:
     break;
@@ -580,8 +661,8 @@ int main(int argc, char *argv[])
   // Check if there are no invalid delim chars
   if (check_delim_characters(delims) < 0)
   {
-    fprintf(stderr, "Invalid characters in delim string!");
-    return -3;
+    fprintf(stderr, "Invalid characters in delim string!\n");
+    return ARG_ERROR;
   }
 
   // Create buffer strings for line and cell
@@ -590,7 +671,7 @@ int main(int argc, char *argv[])
   if (fgets(line, (MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET), stdin) == NULL)
   {
     printf("Input cant be empty");
-    return -4;
+    return INPUT_ERROR;
   }
 
   int operating_mode = get_operating_mode(argv, argc);
