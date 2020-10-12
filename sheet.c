@@ -1,13 +1,12 @@
 /*
                           Simple table processor
-
                               Version: 1
-
-Program to process tables from standart input and outputs it to standart output
+Program to process tables from standard input and outputs it to standard output
 
                              Martin Douša
                              October 2020
 */
+#define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,7 +14,7 @@ Program to process tables from standart input and outputs it to standart output
 
 #define MAX_CELL_LEN 100
 #define MAX_LINE_LEN 10240
-#define LINE_TEST_OFFSET 128
+#define LINE_LENGTH_TEST_OFFSET 1
 #define BLACKLISTED_DELIMS "\n\0\r"
 
 const char *TABLE_EDIT_COMS[] = {"irow", "arow", "drow", "drows", "icol", "acol", "dcol", "dcols"};
@@ -34,6 +33,7 @@ struct line_struct
   int num_of_cols;
   char delim;
   int last_line;
+  int del_offset;
 };
 
 int get_table_edit_com_index(char *com)
@@ -190,6 +190,10 @@ void replace_unused_delims(char *string, char* delims)
   {
     for (size_t j=1; j < strlen(delims); j++)
     {
+      // Ignore duplicates of first delim
+      if (delims[j] == delims[0])
+        continue;
+
       if (string[i] == delims[j])
       {
         string[i] = delims[0];
@@ -275,12 +279,12 @@ int get_sub_string(char *string, char delim, int index, char *substring, int max
   :max_length - maximal length of one cell
   */
 
- int number_of_cells = get_number_of_cells(string, delim);
+  int number_of_cells = get_number_of_cells(string, delim);
 
- if (index > (number_of_cells - 1)) return -2;
+  if (index > (number_of_cells - 1)) return -2;
 
-  int end_index;
   int start_index;
+  int end_index;
 
   if (index == 0)
   {
@@ -317,6 +321,7 @@ int get_sub_string(char *string, char delim, int index, char *substring, int max
     else
     {
       substring[i] = 0;
+      break;
     }
   }
 
@@ -384,21 +389,133 @@ int argument_to_unsigned_int(char *input_array[], int array_len, int index)
   return val;
 }
 
-void process_line(struct line_struct line, int argc, char *argv[], int operating_mode)
+void create_empty_row(int length, char delim, char *return_string)
 {
+  if (length <= 0)
+  {
+    return_string[0] = 0;
+    return;
+  }
+
+  int i = 0;
+  for (; i < length; i++)
+  {
+    if (i < (length - 1))
+      return_string[i] = delim;
+    else
+    {
+      return_string[i] = 0;
+      break;
+    }
+    
+  }
+}
+
+void print_line(struct line_struct *line)
+{
+  if (line->line_string[0] != 0)
+  {
+    printf("%s\n", line->line_string);
+  }
+
+  line->line_string[0] = 0;
+  line->line_index++;
+}
+
+void delete_current_line(struct line_struct *line)
+{
+  if (line->line_string[0] != 0)
+  {
+    line->line_string[0] = 0;
+    line->del_offset++;
+  }
+}
+
+int insert_string(char base_string[], const char insert_string[], int index)
+{
+  size_t base_string_length = strlen(base_string);
+  size_t insert_string_length = strlen(insert_string);
+
+  if ((base_string_length + insert_string_length) > MAX_LINE_LEN) return -1;
+
+  // If index is larger than basestring lenght then insert position is lenght of base string
+  size_t pos = ((size_t)index < base_string_length) ? (size_t)index : base_string_length;
+
+  char final_string[MAX_LINE_LEN];
+  size_t i;
+
+  // Add first part of base string
+  for (i=0; i<pos; ++i)
+    final_string[i] = base_string[i];
+
+  // Add insert string
+  for (i=0; i < insert_string_length; ++i)
+    final_string[pos+i] = insert_string[i];
+
+  // Add rest of base string
+  for (i=pos; i < base_string_length; ++i)
+    final_string[i + insert_string_length] = base_string[i];
+
+  // Add terminate character to the end
+  final_string[base_string_length + insert_string_length] = 0;
+
+  // Copy new string to base string
+  strcpy(base_string, final_string);
+  return 0;
+}
+
+void process_line(struct line_struct *line, int argc, char *argv[], int operating_mode, int last_line_executed)
+{
+  // Check if line length is in boundaries
+  check_line_length(*line);
+
+  // Create buffer for cases when we are inserting new line
+  char line_buffer[MAX_LINE_LEN + 1 + LINE_LENGTH_TEST_OFFSET];
+
   for (int i=1; i < argc; i++)
   {
     switch (operating_mode)
     {
     case TABLE_EDIT:
+
       switch (get_table_edit_com_index(argv[i]))
       {
+      case 0:
+        if (argument_to_unsigned_int(argv, argc, i+1) > 0 && argument_to_unsigned_int(argv, argc, i+1) == (line->line_index + 1))
+        {
+          strcpy(line_buffer, line->line_string);
+          create_empty_row(line->num_of_cols, line->delim, line->line_string);
+        }
+        break;
+
+      // In delete row functions there is offset to correct line index relative to position relative to NEW positions in case of another delete
+      case 2:
+        if (argument_to_unsigned_int(argv, argc, i+1) > 0 && (argument_to_unsigned_int(argv, argc, i+1) == (line->line_index + 1 + line->del_offset)))
+        {
+          delete_current_line(line);
+        }
+        break;
+
+      case 3:
+        if ((argument_to_unsigned_int(argv, argc, i+1) > 0) && (argument_to_unsigned_int(argv, argc, i+2) > 0))
+        {
+          if ((argument_to_unsigned_int(argv, argc, i+1) <= (line->line_index + 1)) && (argument_to_unsigned_int(argv, argc, i+2) >= (line->line_index + 1 + line->del_offset)))
+          {
+            delete_current_line(line);
+          }
+        }
+        break;
+
+      case 4:
+        break;
+
       case 5:
         break;
       
       default:
         break;
       }
+
       break;
 
     case DATA_EDIT:
@@ -409,10 +526,19 @@ void process_line(struct line_struct line, int argc, char *argv[], int operating
     }
   }
 
-  if (line.line_string[0] != 0)
-    printf("%s\n", line.line_string);
+  // Print line from line structure
+  print_line(line);
 
-  if (line.last_line)
+  // Check if there is any line in buffer
+  if (line_buffer[0] != 0)
+  {
+    // If there is line in buffer copy it to line structure, clear buffer and recursively call this function to process that line
+    strcpy(line->line_string, line_buffer);
+    line_buffer[0] = 0;
+    process_line(line, argc, argv, operating_mode, 0);
+  }
+
+  if (line->last_line && !last_line_executed)
   {
     if (operating_mode == TABLE_EDIT)
     {
@@ -420,14 +546,11 @@ void process_line(struct line_struct line, int argc, char *argv[], int operating
       {
         if (get_table_edit_com_index(argv[i]) == 1)
         {
-          for (int j=0; j < line.num_of_cols; j++)
-          {
-            
-            if (j < (line.num_of_cols - 1))
-              printf("%c", line.delim);
-          }
+          create_empty_row(line->num_of_cols, line->delim, line->line_string);
 
-          printf("\n");
+          line->line_index++;
+
+          process_line(line, argc, argv, operating_mode, 1);
         }
       }
     }
@@ -462,10 +585,9 @@ int main(int argc, char *argv[])
   }
 
   // Create buffer strings for line and cell
-  char line[MAX_LINE_LEN + LINE_TEST_OFFSET];
-  char buffer_line[MAX_LINE_LEN + LINE_TEST_OFFSET];
+  char line[MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET];
 
-  if (fgets(buffer_line, (MAX_LINE_LEN + LINE_TEST_OFFSET), stdin) == NULL)
+  if (fgets(line, (MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET), stdin) == NULL)
   {
     printf("Input cant be empty");
     return -4;
@@ -475,22 +597,26 @@ int main(int argc, char *argv[])
 
   struct line_struct line_holder;
   line_holder.delim = delims[0];
-  line_holder.num_of_cols = get_number_of_cells(buffer_line, delims[0]);
+  line_holder.num_of_cols = get_number_of_cells(line, delims[0]);
 
   // Iterate over lines
   while (!line_holder.last_line)
   {
-    strcpy(line, buffer_line);
-    line_holder.last_line = fgets(buffer_line, (MAX_LINE_LEN + LINE_TEST_OFFSET), stdin) == NULL;
-
     remove_newline_character(line);
     replace_unused_delims(line, delims);
     line_holder.line_string = line;
 
-    check_line_length(line_holder);
-    process_line(line_holder, argc, argv, operating_mode);
+    process_line(&line_holder, argc, argv, operating_mode, 0);
 
-    line_holder.line_index++;
+    // After last line is loaded process it
+    if ((line_holder.last_line = fgets(line, (MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET), stdin) == NULL))
+    {
+      remove_newline_character(line);
+      replace_unused_delims(line, delims);
+      line_holder.line_string = line;
+
+      process_line(&line_holder, argc, argv, operating_mode, 0);
+    }
   }
 
   //Debug
