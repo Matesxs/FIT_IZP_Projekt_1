@@ -521,7 +521,7 @@ void print_line(struct line_struct *line)
 
   if (!is_line_empty(line))
   {
-    printf("%s - %d\n", line->line_string, line->process_flag);
+    printf("%s\n", line->line_string);
   }
 
   line->line_index++;
