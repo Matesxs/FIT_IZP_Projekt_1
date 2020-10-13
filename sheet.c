@@ -30,27 +30,57 @@ enum ReturnCodes {SUCESS, MAX_LINE_LEN_EXCEDED, MAX_CELL_LEN_EXCEDED, ARG_ERROR,
 struct line_struct
 {
   char *line_string;
-  int line_index;
-  int num_of_cols;
-  int final_cols;
   char delim;
-  int last_line;
+  int line_index;
+
+  // Reference number of cols
+  int num_of_cols;
+  // Number of cols after editing
+  int final_cols;
+
+  int last_line_flag;
   int deleted;
+  int process_flag;
 };
 
 struct selector_arguments
 {
   int selector_type;
-  int a1, a2;
-  char *str;
+  char *a1, *a2, *str;
+  int ai1, ai2;
 };
+
+void check_arguments(int argc, char *argv[])
+{
+  for (int i=1; i < argc; i++)
+  {
+    if (strlen(argv[i]) > MAX_CELL_LEN)
+    {
+      fprintf(stderr, "Argument %d exceded maximum allowed size! Maximum size is %d characters", i, MAX_CELL_LEN);
+      exit(MAX_CELL_LEN_EXCEDED);
+    }
+  }
+}
+
+int are_strings_same(const char *string1, const char *string2)
+{
+  return strcmp(string1, string2) == 0;
+}
+
+int is_string_start_with(const char *base_string, const char *start_string)
+{
+  if (strlen(start_string) > strlen(base_string))
+    return 0;
+
+  return strncmp(start_string, base_string, strlen(start_string)) == 0;
+}
 
 // Get index of commands used for switching between different editing functions
 int get_table_edit_com_index(char *com)
 {
   for (int i=0; i < NUMBER_OF_TABLE_EDIT_COMS; i++)
   {
-    if (strcmp(com, TABLE_EDIT_COMS[i]) == 0)
+    if (are_strings_same(com, TABLE_EDIT_COMS[i]))
     {
       return i;
     }
@@ -62,7 +92,7 @@ int get_data_edit_com_index(char *com)
 {
   for (int i=0; i < NUMBER_OF_DATA_EDIT_COMS; i++)
   {
-    if (strcmp(com, DATA_EDIT_COMS[i]) == 0)
+    if (are_strings_same(com, DATA_EDIT_COMS[i]))
     {
       return i;
     }
@@ -74,7 +104,7 @@ int get_area_selector_com_index(char *com)
 {
   for (int i=0; i < NUMBER_OF_AREA_SELECTOR_COMS; i++)
   {
-    if (strcmp(com, AREA_SELECTOR_COMS[i]) == 0)
+    if (are_strings_same(com, AREA_SELECTOR_COMS[i]))
     {
       return i;
     }
@@ -164,18 +194,12 @@ void get_delims(char *input_array[], int array_len, char *delim)
 
   for (int i=1; i < array_len; i++)
   {
-      if (strcmp(input_array[i], "-d") == 0)
+      if (are_strings_same(input_array[i], "-d"))
       {
         if ((i + 1) >= array_len)
         {
           fprintf(stderr, "Found delimiter flag without any value\n");
           exit(ARG_ERROR);
-        }
-
-        if (strlen(input_array[i + 1]) > MAX_CELL_LEN)
-        {
-          fprintf(stderr, "Delimiter string max length exceded! Max length is %d characters\n", MAX_CELL_LEN);
-          exit(MAX_CELL_LEN_EXCEDED);
         }
 
         strcpy(delim, input_array[i + 1]);
@@ -499,7 +523,7 @@ void print_line(struct line_struct *line)
 
   if (!is_line_empty(line))
   {
-    printf("%s\n", line->line_string);
+    printf("%s - %d\n", line->line_string, line->process_flag);
   }
 
   line->line_index++;
@@ -634,7 +658,8 @@ int remove_col(struct line_struct *line, int index)
 
 void get_selector(struct selector_arguments *selector, int argc, char *argv[])
 {
-  for (int i=1; i < argc; i++)
+  // Offset -2 to be sure that there will be another 2 args after the selector flag
+  for (int i=1; i < (argc - 2); i++)
   {
     for (int j=0; j < NUMBER_OF_AREA_SELECTOR_COMS; j++)
     {
@@ -643,30 +668,35 @@ void get_selector(struct selector_arguments *selector, int argc, char *argv[])
         switch (j)
         {
         case 0:
-          if (argument_to_int(argv, argc, i+1) > 0 && argument_to_int(argv, argc, i+2) > 0 && argument_to_int(argv, argc, i+1) <= argument_to_int(argv, argc, i+2))
+          if (((argument_to_int(argv, argc, i+1) > 0) || are_strings_same(argv[i+1], "-")) &&
+              ((argument_to_int(argv, argc, i+2) > 0) || are_strings_same(argv[i+2], "-")))
           {
             selector->selector_type = j;
-            selector->a1 = argument_to_int(argv, argc, i+1);
-            selector->a2 = argument_to_int(argv, argc, i+2);
+            selector->a1 = argv[i+1];
+            selector->a2 = argv[i+2];
+            selector->ai1 = argument_to_int(argv, argc, i+1);
+            selector->ai2 = argument_to_int(argv, argc, i+2);
             return;
           }
           break;
 
         case 1:
-          if (argument_to_int(argv, argc, i+1) > 0 && ((i + 2) < argc))
+          if ((argument_to_int(argv, argc, i+1) > 0) || are_strings_same(argv[i+1], "-"))
           {
             selector->selector_type = j;
-            selector->a1 = argument_to_int(argv, argc, i+1);
+            selector->a1 = argv[i+1];
+            selector->ai1 = argument_to_int(argv, argc, i+1);
             selector->str = argv[i+2];
             return;
           }
           break;
 
         case 2:
-          if (argument_to_int(argv, argc, i+1) > 0 && ((i + 2) < argc))
+          if ((argument_to_int(argv, argc, i+1) > 0) || are_strings_same(argv[i+1], "-"))
           {
             selector->selector_type = j;
-            selector->a1 = argument_to_int(argv, argc, i+1);
+            selector->a1 = argv[i+1];
+            selector->ai1 = argument_to_int(argv, argc, i+1);
             selector->str = argv[i+2];
             return;
           }
@@ -682,8 +712,60 @@ void get_selector(struct selector_arguments *selector, int argc, char *argv[])
   selector->selector_type = -1;
 }
 
+void validate_line_processing(struct line_struct *line, struct selector_arguments *selector)
+{
+  switch (selector->selector_type)
+  {
+  case 0:
+    if ((are_strings_same(selector->a1, "-") && are_strings_same(selector->a2, "-") && line->last_line_flag) ||
+        (selector->ai1 > 0 && are_strings_same(selector->a2, "-") && line->line_index >= (selector->ai1 - 1)) ||
+        (selector->ai1 > 0 && selector->ai2 > 0 && selector->ai1 <= selector->ai2 && line->line_index >= (selector->ai1 - 1) && line->line_index <= (selector->ai2 - 1)))
+    {
+      line->process_flag = 1;
+      return;
+    }
+    break;
+
+  case 1:
+    if (selector->ai1 > 0 && selector->ai1 <= line->num_of_cols)
+    {
+      char substr[MAX_CELL_LEN];
+      get_sub_string(line, selector->ai1 - 1, substr);
+
+      if (is_string_start_with(substr, selector->str))
+      {
+        line->process_flag = 1;
+        return;
+      }
+    }
+    break;
+
+  case 2:
+    if (selector->ai1 > 0 && selector->ai1 <= line->num_of_cols)
+    {
+      char substr[MAX_CELL_LEN];
+      get_sub_string(line, selector->ai1 - 1, substr);
+
+      if (strstr(substr, selector->str) != NULL)
+      {
+        line->process_flag = 1;
+        return;
+      }
+    }
+    break;
+  
+  default:
+    line->process_flag = 1;
+    return;
+  }
+
+  line->process_flag = 0;
+}
+
 void process_line(struct line_struct *line, struct selector_arguments *selector, int argc, char *argv[], int operating_mode, int last_line_executed)
 {
+  validate_line_processing(line, selector);
+
   // Check if line length is in boundaries
   check_line_length(*line);
 
@@ -692,8 +774,6 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
 
   line->deleted = 0;
   line->final_cols = line->num_of_cols;
-
-  // printf("%d\n", line->line_index);
 
   for (int i=1; i < argc; i++)
   {
@@ -782,6 +862,11 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
       break;
 
     case DATA_EDIT:
+      // Edit line data only when its flagged as line to edit
+      if (line->process_flag)
+      {
+
+      }
       break;
 
     default:
@@ -801,7 +886,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
     process_line(line, selector, argc, argv, operating_mode, 0);
   }
 
-  if (line->last_line && !last_line_executed)
+  if (line->last_line_flag && !last_line_executed)
   {
     if (operating_mode == TABLE_EDIT)
     {
@@ -819,6 +904,8 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
 
 int main(int argc, char *argv[])
 {
+  check_arguments(argc, argv);
+
   char delims[MAX_CELL_LEN] = " ";
 
   // Extract delims from args
@@ -853,10 +940,10 @@ int main(int argc, char *argv[])
   line_holder.num_of_cols = get_number_of_cells(buffer_line, delims[0]);
 
   // Iterate over lines
-  while (!line_holder.last_line)
+  while (!line_holder.last_line_flag)
   {
     strcpy(line, buffer_line);
-    line_holder.last_line = fgets(buffer_line, (MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET), stdin) == NULL;
+    line_holder.last_line_flag = fgets(buffer_line, (MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET), stdin) == NULL;
 
     remove_newline_character(line);
     replace_unused_delims(line, delims);
@@ -869,7 +956,7 @@ int main(int argc, char *argv[])
   printf("\n\nDebug:\n");
 
   printf("Num of cols: %d\n", line_holder.num_of_cols);
-  printf("Selector: type %d, a1: %d, a2: %d, str: %s\n", selector.selector_type, selector.a1, selector.a2, selector.str);
+  printf("Selector: type %d, a1: %s, a2: %s, str: %s\n", selector.selector_type, selector.a1, selector.a2, selector.str);
 
   printf("Args: ");
   for (int i=1; i < argc; i++)

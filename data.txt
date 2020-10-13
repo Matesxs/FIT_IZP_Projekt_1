@@ -14,4 +14,3 @@ Iterace, rekurze:2:
 Dynamicke struktury:2:
 ::test
 test2:1:25555:1111
-test2:1
