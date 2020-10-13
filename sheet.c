@@ -615,19 +615,19 @@ int remove_substring(char *base_string, int start_index, int end_index)
   return 0;
 }
 
-int insert_empty_col(struct line_struct *line, int index)
+int insert_col(struct line_struct *line, int index, char *string)
 {
-  char empty_col[2] = {line->delim, '\0'};
-
-  // Offset to to place before index col
-  if (index > 0)
-    index -= 1;
-
   index = get_start_of_substring(line, index);
   if (index < 0)
     return 0;
 
-  return insert_string(line->line_string, empty_col, index);
+  return insert_string(line->line_string, string, index);
+}
+
+int insert_empty_col(struct line_struct *line, int index)
+{
+  char empty_col[2] = {line->delim, '\0'};
+  return insert_col(line, index, empty_col);
 }
 
 int append_empty_col(struct line_struct *line)
@@ -810,7 +810,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
       case 4:
         if ((argument_to_int(argv, argc, i+1) > 0) && !is_line_empty(line) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
         {
-          if (insert_empty_col(line, argument_to_int(argv, argc, i+1)) < 0)
+          if (insert_empty_col(line, argument_to_int(argv, argc, i+1) - 1) < 0)
           {
             fprintf(stderr, "\nLine %d exceded max memory size! Max length of line is %d characters (including delims)\n", line->line_index+1, MAX_LINE_LEN);
             exit(MAX_LINE_LEN_EXCEDED);
