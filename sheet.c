@@ -405,13 +405,13 @@ int string_to_double(char *string, double *val)
   :string - string to convertion
   :val - output double value
 
-  :return - 0 if conversion is success, -1 if not
+  :return - 0 if conversion is success, -1 if whole string is not double
   */
 
   char *foo;
   (*val) = strtod(string, &foo);
 
-  if (foo == string)
+  if (foo[0] != 0)
     return -1;
 
   return 0;
@@ -426,13 +426,13 @@ int string_to_int(char *string, int *val)
   :string - string to convertion
   :val - output intiger value
 
-  :return - 0 if conversion is success, -1 if not
+  :return - 0 if conversion is success, -1 if whole string is not int
   */
 
   char *foo;
   (*val) = strtol(string, &foo, 10);
 
-  if (foo == string)
+  if (foo[0] != 0)
     return -1;
 
   return 0;
