@@ -429,13 +429,11 @@ int string_to_int(char *string, int *val)
   :return - 0 if conversion is success, -1 if not
   */
 
-  for (size_t i=0; i < strlen(string); i++)
-  {
-    if(string[i] < '0' || string[i] > '9')
-      return -1;
-  }
+  char *foo;
+  (*val) = strtol(string, &foo, 10);
 
-  (*val) = atoi(string);
+  if (foo == string)
+    return -1;
 
   return 0;
 }
