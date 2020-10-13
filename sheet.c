@@ -52,30 +52,69 @@ struct selector_arguments
 
 void check_arguments(int argc, char *argv[])
 {
+  /*
+  Check if lenght of every single argument is in limit and exit if max length is exceded
+
+  params:
+  :argc - length of argument array
+  :argv - array of arguments
+  */
+
   for (int i=1; i < argc; i++)
   {
     if (strlen(argv[i]) > MAX_CELL_LEN)
     {
-      fprintf(stderr, "Argument %d exceded maximum allowed size! Maximum size is %d characters", i, MAX_CELL_LEN);
+      fprintf(stderr, "Argument %d exceded maximum allowed size! Maximum size is %d characters\n", i, MAX_CELL_LEN);
       exit(MAX_CELL_LEN_EXCEDED);
     }
   }
 }
 
-int are_strings_same(const char *string1, const char *string2)
+int are_strings_same(const char *s1, const char *s2)
 {
-  return strcmp(string1, string2) == 0;
+  /*
+  Check if two string are same
+
+  params:
+  :s1 - first string
+  :s2 - second string
+  
+  :return - 1 if strings are same
+          - 0 if strings are different
+  */
+
+  return strcmp(s1, s2) == 0;
 }
 
 int is_string_start_with(const char *base_string, const char *start_string)
 {
+  /*
+  Check if string starts with other string
+
+  params:
+  :base_string - string where to look for substring
+  :start_string - substring to look for at start of base_string
+
+  :return - 1 if base_string starts with start_string, 0 if dont
+  */
+
   if (strlen(start_string) > strlen(base_string))
     return 0;
 
   return strncmp(start_string, base_string, strlen(start_string)) == 0;
 }
 
-// Get index of commands used for switching between different editing functions
+// command_selectors
+/*
+Selectors that will return index of command from arrays of commands
+
+params:
+:com - command string
+
+:return - index of command in commands array if command is found
+        - -1 if command not found
+*/
+
 int get_table_edit_com_index(char *com)
 {
   for (int i=0; i < NUMBER_OF_TABLE_EDIT_COMS; i++)
@@ -111,6 +150,7 @@ int get_area_selector_com_index(char *com)
   }
   return -1;
 }
+// command_selectors
 
 int get_operating_mode(char *input_array[], int array_len)
 {
@@ -300,6 +340,20 @@ int get_position_of_character(char *string, char ch, int index)
 
 int get_start_of_substring(struct line_struct *line, int index)
 {
+  /*
+  Get start index of substring from line string limited by delim
+
+  params:
+  :line - structure with line data
+  :index - index of substring in line
+
+  :return - index of first char of substring if found
+          - -1 on error
+  */
+
+  if (index < 0)
+    return -1;
+
   if (index == 0)
   {
     // if we want first substring there is no delim before substring then we are starting from first char of string
@@ -314,7 +368,21 @@ int get_start_of_substring(struct line_struct *line, int index)
 
 int get_end_of_substring(struct line_struct *line, int index)
 {
+  /*
+  Get last index of substring from line string limited by delim
+
+  params:
+  :line - structure with line data
+  :index - index of substring in line
+
+  :return - index of last char of substring if found
+          - -1 on error
+  */
+
   int number_of_cells = get_number_of_cells(line->line_string, line->delim);
+
+  if (index > (number_of_cells - 1))
+    return -1;
 
   if (index == (number_of_cells - 1))
   {
@@ -328,21 +396,19 @@ int get_end_of_substring(struct line_struct *line, int index)
   }
 }
 
-int get_sub_string(struct line_struct *line, int index, char *substring)
+int get_value_of_cell(struct line_struct *line, int index, char *substring)
 {
   /*
-  Extract substring from string
+  Extract value of cell
 
   params:
-  :string - input string
-  :delim - deliminator for substrings
-  :index - index of substring
+  :line - structure with line data
+  :index - index of cell
   :substring - string for saving result
   :max_length - maximal length of one cell
 
   :return - 0 on success
-          - -1 on invalid index
-          - -2 failed to get substring boundaries
+          - -1 on error
   */
 
   int number_of_cells = get_number_of_cells(line->line_string, line->delim);
@@ -354,7 +420,7 @@ int get_sub_string(struct line_struct *line, int index, char *substring)
   int end_index = get_end_of_substring(line, index);
 
   if (start_index < 0 || end_index < 0)
-    return -2;
+    return -1;
 
   // exit if length of substring is larger than maximum size of one cell
   if ((end_index - start_index) > MAX_CELL_LEN)
@@ -380,7 +446,7 @@ int get_sub_string(struct line_struct *line, int index, char *substring)
   return 0;
 }
 
-void check_line_length(struct line_struct line)
+void check_line_length(struct line_struct *line)
 {
   /*
   Check if line is no longer than maximum allowed length of one line
@@ -389,9 +455,9 @@ void check_line_length(struct line_struct line)
   :line - structure with line data
   */
 
-  if (strlen(line.line_string) > MAX_LINE_LEN)
+  if (strlen(line->line_string) > MAX_LINE_LEN)
   {
-    fprintf(stderr, "\nLine %d exceded max memory size! Max length of line is %d characters (including delims)\n", line.line_index+1, MAX_LINE_LEN);
+    fprintf(stderr, "\nLine %d exceded max memory size! Max length of line is %d characters (including delims)\n", line->line_index+1, MAX_LINE_LEN);
     exit(MAX_LINE_LEN_EXCEDED);
   }
 }
@@ -405,7 +471,8 @@ int string_to_double(char *string, double *val)
   :string - string to convertion
   :val - output double value
 
-  :return - 0 if conversion is success, -1 if whole string is not double
+  :return - 0 if conversion is success
+          - -1 if whole string is not double
   */
 
   char *foo;
@@ -417,6 +484,27 @@ int string_to_double(char *string, double *val)
   return 0;
 }
 
+int is_string_int(char *string)
+{
+  /*
+  Check if input string is intiger
+
+  params:
+  :string - string to convertion
+
+  :return - 1 if is intiger
+          - 0 if not
+  */
+
+  char *foo;
+  strtol(string, &foo, 10);
+
+  if (foo[0] != 0)
+    return 0;
+
+  return 1;
+}
+
 int string_to_int(char *string, int *val)
 {
   /*
@@ -426,7 +514,8 @@ int string_to_int(char *string, int *val)
   :string - string to convertion
   :val - output intiger value
 
-  :return - 0 if conversion is success, -1 if whole string is not int
+  :return - 0 if conversion is success
+          - -1 if whole string is not int
   */
 
   char *foo;
@@ -554,7 +643,8 @@ int insert_string(char *base_string, char *insert_string, int index)
   :insert_string - string that will be inserted to base_string
   :index - index of character from which insert_string will be inserted to base_string
 
-  :return - 0 on success, -1 on fail
+  :return - 0 on success
+          - -1 on fail
   */
 
   size_t base_string_length = strlen(base_string);
@@ -590,7 +680,19 @@ int insert_string(char *base_string, char *insert_string, int index)
 
 int remove_substring(char *base_string, int start_index, int end_index)
 {
-  if (start_index < 0 || end_index < 0)
+  /*
+  Remove substring from string base on input indexes
+
+  params:
+  :base_string - string from what will be substring removed
+  :start_index - index of first removed char of substring
+  :end_index - index of last removed char of substring
+
+  :return - 0 on success
+          - -1 on error
+  */
+
+  if (start_index < 0 || end_index < 0 || start_index > end_index)
     return -1;
 
   size_t string_len = strlen(base_string);
@@ -615,23 +717,82 @@ int remove_substring(char *base_string, int start_index, int end_index)
   return 0;
 }
 
-int insert_col(struct line_struct *line, int index, char *string)
+int clear_cell(struct line_struct *line, int index)
 {
+  /*
+  Clear value from cell
+
+  param:
+  :line - structure with line data
+  :index - index of cell to clear
+
+  :return - 0 on success
+          - -1 on error
+  */
+
+  if (index < 0)
+    return -1;
+
+  int start_index = get_start_of_substring(line, index);
+  int end_index = get_end_of_substring(line, index);
+
+  if (start_index < 0 || end_index < 0)
+    return -1;
+
+  return remove_substring(line->line_string, start_index, end_index);
+}
+
+int insert_to_cell(struct line_struct *line, int index, char *string)
+{
+  /*
+  Insert string to column
+
+  params:
+  :line - structure with line data
+  :index - index of column to insert string
+  :string - string that will be inserted to cell
+
+  :return - 0 on success
+          - -1 on error
+  */
+
   index = get_start_of_substring(line, index);
   if (index < 0)
-    return 0;
+    return -1;
 
   return insert_string(line->line_string, string, index);
 }
 
-int insert_empty_col(struct line_struct *line, int index)
+int insert_empty_cell(struct line_struct *line, int index)
 {
+  /*
+  Insert new cell before the one selected by index
+
+  params:
+  :line - structure with line data
+  :index - index of cell before which will be inserted new cell
+
+  :return - 0 on success
+          - -1 on error
+  */
+
   char empty_col[2] = {line->delim, '\0'};
-  return insert_col(line, index, empty_col);
+  return insert_to_cell(line, index, empty_col);
 }
 
-int append_empty_col(struct line_struct *line)
+int append_empty_cell(struct line_struct *line)
 {
+  /*
+  Insert empty cell on the end of the line
+  (Should be replaced by strcat)
+
+  params:
+  :line - structure with line data
+
+  :return - 0 on success
+          - -1 on errror
+  */
+
   char empty_col[2] = {line->delim, '\0'};
 
   int index = get_end_of_substring(line, get_number_of_cells(line->line_string, line->delim) - 1);
@@ -641,8 +802,19 @@ int append_empty_col(struct line_struct *line)
   return insert_string(line->line_string, empty_col, index);
 }
 
-int remove_col(struct line_struct *line, int index)
+int remove_cell(struct line_struct *line, int index)
 {
+  /*
+  Remove whole cell
+
+  params:
+  :line - structure with line data
+  :index - index of cell to remove
+
+  :return - 0 on success
+          - -1 on error
+  */
+
   int start_index = get_start_of_substring(line, index);
   // offset to delim in front of substring if there is any to delete it
   if (index != 0 && (get_number_of_cells(line->line_string, line->delim) - 1) == index)
@@ -656,6 +828,16 @@ int remove_col(struct line_struct *line, int index)
 
 void get_selector(struct selector_arguments *selector, int argc, char *argv[])
 {
+  /*
+  Get line selector from arguments
+  Only first valid selector is loaded
+
+  params:
+  :selector - structor to save params for selector
+  :argc - length of argument array
+  :argv - argument array
+  */
+
   // Offset -2 to be sure that there will be another 2 args after the selector flag
   for (int i=1; i < (argc - 2); i++)
   {
@@ -666,9 +848,16 @@ void get_selector(struct selector_arguments *selector, int argc, char *argv[])
         switch (j)
         {
         case 0:
+          // rows selector is valid when both arguments are int > 0 and a1 < a2 or -
           if (((argument_to_int(argv, argc, i+1) > 0) || are_strings_same(argv[i+1], "-")) &&
               ((argument_to_int(argv, argc, i+2) > 0) || are_strings_same(argv[i+2], "-")))
           {
+            if (is_string_int(argv[i+1]) && is_string_int(argv[i+2]) &&
+                (argument_to_int(argv, argc, i+1) > argument_to_int(argv, argc, i+2)))
+            {
+              break;
+            }
+
             selector->selector_type = j;
             selector->a1 = argv[i+1];
             selector->a2 = argv[i+2];
@@ -712,12 +901,20 @@ void get_selector(struct selector_arguments *selector, int argc, char *argv[])
 
 void validate_line_processing(struct line_struct *line, struct selector_arguments *selector)
 {
+  /*
+  Check if current line is valid for processing (selected by selector)
+
+  params:
+  :line - structure with line data
+  :selector - structure with selector params
+  */
+
   switch (selector->selector_type)
   {
   case 0:
     if ((are_strings_same(selector->a1, "-") && are_strings_same(selector->a2, "-") && line->last_line_flag) ||
         (selector->ai1 > 0 && are_strings_same(selector->a2, "-") && line->line_index >= (selector->ai1 - 1)) ||
-        (selector->ai1 > 0 && selector->ai2 > 0 && selector->ai1 <= selector->ai2 && line->line_index >= (selector->ai1 - 1) && line->line_index <= (selector->ai2 - 1)))
+        (selector->ai1 > 0 && selector->ai2 > 0 && line->line_index >= (selector->ai1 - 1) && line->line_index <= (selector->ai2 - 1)))
     {
       line->process_flag = 1;
       return;
@@ -728,7 +925,7 @@ void validate_line_processing(struct line_struct *line, struct selector_argument
     if (selector->ai1 > 0 && selector->ai1 <= line->num_of_cols)
     {
       char substr[MAX_CELL_LEN];
-      get_sub_string(line, selector->ai1 - 1, substr);
+      get_value_of_cell(line, selector->ai1 - 1, substr);
 
       if (is_string_start_with(substr, selector->str))
       {
@@ -742,7 +939,7 @@ void validate_line_processing(struct line_struct *line, struct selector_argument
     if (selector->ai1 > 0 && selector->ai1 <= line->num_of_cols)
     {
       char substr[MAX_CELL_LEN];
-      get_sub_string(line, selector->ai1 - 1, substr);
+      get_value_of_cell(line, selector->ai1 - 1, substr);
 
       if (strstr(substr, selector->str) != NULL)
       {
@@ -762,10 +959,23 @@ void validate_line_processing(struct line_struct *line, struct selector_argument
 
 void process_line(struct line_struct *line, struct selector_arguments *selector, int argc, char *argv[], int operating_mode, int last_line_executed)
 {
+  /*
+  Process loaded line data
+
+  params:
+  :line - structure with line data
+  :selector - structure with selector params
+  :argc - length of argument array
+  :argv - argument array
+  :operating_mode - operating mode of program
+  :last_line_executed - flag to indicate that last line is executed
+  */
+
+  // Check if data in line should be processed
   validate_line_processing(line, selector);
 
   // Check if line length is in boundaries
-  check_line_length(*line);
+  check_line_length(line);
 
   // Create buffer for cases when we are inserting new line
   char line_buffer[MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET];
@@ -810,7 +1020,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
       case 4:
         if ((argument_to_int(argv, argc, i+1) > 0) && !is_line_empty(line) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
         {
-          if (insert_empty_col(line, argument_to_int(argv, argc, i+1) - 1) < 0)
+          if (insert_empty_cell(line, argument_to_int(argv, argc, i+1) - 1) < 0)
           {
             fprintf(stderr, "\nLine %d exceded max memory size! Max length of line is %d characters (including delims)\n", line->line_index+1, MAX_LINE_LEN);
             exit(MAX_LINE_LEN_EXCEDED);
@@ -821,7 +1031,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
         break;
 
       case 5:
-        if (append_empty_col(line) < 0 && !is_line_empty(line))
+        if (append_empty_cell(line) < 0 && !is_line_empty(line))
         {
           fprintf(stderr, "\nLine %d exceded max memory size! Max length of line is %d characters (including delims)\n", line->line_index+1, MAX_LINE_LEN);
           exit(MAX_LINE_LEN_EXCEDED);
@@ -833,7 +1043,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
       case 6:
         if ((argument_to_int(argv, argc, i+1) > 0) && !is_line_empty(line) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
         {
-          if (remove_col(line, (argument_to_int(argv, argc, i+1) - 1)) == 0)
+          if (remove_cell(line, (argument_to_int(argv, argc, i+1) - 1)) == 0)
           {
             line->final_cols--;
           }
@@ -845,7 +1055,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
         {
           for (int j=argument_to_int(argv, argc, i+1); j <= argument_to_int(argv, argc, i+2); j++)
           {
-            if (remove_col(line, argument_to_int(argv, argc, i+1) - 1) == 0)
+            if (remove_cell(line, argument_to_int(argv, argc, i+1) - 1) == 0)
             {
               line->final_cols--;
             }
@@ -863,7 +1073,19 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
       // Edit line data only when its flagged as line to edit
       if (line->process_flag)
       {
-
+        switch (get_data_edit_com_index(argv[i]))
+        {
+        case 0:
+          if ((argument_to_int(argv, argc, i+1) > 0) && (i + 2) < argc)
+          {
+            clear_cell(line, argument_to_int(argv, argc, i+1) - 1);
+            insert_to_cell(line, argument_to_int(argv, argc, i+1) - 1, argv[i + 2]);
+          }
+          break;
+        
+        default:
+          break;
+        }
       }
       break;
 
@@ -884,6 +1106,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
     process_line(line, selector, argc, argv, operating_mode, 0);
   }
 
+  // There will be processed appending of new rows
   if (line->last_line_flag && !last_line_executed)
   {
     if (operating_mode == TABLE_EDIT)
