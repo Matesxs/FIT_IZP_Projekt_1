@@ -307,7 +307,7 @@ int get_start_of_substring(struct line_struct *line, int index)
   }
   else
   {
-    // get position of delim before that substring
+    // first character of substring after start delim
     return get_position_of_character(line->line_string, line->delim, index - 1) + 1;
   }
 }
@@ -323,7 +323,7 @@ int get_end_of_substring(struct line_struct *line, int index)
   }
   else
   {
-    // position of end delim
+    // last character of substring before delim
     return get_position_of_character(line->line_string, line->delim, index) - 1;
   }
 }
