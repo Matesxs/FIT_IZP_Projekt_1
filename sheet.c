@@ -632,6 +632,56 @@ int remove_col(struct line_struct *line, int index)
   return remove_substring(line->line_string, start_index, end_index);
 }
 
+void get_selector(struct selector_arguments *selector, int argc, char *argv[])
+{
+  for (int i=1; i < argc; i++)
+  {
+    for (int j=0; j < NUMBER_OF_AREA_SELECTOR_COMS; j++)
+    {
+      if (strcmp(argv[i], AREA_SELECTOR_COMS[j]) == 0)
+      {
+        switch (j)
+        {
+        case 0:
+          if (argument_to_int(argv, argc, i+1) > 0 && argument_to_int(argv, argc, i+2) > 0 && argument_to_int(argv, argc, i+1) <= argument_to_int(argv, argc, i+2))
+          {
+            selector->selector_type = j;
+            selector->a1 = argument_to_int(argv, argc, i+1);
+            selector->a2 = argument_to_int(argv, argc, i+2);
+            return;
+          }
+          break;
+
+        case 1:
+          if (argument_to_int(argv, argc, i+1) > 0 && ((i + 2) < argc))
+          {
+            selector->selector_type = j;
+            selector->a1 = argument_to_int(argv, argc, i+1);
+            selector->str = argv[i+2];
+            return;
+          }
+          break;
+
+        case 2:
+          if (argument_to_int(argv, argc, i+1) > 0 && ((i + 2) < argc))
+          {
+            selector->selector_type = j;
+            selector->a1 = argument_to_int(argv, argc, i+1);
+            selector->str = argv[i+2];
+            return;
+          }
+          break;
+        
+        default:
+          break;
+        }
+      }
+    }
+  }
+
+  selector->selector_type = -1;
+}
+
 void process_line(struct line_struct *line, struct selector_arguments *selector, int argc, char *argv[], int operating_mode, int last_line_executed)
 {
   // Check if line length is in boundaries
@@ -639,10 +689,6 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
 
   // Create buffer for cases when we are inserting new line
   char line_buffer[MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET];
-
-  //get_sub_string(line, 2, line_buffer);
-  //printf("Selected substring: %s\n", line_buffer);
-  //line_buffer[0] = 0;
 
   line->deleted = 0;
   line->final_cols = line->num_of_cols;
@@ -769,56 +815,6 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
       }
     }
   }
-}
-
-void get_selector(struct selector_arguments *selector, int argc, char *argv[])
-{
-  for (int i=1; i < argc; i++)
-  {
-    for (int j=0; j < NUMBER_OF_AREA_SELECTOR_COMS; j++)
-    {
-      if (strcmp(argv[i], AREA_SELECTOR_COMS[j]) == 0)
-      {
-        switch (j)
-        {
-        case 0:
-          if (argument_to_int(argv, argc, i+1) > 0 && argument_to_int(argv, argc, i+2) > 0 && argument_to_int(argv, argc, i+1) <= argument_to_int(argv, argc, i+2))
-          {
-            selector->selector_type = j;
-            selector->a1 = argument_to_int(argv, argc, i+1);
-            selector->a2 = argument_to_int(argv, argc, i+2);
-            return;
-          }
-          break;
-
-        case 1:
-          if (argument_to_int(argv, argc, i+1) > 0 && ((i + 2) < argc))
-          {
-            selector->selector_type = j;
-            selector->a1 = argument_to_int(argv, argc, i+1);
-            selector->str = argv[i+2];
-            return;
-          }
-          break;
-
-        case 2:
-          if (argument_to_int(argv, argc, i+1) > 0 && ((i + 2) < argc))
-          {
-            selector->selector_type = j;
-            selector->a1 = argument_to_int(argv, argc, i+1);
-            selector->str = argv[i+2];
-            return;
-          }
-          break;
-        
-        default:
-          break;
-        }
-      }
-    }
-  }
-
-  selector->selector_type = -1;
 }
 
 int main(int argc, char *argv[])
