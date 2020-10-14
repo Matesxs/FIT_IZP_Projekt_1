@@ -421,8 +421,18 @@ int get_value_of_cell(struct line_struct *line, int index, char *substring)
   int start_index = get_start_of_substring(line, index);
   int end_index = get_end_of_substring(line, index);
 
-  if (start_index < 0 || end_index < 0)
+  if (start_index < 0 && end_index < 0)
+  {
     return -1;
+  }
+
+  // if start index is 0 and end index is -1 it means its first cell in row and its empty
+  // then its not problem only it needs to set substring to empty string
+  if (start_index == 0 && end_index == -1)
+  {
+    substring[0] = 0;
+    return 0;
+  }
 
   // exit if length of substring is larger than maximum size of one cell
   if ((end_index - start_index) > MAX_CELL_LEN)
@@ -1249,7 +1259,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
 
             if (get_value_of_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff) == 0)
             {
-              clear_cell(line, argument_to_int(argv, argc, i+2));
+              clear_cell(line, argument_to_int(argv, argc, i+2) - 1);
               insert_to_cell(line, argument_to_int(argv, argc, i+2) - 1, cell_buff);
             }
           }
@@ -1265,8 +1275,8 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
 
             if ((get_value_of_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff1) == 0) && (get_value_of_cell(line, argument_to_int(argv, argc, i+2) - 1, cell_buff2) == 0))
             {
-              clear_cell(line, argument_to_int(argv, argc, i+1));
-              clear_cell(line, argument_to_int(argv, argc, i+2));
+              clear_cell(line, argument_to_int(argv, argc, i+1) - 1);
+              clear_cell(line, argument_to_int(argv, argc, i+2) - 1);
               
               insert_to_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff2);
               insert_to_cell(line, argument_to_int(argv, argc, i+2) - 1, cell_buff1);
