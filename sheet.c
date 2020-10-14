@@ -1297,6 +1297,32 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
             }
           }
           break;
+
+        case 7:
+          // move N M
+          if ((argument_to_int(argv, argc, i+1) > 0) && (argument_to_int(argv, argc, i+2) > 0) &&
+              (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+2)) &&
+              argument_to_int(argv, argc, i+1) != argument_to_int(argv, argc, i+2))
+          {
+            char cell_buff[MAX_CELL_LEN];
+
+            if (get_value_of_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff) == 0)
+            {
+              if (argument_to_int(argv, argc, i+1) < argument_to_int(argv, argc, i+2))
+              {
+                insert_empty_cell(line, argument_to_int(argv, argc, i+2) - 1);
+                remove_cell(line, argument_to_int(argv, argc, i+1) - 1);
+                insert_to_cell(line, argument_to_int(argv, argc, i+2) - 2, cell_buff);
+              }
+              else
+              {
+                insert_empty_cell(line, argument_to_int(argv, argc, i+2) - 1);
+                remove_cell(line, argument_to_int(argv, argc, i+1));
+                insert_to_cell(line, argument_to_int(argv, argc, i+2) - 1, cell_buff);
+              }
+            }
+          }
+          break;
         
         default:
           break;
