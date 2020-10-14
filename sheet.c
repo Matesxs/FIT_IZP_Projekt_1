@@ -810,31 +810,6 @@ int remove_substring(char *base_string, int start_index, int end_index)
   return 0;
 }
 
-int clear_cell(struct line_struct *line, int index)
-{
-  /*
-  Clear value from cell
-
-  param:
-  :line - structure with line data
-  :index - index of cell to clear
-
-  :return - 0 on success
-          - -1 on error
-  */
-
-  if (index < 0)
-    return -1;
-
-  int start_index = get_start_of_substring(line, index);
-  int end_index = get_end_of_substring(line, index);
-
-  if (start_index < 0 || end_index < 0)
-    return -1;
-
-  return remove_substring(line->line_string, start_index, end_index);
-}
-
 int insert_to_cell(struct line_struct *line, int index, char *string)
 {
   /*
@@ -915,6 +890,31 @@ int remove_cell(struct line_struct *line, int index)
 
   // offset to delim char after the substring
   int end_index = get_end_of_substring(line, index) + 1;
+
+  return remove_substring(line->line_string, start_index, end_index);
+}
+
+int clear_cell(struct line_struct *line, int index)
+{
+  /*
+  Clear value from cell
+
+  param:
+  :line - structure with line data
+  :index - index of cell to clear
+
+  :return - 0 on success
+          - -1 on error
+  */
+
+  if (index < 0)
+    return -1;
+
+  int start_index = get_start_of_substring(line, index);
+  int end_index = get_end_of_substring(line, index);
+
+  if (start_index < 0 || end_index < 0)
+    return -1;
 
   return remove_substring(line->line_string, start_index, end_index);
 }
