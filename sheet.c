@@ -1085,6 +1085,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
       switch (get_table_edit_com_index(argv[i]))
       {
       case 0:
+        // irow R
         if (argument_to_int(argv, argc, i+1) > 0 && argument_to_int(argv, argc, i+1) == (line->line_index + 1))
         {
           strcpy(line_buffer, line->line_string);
@@ -1093,6 +1094,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
         break;
 
       case 2:
+        // drow R
         if (argument_to_int(argv, argc, i+1) > 0 && !is_line_empty(line) && (argument_to_int(argv, argc, i+1) == (line->line_index + 1)))
         {
           delete_current_line(line);
@@ -1100,6 +1102,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
         break;
 
       case 3:
+        // drows N M
         if ((argument_to_int(argv, argc, i+1) > 0) && !is_line_empty(line) && (argument_to_int(argv, argc, i+2) > 0))
         {
           if ((argument_to_int(argv, argc, i+1) <= (line->line_index + 1)) && (argument_to_int(argv, argc, i+2) >= (line->line_index + 1)))
@@ -1111,6 +1114,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
 
       // TODO: Rework colms to work with relative position to input not per step!
       case 4:
+        // icol C
         if ((argument_to_int(argv, argc, i+1) > 0) && !is_line_empty(line) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
         {
           if (insert_empty_cell(line, argument_to_int(argv, argc, i+1) - 1) < 0)
@@ -1124,6 +1128,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
         break;
 
       case 5:
+        // acol
         if (append_empty_cell(line) < 0 && !is_line_empty(line))
         {
           fprintf(stderr, "\nLine %d exceded max memory size! Max length of line is %d characters (including delims)\n", line->line_index+1, MAX_LINE_LEN);
@@ -1134,6 +1139,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
         break;
 
       case 6:
+        // dcol C
         if ((argument_to_int(argv, argc, i+1) > 0) && !is_line_empty(line) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
         {
           if (remove_cell(line, (argument_to_int(argv, argc, i+1) - 1)) == 0)
@@ -1144,6 +1150,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
         break;
 
       case 7:
+        // dcols N M
         if ((argument_to_int(argv, argc, i+1) > 0) && (argument_to_int(argv, argc, i+2) > 0) && !is_line_empty(line))
         {
           for (int j=argument_to_int(argv, argc, i+1); j <= argument_to_int(argv, argc, i+2); j++)
@@ -1169,6 +1176,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
         switch (get_data_edit_com_index(argv[i]))
         {
         case 0:
+          // cset C STR
           if ((argument_to_int(argv, argc, i+1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)) && (i + 2) < argc)
           {
             clear_cell(line, argument_to_int(argv, argc, i+1) - 1);
@@ -1177,6 +1185,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
           break;
 
         case 1:
+          // tolower C
           if ((argument_to_int(argv, argc, i+1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
           {
             char cell_buff[MAX_CELL_LEN];
@@ -1195,6 +1204,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
           break;
 
         case 2:
+          // toupper C
           if ((argument_to_int(argv, argc, i+1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
           {
             char cell_buff[MAX_CELL_LEN];
@@ -1213,6 +1223,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
           break;
 
         case 3:
+          // round C
           if ((argument_to_int(argv, argc, i+1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
           {
             char cell_buff[MAX_CELL_LEN];
@@ -1232,6 +1243,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
           break;
 
         case 4:
+          // int C
           if ((argument_to_int(argv, argc, i+1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
           {
             char cell_buff[MAX_CELL_LEN];
@@ -1251,6 +1263,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
           break;
 
         case 5:
+          // copy N M
           if ((argument_to_int(argv, argc, i+1) > 0) && (argument_to_int(argv, argc, i+2) > 0) &&
               (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+2)) &&
               argument_to_int(argv, argc, i+1) != argument_to_int(argv, argc, i+2))
@@ -1266,6 +1279,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
           break;
 
         case 6:
+          // swap N M
           if ((argument_to_int(argv, argc, i+1) > 0) && (argument_to_int(argv, argc, i+2) > 0) &&
               (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+2)) &&
               argument_to_int(argv, argc, i+1) != argument_to_int(argv, argc, i+2))
@@ -1316,6 +1330,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
       {
         if (get_table_edit_com_index(argv[i]) == 1)
         {
+          // arow
           create_empty_row(line);
           process_line(line, selector, argc, argv, operating_mode, 1);
         }
