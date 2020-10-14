@@ -1170,6 +1170,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
           if ((argument_to_int(argv, argc, i+1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
           {
             char cell_buff[MAX_CELL_LEN];
+
             if (get_value_of_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff) == 0)
             {
               // Check if the cell is not number (int should be double too)
@@ -1187,6 +1188,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
           if ((argument_to_int(argv, argc, i+1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
           {
             char cell_buff[MAX_CELL_LEN];
+
             if (get_value_of_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff) == 0)
             {
               // Check if the cell is not number (int should be double too)
@@ -1204,9 +1206,11 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
           if ((argument_to_int(argv, argc, i+1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
           {
             char cell_buff[MAX_CELL_LEN];
+
             if (get_value_of_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff) == 0)
             {
               double cell_double;
+
               if (string_to_double(cell_buff, &cell_double) == 0)
               {
                 snprintf(cell_buff, MAX_CELL_LEN, "%d", (int)round(cell_double));
@@ -1221,15 +1225,51 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
           if ((argument_to_int(argv, argc, i+1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
           {
             char cell_buff[MAX_CELL_LEN];
+
             if (get_value_of_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff) == 0)
             {
               double cell_double;
+
               if (string_to_double(cell_buff, &cell_double) == 0)
               {
                 snprintf(cell_buff, MAX_CELL_LEN, "%d", (int)cell_double);
                 clear_cell(line, argument_to_int(argv, argc, i+1) - 1);
                 insert_to_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff);
               }
+            }
+          }
+          break;
+
+        case 5:
+          if ((argument_to_int(argv, argc, i+1) > 0) && (argument_to_int(argv, argc, i+2) > 0) &&
+              (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+2)) &&
+              argument_to_int(argv, argc, i+1) != argument_to_int(argv, argc, i+2))
+          {
+            char cell_buff[MAX_CELL_LEN];
+
+            if (get_value_of_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff) == 0)
+            {
+              clear_cell(line, argument_to_int(argv, argc, i+2));
+              insert_to_cell(line, argument_to_int(argv, argc, i+2) - 1, cell_buff);
+            }
+          }
+          break;
+
+        case 6:
+          if ((argument_to_int(argv, argc, i+1) > 0) && (argument_to_int(argv, argc, i+2) > 0) &&
+              (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+2)) &&
+              argument_to_int(argv, argc, i+1) != argument_to_int(argv, argc, i+2))
+          {
+            char cell_buff1[MAX_CELL_LEN];
+            char cell_buff2[MAX_CELL_LEN];
+
+            if ((get_value_of_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff1) == 0) && (get_value_of_cell(line, argument_to_int(argv, argc, i+2) - 1, cell_buff2) == 0))
+            {
+              clear_cell(line, argument_to_int(argv, argc, i+1));
+              clear_cell(line, argument_to_int(argv, argc, i+2));
+              
+              insert_to_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff2);
+              insert_to_cell(line, argument_to_int(argv, argc, i+2) - 1, cell_buff1);
             }
           }
           break;
