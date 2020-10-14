@@ -11,6 +11,8 @@ Program to process tables from standard input and outputs it to standard output
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+#include <math.h>
 
 #define MAX_CELL_LEN 100
 #define MAX_LINE_LEN 10240
@@ -462,6 +464,30 @@ void check_line_length(struct line_struct *line)
   }
 }
 
+int is_string_double(char *string)
+{
+  /*
+  Check if input string is double
+
+  params:
+  :string - string to convertion
+
+  :return - 1 if is double
+          - 0 if not
+  */
+
+  if (string[0] == 0)
+    return 0;
+
+  char *foo;
+  strtod(string, &foo);
+
+  if (foo[0] != 0)
+    return 0;
+
+  return 1;
+}
+
 int string_to_double(char *string, double *val)
 {
   /*
@@ -474,6 +500,10 @@ int string_to_double(char *string, double *val)
   :return - 0 if conversion is success
           - -1 if whole string is not double
   */
+
+  // we dont want to convert empty strings to 0
+  if (string[0] == 0)
+    return -1;
 
   char *foo;
   (*val) = strtod(string, &foo);
@@ -495,6 +525,9 @@ int is_string_int(char *string)
   :return - 1 if is intiger
           - 0 if not
   */
+
+  if (string[0] == 0)
+    return 0;
 
   char *foo;
   strtol(string, &foo, 10);
@@ -518,6 +551,10 @@ int string_to_int(char *string, int *val)
           - -1 if whole string is not int
   */
 
+  // we dont want to convert empty strings to 0
+  if (string[0] == 0)
+    return -1;
+
   char *foo;
   (*val) = strtol(string, &foo, 10);
 
@@ -525,6 +562,52 @@ int string_to_int(char *string, int *val)
     return -1;
 
   return 0;
+}
+
+void string_to_upper(char *string)
+{
+  /*
+  Converts string to upper case
+
+  params:
+  :string - input string
+  */
+
+  for (size_t i=0; i < strlen(string); i++)
+  {
+    while (*string)
+    {
+      if (*string >= 'a' && *string <= 'z')
+      {
+        *string = toupper(*string); 
+      }
+
+      string++;
+    }
+  }
+}
+
+void string_to_lower(char *string)
+{
+  /*
+  Converts string to lower case
+
+  params:
+  :string - input string
+  */
+
+  for (size_t i=0; i < strlen(string); i++)
+  {
+    while (*string)
+    {
+      if (*string >= 'A' && *string <= 'Z')
+      {
+        *string = tolower(*string);  
+      }
+
+      string++;
+    }
+  }
 }
 
 int argument_to_int(char *input_array[], int array_len, int index)
@@ -1076,10 +1159,78 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
         switch (get_data_edit_com_index(argv[i]))
         {
         case 0:
-          if ((argument_to_int(argv, argc, i+1) > 0) && (i + 2) < argc)
+          if ((argument_to_int(argv, argc, i+1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)) && (i + 2) < argc)
           {
             clear_cell(line, argument_to_int(argv, argc, i+1) - 1);
             insert_to_cell(line, argument_to_int(argv, argc, i+1) - 1, argv[i + 2]);
+          }
+          break;
+
+        case 1:
+          if ((argument_to_int(argv, argc, i+1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
+          {
+            char cell_buff[MAX_CELL_LEN];
+            if (get_value_of_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff) == 0)
+            {
+              // Check if the cell is not number (int should be double too)
+              if (!is_string_double(cell_buff))
+              {
+                string_to_lower(cell_buff);
+                clear_cell(line, argument_to_int(argv, argc, i+1) - 1);
+                insert_to_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff);
+              }
+            }
+          }
+          break;
+
+        case 2:
+          if ((argument_to_int(argv, argc, i+1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
+          {
+            char cell_buff[MAX_CELL_LEN];
+            if (get_value_of_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff) == 0)
+            {
+              // Check if the cell is not number (int should be double too)
+              if (!is_string_double(cell_buff))
+              {
+                string_to_upper(cell_buff);
+                clear_cell(line, argument_to_int(argv, argc, i+1) - 1);
+                insert_to_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff);
+              }
+            }
+          }
+          break;
+
+        case 3:
+          if ((argument_to_int(argv, argc, i+1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
+          {
+            char cell_buff[MAX_CELL_LEN];
+            if (get_value_of_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff) == 0)
+            {
+              double cell_double;
+              if (string_to_double(cell_buff, &cell_double) == 0)
+              {
+                snprintf(cell_buff, MAX_CELL_LEN, "%d", (int)round(cell_double));
+                clear_cell(line, argument_to_int(argv, argc, i+1) - 1);
+                insert_to_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff);
+              }
+            }
+          }
+          break;
+
+        case 4:
+          if ((argument_to_int(argv, argc, i+1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
+          {
+            char cell_buff[MAX_CELL_LEN];
+            if (get_value_of_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff) == 0)
+            {
+              double cell_double;
+              if (string_to_double(cell_buff, &cell_double) == 0)
+              {
+                snprintf(cell_buff, MAX_CELL_LEN, "%d", (int)cell_double);
+                clear_cell(line, argument_to_int(argv, argc, i+1) - 1);
+                insert_to_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff);
+              }
+            }
           }
           break;
         
