@@ -32,6 +32,7 @@ enum ReturnCodes {SUCESS, MAX_LINE_LEN_EXCEDED, MAX_CELL_LEN_EXCEDED, ARG_ERROR,
 struct line_struct
 {
   char *line_string;
+  char unedited_line_string[MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET];
   char delim;
   int line_index;
 
@@ -648,11 +649,12 @@ int argument_to_int(char *input_array[], int array_len, int index)
   return val;
 }
 
-void create_empty_row(struct line_struct *line)
+void generate_empty_row(struct line_struct *line)
 {
   /*
   Create string with empty line format based on wanted line length and delim char
   Empty line is saved to line structure instead of current line string
+  Line will have same number of cells as saved number of cells from first line
 
   params:
   :line - structure with line data
@@ -710,10 +712,10 @@ void print_line(struct line_struct *line)
   line->line_string[0] = 0;
 }
 
-void delete_current_line(struct line_struct *line)
+void delete_line_content(struct line_struct *line)
 {
   /*
-  Delete current line from buffer and increment delete offset
+  Delete line string and if line wasnt already empty switch delete flag to true
 
   params:
   :line - structure with line data
@@ -726,25 +728,25 @@ void delete_current_line(struct line_struct *line)
   }
 }
 
-int insert_string(char *base_string, char *insert_string, int index)
+void insert_string(struct line_struct *line, char *insert_string, int index)
 {
   /*
-  Insert one string to another to index position in base string
+  Insert string to line string
 
   params:
-  :base_string - string to which we will insert string
+  :line - structure with line data
   :insert_string - string that will be inserted to base_string
   :index - index of character from which insert_string will be inserted to base_string
-
-  :return - 0 on success
-          - -1 on fail
   */
 
-  size_t base_string_length = strlen(base_string);
+  size_t base_string_length = strlen(line->line_string);
   size_t insert_string_length = strlen(insert_string);
 
   if ((base_string_length + insert_string_length) > MAX_LINE_LEN)
-    return -1;
+  {
+    fprintf(stderr, "\nLine %d exceded max memory size! Max length of line is %d characters (including delims)\n", line->line_index+1, MAX_LINE_LEN);
+    exit(MAX_LINE_LEN_EXCEDED);
+  }
 
   // If index is larger than basestring lenght then insert position is lenght of base string
   size_t pos = ((size_t)index < base_string_length) ? (size_t)index : base_string_length;
@@ -753,7 +755,7 @@ int insert_string(char *base_string, char *insert_string, int index)
 
   // Add first part of base string
   for (size_t i=0; i < pos; ++i)
-    final_string[i] = base_string[i];
+    final_string[i] = line->line_string[i];
 
   // Add insert string
   for (size_t i=0; i < insert_string_length; ++i)
@@ -761,14 +763,13 @@ int insert_string(char *base_string, char *insert_string, int index)
 
   // Add rest of base string
   for (size_t i=pos; i < base_string_length; ++i)
-    final_string[i + insert_string_length] = base_string[i];
+    final_string[i + insert_string_length] = line->line_string[i];
 
   // Add terminate character to the end
   final_string[base_string_length + insert_string_length] = 0;
 
   // Copy new string to base string
-  strcpy(base_string, final_string);
-  return 0;
+  strcpy(line->line_string, final_string);
 }
 
 int remove_substring(char *base_string, int start_index, int end_index)
@@ -828,7 +829,9 @@ int insert_to_cell(struct line_struct *line, int index, char *string)
   if (index < 0)
     return -1;
 
-  return insert_string(line->line_string, string, index);
+  insert_string(line, string, index);
+
+  return 0;
 }
 
 int insert_empty_cell(struct line_struct *line, int index)
@@ -845,10 +848,14 @@ int insert_empty_cell(struct line_struct *line, int index)
   */
 
   char empty_col[2] = {line->delim, '\0'};
-  return insert_to_cell(line, index, empty_col);
+  int ret = insert_to_cell(line, index, empty_col);
+  if (ret == 0)
+    line->final_cols++;
+
+  return ret;
 }
 
-int append_empty_cell(struct line_struct *line)
+void append_empty_cell(struct line_struct *line)
 {
   /*
   Insert empty cell on the end of the line
@@ -856,18 +863,24 @@ int append_empty_cell(struct line_struct *line)
 
   params:
   :line - structure with line data
-
-  :return - 0 on success
-          - -1 on errror
   */
+
+  if (line->final_cols < 1)
+  {
+    line->final_cols++;
+    return;
+  }
 
   char empty_col[2] = {line->delim, '\0'};
 
   int index = get_end_of_substring(line, get_number_of_cells(line->line_string, line->delim) - 1);
   if (index < 0)
-    return 0;
+  {
+    line->final_cols++;
+    return;
+  }
 
-  return insert_string(line->line_string, empty_col, index);
+  insert_string(line, empty_col, index);
 }
 
 int remove_cell(struct line_struct *line, int index)
@@ -890,8 +903,12 @@ int remove_cell(struct line_struct *line, int index)
 
   // offset to delim char after the substring
   int end_index = get_end_of_substring(line, index) + 1;
+  int ret = remove_substring(line->line_string, start_index, end_index);
 
-  return remove_substring(line->line_string, start_index, end_index);
+  if (ret == 0)
+    line->final_cols--;
+
+  return ret;
 }
 
 int clear_cell(struct line_struct *line, int index)
@@ -1050,6 +1067,242 @@ void validate_line_processing(struct line_struct *line, struct selector_argument
   line->process_flag = 0;
 }
 
+void create_emty_row_at(struct line_struct *line, char *line_buffer, int index)
+{
+  if ((index > 0) && (index == (line->line_index + 1)))
+  {
+    strcpy(line_buffer, line->unedited_line_string);
+    generate_empty_row(line);
+  }
+}
+
+void table_edit(struct line_struct *line, char *line_buffer, int argc, char *argv[], int com_index)
+{
+  switch (get_table_edit_com_index(argv[com_index]))
+  {
+  case 0:
+    // irow R
+    create_emty_row_at(line, line_buffer, argument_to_int(argv, argc, com_index + 1));
+    break;
+
+  case 2:
+    // drow R
+    if (argument_to_int(argv, argc, com_index + 1) > 0 && (argument_to_int(argv, argc, com_index + 1) == (line->line_index + 1)))
+    {
+      delete_line_content(line);
+    }
+    break;
+
+  case 3:
+    // drows N M
+    if ((argument_to_int(argv, argc, com_index + 1) > 0) && (argument_to_int(argv, argc, com_index + 2) > 0))
+    {
+      if ((argument_to_int(argv, argc, com_index + 1) <= (line->line_index + 1)) && (argument_to_int(argv, argc, com_index + 2) >= (line->line_index + 1)))
+      {
+        delete_line_content(line);
+      }
+    }
+    break;
+
+  case 4:
+    // icol C
+    if ((argument_to_int(argv, argc, com_index + 1) > 0) && !is_line_empty(line) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)))
+    {
+      insert_empty_cell(line, argument_to_int(argv, argc, com_index + 1) - 1);
+    }
+    break;
+
+  case 5:
+    // acol
+    append_empty_cell(line);
+    break;
+
+  case 6:
+    // dcol C
+    if ((argument_to_int(argv, argc, com_index + 1) > 0) && !is_line_empty(line) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)))
+    {
+      remove_cell(line, (argument_to_int(argv, argc, com_index + 1) - 1));
+    }
+    break;
+
+  case 7:
+    // dcols N M
+    if ((argument_to_int(argv, argc, com_index + 1) > 0) && (argument_to_int(argv, argc, com_index + 2) > 0) && !is_line_empty(line))
+    {
+      for (int j = argument_to_int(argv, argc, com_index + 1); j <= argument_to_int(argv, argc, com_index + 2); j++)
+      {
+        remove_cell(line, argument_to_int(argv, argc, com_index + 1) - 1);
+      }
+    }
+    break;
+
+  default:
+    break;
+  }
+}
+
+void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
+{
+  // Edit line data only when its flagged as line to edit
+  if (line->process_flag)
+  {
+    switch (get_data_edit_com_index(argv[com_index]))
+    {
+    case 0:
+      // cset C STR
+      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)) && (com_index + 2) < argc)
+      {
+        clear_cell(line, argument_to_int(argv, argc, com_index + 1) - 1);
+        insert_to_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, argv[com_index + 2]);
+      }
+      break;
+
+    case 1:
+      // tolower C
+      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)))
+      {
+        char cell_buff[MAX_CELL_LEN];
+
+        if (get_value_of_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff) == 0)
+        {
+          // Check if the cell is not number (int should be double too)
+          if (!is_string_double(cell_buff))
+          {
+            string_to_lower(cell_buff);
+            clear_cell(line, argument_to_int(argv, argc, com_index + 1) - 1);
+            insert_to_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff);
+          }
+        }
+      }
+      break;
+
+    case 2:
+      // toupper C
+      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)))
+      {
+        char cell_buff[MAX_CELL_LEN];
+
+        if (get_value_of_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff) == 0)
+        {
+          // Check if the cell is not number (int should be double too)
+          if (!is_string_double(cell_buff))
+          {
+            string_to_upper(cell_buff);
+            clear_cell(line, argument_to_int(argv, argc, com_index + 1) - 1);
+            insert_to_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff);
+          }
+        }
+      }
+      break;
+
+    case 3:
+      // round C
+      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)))
+      {
+        char cell_buff[MAX_CELL_LEN];
+
+        if (get_value_of_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff) == 0)
+        {
+          double cell_double;
+
+          if (string_to_double(cell_buff, &cell_double) == 0)
+          {
+            snprintf(cell_buff, MAX_CELL_LEN, "%d", (int)round(cell_double));
+            clear_cell(line, argument_to_int(argv, argc, com_index + 1) - 1);
+            insert_to_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff);
+          }
+        }
+      }
+      break;
+
+    case 4:
+      // int C
+      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)))
+      {
+        char cell_buff[MAX_CELL_LEN];
+
+        if (get_value_of_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff) == 0)
+        {
+          double cell_double;
+
+          if (string_to_double(cell_buff, &cell_double) == 0)
+          {
+            snprintf(cell_buff, MAX_CELL_LEN, "%d", (int)cell_double);
+            clear_cell(line, argument_to_int(argv, argc, com_index + 1) - 1);
+            insert_to_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff);
+          }
+        }
+      }
+      break;
+
+    case 5:
+      // copy N M
+      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (argument_to_int(argv, argc, com_index + 2) > 0) &&
+          (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 2)) &&
+          argument_to_int(argv, argc, com_index + 1) != argument_to_int(argv, argc, com_index + 2))
+      {
+        char cell_buff[MAX_CELL_LEN];
+
+        if (get_value_of_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff) == 0)
+        {
+          clear_cell(line, argument_to_int(argv, argc, com_index + 2) - 1);
+          insert_to_cell(line, argument_to_int(argv, argc, com_index + 2) - 1, cell_buff);
+        }
+      }
+      break;
+
+    case 6:
+      // swap N M
+      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (argument_to_int(argv, argc, com_index + 2) > 0) &&
+          (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 2)) &&
+          argument_to_int(argv, argc, com_index + 1) != argument_to_int(argv, argc, com_index + 2))
+      {
+        char cell_buff1[MAX_CELL_LEN];
+        char cell_buff2[MAX_CELL_LEN];
+
+        if ((get_value_of_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff1) == 0) && (get_value_of_cell(line, argument_to_int(argv, argc, com_index + 2) - 1, cell_buff2) == 0))
+        {
+          clear_cell(line, argument_to_int(argv, argc, com_index + 1) - 1);
+          clear_cell(line, argument_to_int(argv, argc, com_index + 2) - 1);
+
+          insert_to_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff2);
+          insert_to_cell(line, argument_to_int(argv, argc, com_index + 2) - 1, cell_buff1);
+        }
+      }
+      break;
+
+    case 7:
+      // move N M
+      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (argument_to_int(argv, argc, com_index + 2) > 0) &&
+          (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 2)) &&
+          argument_to_int(argv, argc, com_index + 1) != argument_to_int(argv, argc, com_index + 2))
+      {
+        char cell_buff[MAX_CELL_LEN];
+
+        if (get_value_of_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff) == 0)
+        {
+          if (argument_to_int(argv, argc, com_index + 1) < argument_to_int(argv, argc, com_index + 2))
+          {
+            insert_empty_cell(line, argument_to_int(argv, argc, com_index + 2) - 1);
+            remove_cell(line, argument_to_int(argv, argc, com_index + 1) - 1);
+            insert_to_cell(line, argument_to_int(argv, argc, com_index + 2) - 2, cell_buff);
+          }
+          else
+          {
+            insert_empty_cell(line, argument_to_int(argv, argc, com_index + 2) - 1);
+            remove_cell(line, argument_to_int(argv, argc, com_index + 1));
+            insert_to_cell(line, argument_to_int(argv, argc, com_index + 2) - 1, cell_buff);
+          }
+        }
+      }
+      break;
+
+    default:
+      break;
+    }
+  }
+}
+
 void process_line(struct line_struct *line, struct selector_arguments *selector, int argc, char *argv[], int operating_mode, int last_line_executed)
 {
   /*
@@ -1070,6 +1323,9 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
   // Check if line length is in boundaries
   check_line_length(line);
 
+  // Create copy of line
+  strcpy(line->unedited_line_string, line->line_string);
+
   // Create buffer for cases when we are inserting new line
   char line_buffer[MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET];
 
@@ -1081,253 +1337,11 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
     switch (operating_mode)
     {
     case TABLE_EDIT:
-
-      switch (get_table_edit_com_index(argv[i]))
-      {
-      case 0:
-        // irow R
-        if (argument_to_int(argv, argc, i+1) > 0 && argument_to_int(argv, argc, i+1) == (line->line_index + 1))
-        {
-          strcpy(line_buffer, line->line_string);
-          create_empty_row(line);
-        }
-        break;
-
-      case 2:
-        // drow R
-        if (argument_to_int(argv, argc, i+1) > 0 && !is_line_empty(line) && (argument_to_int(argv, argc, i+1) == (line->line_index + 1)))
-        {
-          delete_current_line(line);
-        }
-        break;
-
-      case 3:
-        // drows N M
-        if ((argument_to_int(argv, argc, i+1) > 0) && !is_line_empty(line) && (argument_to_int(argv, argc, i+2) > 0))
-        {
-          if ((argument_to_int(argv, argc, i+1) <= (line->line_index + 1)) && (argument_to_int(argv, argc, i+2) >= (line->line_index + 1)))
-          {
-            delete_current_line(line);
-          }
-        }
-        break;
-
-      // TODO: Rework colms to work with relative position to input not per step!
-      case 4:
-        // icol C
-        if ((argument_to_int(argv, argc, i+1) > 0) && !is_line_empty(line) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
-        {
-          if (insert_empty_cell(line, argument_to_int(argv, argc, i+1) - 1) < 0)
-          {
-            fprintf(stderr, "\nLine %d exceded max memory size! Max length of line is %d characters (including delims)\n", line->line_index+1, MAX_LINE_LEN);
-            exit(MAX_LINE_LEN_EXCEDED);
-          }
-
-          line->final_cols++;
-        }
-        break;
-
-      case 5:
-        // acol
-        if (append_empty_cell(line) < 0 && !is_line_empty(line))
-        {
-          fprintf(stderr, "\nLine %d exceded max memory size! Max length of line is %d characters (including delims)\n", line->line_index+1, MAX_LINE_LEN);
-          exit(MAX_LINE_LEN_EXCEDED);
-        }
-
-        line->final_cols++;
-        break;
-
-      case 6:
-        // dcol C
-        if ((argument_to_int(argv, argc, i+1) > 0) && !is_line_empty(line) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
-        {
-          if (remove_cell(line, (argument_to_int(argv, argc, i+1) - 1)) == 0)
-          {
-            line->final_cols--;
-          }
-        }
-        break;
-
-      case 7:
-        // dcols N M
-        if ((argument_to_int(argv, argc, i+1) > 0) && (argument_to_int(argv, argc, i+2) > 0) && !is_line_empty(line))
-        {
-          for (int j=argument_to_int(argv, argc, i+1); j <= argument_to_int(argv, argc, i+2); j++)
-          {
-            if (remove_cell(line, argument_to_int(argv, argc, i+1) - 1) == 0)
-            {
-              line->final_cols--;
-            }
-          }
-        }
-        break;
-      
-      default:
-        break;
-      }
-
+      table_edit(line, line_buffer, argc, argv, i);
       break;
 
     case DATA_EDIT:
-      // Edit line data only when its flagged as line to edit
-      if (line->process_flag)
-      {
-        switch (get_data_edit_com_index(argv[i]))
-        {
-        case 0:
-          // cset C STR
-          if ((argument_to_int(argv, argc, i+1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)) && (i + 2) < argc)
-          {
-            clear_cell(line, argument_to_int(argv, argc, i+1) - 1);
-            insert_to_cell(line, argument_to_int(argv, argc, i+1) - 1, argv[i + 2]);
-          }
-          break;
-
-        case 1:
-          // tolower C
-          if ((argument_to_int(argv, argc, i+1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
-          {
-            char cell_buff[MAX_CELL_LEN];
-
-            if (get_value_of_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff) == 0)
-            {
-              // Check if the cell is not number (int should be double too)
-              if (!is_string_double(cell_buff))
-              {
-                string_to_lower(cell_buff);
-                clear_cell(line, argument_to_int(argv, argc, i+1) - 1);
-                insert_to_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff);
-              }
-            }
-          }
-          break;
-
-        case 2:
-          // toupper C
-          if ((argument_to_int(argv, argc, i+1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
-          {
-            char cell_buff[MAX_CELL_LEN];
-
-            if (get_value_of_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff) == 0)
-            {
-              // Check if the cell is not number (int should be double too)
-              if (!is_string_double(cell_buff))
-              {
-                string_to_upper(cell_buff);
-                clear_cell(line, argument_to_int(argv, argc, i+1) - 1);
-                insert_to_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff);
-              }
-            }
-          }
-          break;
-
-        case 3:
-          // round C
-          if ((argument_to_int(argv, argc, i+1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
-          {
-            char cell_buff[MAX_CELL_LEN];
-
-            if (get_value_of_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff) == 0)
-            {
-              double cell_double;
-
-              if (string_to_double(cell_buff, &cell_double) == 0)
-              {
-                snprintf(cell_buff, MAX_CELL_LEN, "%d", (int)round(cell_double));
-                clear_cell(line, argument_to_int(argv, argc, i+1) - 1);
-                insert_to_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff);
-              }
-            }
-          }
-          break;
-
-        case 4:
-          // int C
-          if ((argument_to_int(argv, argc, i+1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)))
-          {
-            char cell_buff[MAX_CELL_LEN];
-
-            if (get_value_of_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff) == 0)
-            {
-              double cell_double;
-
-              if (string_to_double(cell_buff, &cell_double) == 0)
-              {
-                snprintf(cell_buff, MAX_CELL_LEN, "%d", (int)cell_double);
-                clear_cell(line, argument_to_int(argv, argc, i+1) - 1);
-                insert_to_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff);
-              }
-            }
-          }
-          break;
-
-        case 5:
-          // copy N M
-          if ((argument_to_int(argv, argc, i+1) > 0) && (argument_to_int(argv, argc, i+2) > 0) &&
-              (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+2)) &&
-              argument_to_int(argv, argc, i+1) != argument_to_int(argv, argc, i+2))
-          {
-            char cell_buff[MAX_CELL_LEN];
-
-            if (get_value_of_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff) == 0)
-            {
-              clear_cell(line, argument_to_int(argv, argc, i+2) - 1);
-              insert_to_cell(line, argument_to_int(argv, argc, i+2) - 1, cell_buff);
-            }
-          }
-          break;
-
-        case 6:
-          // swap N M
-          if ((argument_to_int(argv, argc, i+1) > 0) && (argument_to_int(argv, argc, i+2) > 0) &&
-              (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+2)) &&
-              argument_to_int(argv, argc, i+1) != argument_to_int(argv, argc, i+2))
-          {
-            char cell_buff1[MAX_CELL_LEN];
-            char cell_buff2[MAX_CELL_LEN];
-
-            if ((get_value_of_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff1) == 0) && (get_value_of_cell(line, argument_to_int(argv, argc, i+2) - 1, cell_buff2) == 0))
-            {
-              clear_cell(line, argument_to_int(argv, argc, i+1) - 1);
-              clear_cell(line, argument_to_int(argv, argc, i+2) - 1);
-              
-              insert_to_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff2);
-              insert_to_cell(line, argument_to_int(argv, argc, i+2) - 1, cell_buff1);
-            }
-          }
-          break;
-
-        case 7:
-          // move N M
-          if ((argument_to_int(argv, argc, i+1) > 0) && (argument_to_int(argv, argc, i+2) > 0) &&
-              (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+1)) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, i+2)) &&
-              argument_to_int(argv, argc, i+1) != argument_to_int(argv, argc, i+2))
-          {
-            char cell_buff[MAX_CELL_LEN];
-
-            if (get_value_of_cell(line, argument_to_int(argv, argc, i+1) - 1, cell_buff) == 0)
-            {
-              if (argument_to_int(argv, argc, i+1) < argument_to_int(argv, argc, i+2))
-              {
-                insert_empty_cell(line, argument_to_int(argv, argc, i+2) - 1);
-                remove_cell(line, argument_to_int(argv, argc, i+1) - 1);
-                insert_to_cell(line, argument_to_int(argv, argc, i+2) - 2, cell_buff);
-              }
-              else
-              {
-                insert_empty_cell(line, argument_to_int(argv, argc, i+2) - 1);
-                remove_cell(line, argument_to_int(argv, argc, i+1));
-                insert_to_cell(line, argument_to_int(argv, argc, i+2) - 1, cell_buff);
-              }
-            }
-          }
-          break;
-        
-        default:
-          break;
-        }
-      }
+      data_edit(line, argc, argv, i);
       break;
 
     default:
@@ -1357,7 +1371,8 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
         if (get_table_edit_com_index(argv[i]) == 1)
         {
           // arow
-          create_empty_row(line);
+          // Its possible to refactor it to only print delims based on final cols because at this point all other operations are finished
+          generate_empty_row(line);
           process_line(line, selector, argc, argv, operating_mode, 1);
         }
       }
