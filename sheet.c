@@ -8,6 +8,8 @@ Program to process tables from standard input and outputs it to standard output
 */
 #define _CRT_SECURE_NO_WARNINGS
 
+#define DEBUG
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -32,7 +34,7 @@ enum ReturnCodes {SUCESS, MAX_LINE_LEN_EXCEDED, MAX_CELL_LEN_EXCEDED, ARG_ERROR,
 struct line_struct
 {
   char *line_string;
-  char unedited_line_string[MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET];
+  char unedited_line_string[MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET + 1];
   char delim;
   int line_index;
 
@@ -65,7 +67,7 @@ void check_arguments(int argc, char *argv[])
 
   for (int i=1; i < argc; i++)
   {
-    if (strlen(argv[i]) > MAX_CELL_LEN)
+    if (strlen(argv[i]) > (MAX_CELL_LEN + 1))
     {
       fprintf(stderr, "Argument %d exceded maximum allowed size! Maximum size is %d characters\n", i, MAX_CELL_LEN);
       exit(MAX_CELL_LEN_EXCEDED);
@@ -436,14 +438,14 @@ int get_value_of_cell(struct line_struct *line, int index, char *substring)
   }
 
   // exit if length of substring is larger than maximum size of one cell
-  if ((end_index - start_index) > MAX_CELL_LEN)
+  if ((end_index - start_index) > (MAX_CELL_LEN + 1))
   {
     fprintf(stderr, "\nCell %d on line %d exceded max memory size! Max length of cell is %d characters (exclude delims)\n", index + 1, line->line_index + 1, MAX_CELL_LEN);
     exit(MAX_CELL_LEN_EXCEDED);
   }
   
   // iterate over whole substring (we are recycling one and then we want to clear it)
-  for (int i=0; i < MAX_CELL_LEN; i++, start_index++)
+  for (int i=0; i < (MAX_CELL_LEN + 1); i++, start_index++)
   {
     if (start_index <= end_index)
     {
@@ -468,7 +470,7 @@ void check_line_length(struct line_struct *line)
   :line - structure with line data
   */
 
-  if (strlen(line->line_string) > MAX_LINE_LEN)
+  if (strlen(line->line_string) > (MAX_LINE_LEN + 1))
   {
     fprintf(stderr, "\nLine %d exceded max memory size! Max length of line is %d characters (including delims)\n", line->line_index+1, MAX_LINE_LEN);
     exit(MAX_LINE_LEN_EXCEDED);
@@ -660,16 +662,16 @@ void generate_empty_row(struct line_struct *line)
   :line - structure with line data
   */
 
-  if (line->num_of_cols <= 0)
+  if (line->final_cols <= 0)
   {
     line->line_string[0] = 0;
     return;
   }
 
   int i = 0;
-  for (; i < line->num_of_cols; i++)
+  for (; i < line->final_cols; i++)
   {
-    if (i < (line->num_of_cols - 1))
+    if (i < (line->final_cols - 1))
       line->line_string[i] = line->delim;
     else
     {
@@ -742,7 +744,7 @@ void insert_string(struct line_struct *line, char *insert_string, int index)
   size_t base_string_length = strlen(line->line_string);
   size_t insert_string_length = strlen(insert_string);
 
-  if ((base_string_length + insert_string_length) > MAX_LINE_LEN)
+  if ((base_string_length + insert_string_length) > (MAX_LINE_LEN + 1))
   {
     fprintf(stderr, "\nLine %d exceded max memory size! Max length of line is %d characters (including delims)\n", line->line_index+1, MAX_LINE_LEN);
     exit(MAX_LINE_LEN_EXCEDED);
@@ -751,7 +753,7 @@ void insert_string(struct line_struct *line, char *insert_string, int index)
   // If index is larger than basestring lenght then insert position is lenght of base string
   size_t pos = ((size_t)index < base_string_length) ? (size_t)index : base_string_length;
 
-  char final_string[MAX_LINE_LEN];
+  char final_string[MAX_LINE_LEN + 1];
 
   // Add first part of base string
   for (size_t i=0; i < pos; ++i)
@@ -791,7 +793,7 @@ int remove_substring(char *base_string, int start_index, int end_index)
 
   size_t string_len = strlen(base_string);
 
-  char final_string[MAX_LINE_LEN];
+  char final_string[MAX_LINE_LEN + 1];
   int i;
   size_t j;
 
@@ -865,9 +867,10 @@ void append_empty_cell(struct line_struct *line)
   :line - structure with line data
   */
 
+  line->final_cols++;
+
   if (line->final_cols < 1)
   {
-    line->final_cols++;
     return;
   }
 
@@ -876,7 +879,6 @@ void append_empty_cell(struct line_struct *line)
   int index = get_end_of_substring(line, get_number_of_cells(line->line_string, line->delim) - 1);
   if (index < 0)
   {
-    line->final_cols++;
     return;
   }
 
@@ -1034,7 +1036,7 @@ void validate_line_processing(struct line_struct *line, struct selector_argument
   case 1:
     if (selector->ai1 > 0 && selector->ai1 <= line->num_of_cols)
     {
-      char substr[MAX_CELL_LEN];
+      char substr[MAX_CELL_LEN + 1];
       get_value_of_cell(line, selector->ai1 - 1, substr);
 
       if (is_string_start_with(substr, selector->str))
@@ -1048,7 +1050,7 @@ void validate_line_processing(struct line_struct *line, struct selector_argument
   case 2:
     if (selector->ai1 > 0 && selector->ai1 <= line->num_of_cols)
     {
-      char substr[MAX_CELL_LEN];
+      char substr[MAX_CELL_LEN + 1];
       get_value_of_cell(line, selector->ai1 - 1, substr);
 
       if (strstr(substr, selector->str) != NULL)
@@ -1161,7 +1163,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
       // tolower C
       if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)))
       {
-        char cell_buff[MAX_CELL_LEN];
+        char cell_buff[MAX_CELL_LEN + 1];
 
         if (get_value_of_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff) == 0)
         {
@@ -1180,7 +1182,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
       // toupper C
       if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)))
       {
-        char cell_buff[MAX_CELL_LEN];
+        char cell_buff[MAX_CELL_LEN + 1];
 
         if (get_value_of_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff) == 0)
         {
@@ -1199,7 +1201,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
       // round C
       if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)))
       {
-        char cell_buff[MAX_CELL_LEN];
+        char cell_buff[MAX_CELL_LEN + 1];
 
         if (get_value_of_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff) == 0)
         {
@@ -1207,7 +1209,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
 
           if (string_to_double(cell_buff, &cell_double) == 0)
           {
-            snprintf(cell_buff, MAX_CELL_LEN, "%d", (int)round(cell_double));
+            snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", (int)round(cell_double));
             clear_cell(line, argument_to_int(argv, argc, com_index + 1) - 1);
             insert_to_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff);
           }
@@ -1219,7 +1221,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
       // int C
       if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)))
       {
-        char cell_buff[MAX_CELL_LEN];
+        char cell_buff[MAX_CELL_LEN + 1];
 
         if (get_value_of_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff) == 0)
         {
@@ -1227,7 +1229,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
 
           if (string_to_double(cell_buff, &cell_double) == 0)
           {
-            snprintf(cell_buff, MAX_CELL_LEN, "%d", (int)cell_double);
+            snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", (int)cell_double);
             clear_cell(line, argument_to_int(argv, argc, com_index + 1) - 1);
             insert_to_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff);
           }
@@ -1241,7 +1243,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
           (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 2)) &&
           argument_to_int(argv, argc, com_index + 1) != argument_to_int(argv, argc, com_index + 2))
       {
-        char cell_buff[MAX_CELL_LEN];
+        char cell_buff[MAX_CELL_LEN + 1];
 
         if (get_value_of_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff) == 0)
         {
@@ -1257,8 +1259,8 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
           (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 2)) &&
           argument_to_int(argv, argc, com_index + 1) != argument_to_int(argv, argc, com_index + 2))
       {
-        char cell_buff1[MAX_CELL_LEN];
-        char cell_buff2[MAX_CELL_LEN];
+        char cell_buff1[MAX_CELL_LEN + 1];
+        char cell_buff2[MAX_CELL_LEN + 1];
 
         if ((get_value_of_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff1) == 0) && (get_value_of_cell(line, argument_to_int(argv, argc, com_index + 2) - 1, cell_buff2) == 0))
         {
@@ -1277,7 +1279,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
           (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 2)) &&
           argument_to_int(argv, argc, com_index + 1) != argument_to_int(argv, argc, com_index + 2))
       {
-        char cell_buff[MAX_CELL_LEN];
+        char cell_buff[MAX_CELL_LEN + 1];
 
         if (get_value_of_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff) == 0)
         {
@@ -1327,7 +1329,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
   strcpy(line->unedited_line_string, line->line_string);
 
   // Create buffer for cases when we are inserting new line
-  char line_buffer[MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET];
+  char line_buffer[MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET + 1];
 
   line->deleted = 0;
   line->final_cols = line->num_of_cols;
@@ -1371,9 +1373,9 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
         if (get_table_edit_com_index(argv[i]) == 1)
         {
           // arow
-          // Its possible to refactor it to only print delims based on final cols because at this point all other operations are finished
           generate_empty_row(line);
-          process_line(line, selector, argc, argv, operating_mode, 1);
+          print_line(line);
+          //process_line(line, selector, argc, argv, operating_mode, 1);
         }
       }
     }
@@ -1384,7 +1386,7 @@ int main(int argc, char *argv[])
 {
   check_arguments(argc, argv);
 
-  char delims[MAX_CELL_LEN] = " ";
+  char delims[MAX_CELL_LEN + 1] = " ";
 
   // Extract delims from args
   get_delims(argv, argc, delims);
@@ -1397,10 +1399,10 @@ int main(int argc, char *argv[])
   }
 
   // Create buffer strings for line and cell
-  char line[MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET];
-  char buffer_line[MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET];
+  char line[MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET + 1];
+  char buffer_line[MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET + 1];
 
-  if (fgets(buffer_line, (MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET), stdin) == NULL)
+  if (fgets(buffer_line, (MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET + 1), stdin) == NULL)
   {
     printf("Input cant be empty");
     return INPUT_ERROR;
@@ -1421,7 +1423,7 @@ int main(int argc, char *argv[])
   while (!line_holder.last_line_flag)
   {
     strcpy(line, buffer_line);
-    line_holder.last_line_flag = fgets(buffer_line, (MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET), stdin) == NULL;
+    line_holder.last_line_flag = fgets(buffer_line, (MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET + 1), stdin) == NULL;
 
     remove_newline_character(line);
     replace_unused_delims(line, delims);
@@ -1430,10 +1432,10 @@ int main(int argc, char *argv[])
     process_line(&line_holder, &selector, argc, argv, operating_mode, 0);
   }
 
-  //Debug
+  #ifdef DEBUG
   printf("\n\nDebug:\n");
 
-  printf("Num of cols: %d\n", line_holder.num_of_cols);
+  printf("Base cols: %d Final cols: %d\n", line_holder.num_of_cols, line_holder.final_cols);
   printf("Selector: type %d, a1: %s, a2: %s, str: %s\n", selector.selector_type, selector.a1, selector.a2, selector.str);
 
   printf("Args: ");
@@ -1441,7 +1443,7 @@ int main(int argc, char *argv[])
   {
     printf("%s ", argv[i]);
   }
-  // Debug end
+  #endif
 
   printf("\n");
 

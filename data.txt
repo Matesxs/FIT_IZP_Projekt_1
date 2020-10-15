@@ -12,5 +12,3 @@ Malloc, dbg:2:
 Iterace, rekurze:2:
 :0:Obhajoba 2
 Dynamicke struktury:2:
-:125:test
-test2:1:25555.77778:1111
