@@ -383,12 +383,10 @@ int get_end_of_substring(struct line_struct *line, int index)
           - -1 on error
   */
 
-  int number_of_cells = get_number_of_cells(line);
-
-  if (index > (number_of_cells - 1))
+  if (index > (line->final_cols - 1))
     return -1;
 
-  if (index == (number_of_cells - 1))
+  if (index == (line->final_cols - 1))
   {
     // if we are on the last cell we are going to the end of that line
     return strlen(line->line_string);
@@ -415,9 +413,7 @@ int get_value_of_cell(struct line_struct *line, int index, char *substring)
           - -1 on error
   */
 
-  int number_of_cells = get_number_of_cells(line);
-
-  if (index > (number_of_cells - 1) || index < 0)
+  if (index > (line->final_cols - 1) || index < 0)
     return -1;
 
   int start_index = get_start_of_substring(line, index);
@@ -876,7 +872,7 @@ void append_empty_cell(struct line_struct *line)
 
   char empty_col[2] = {line->delim, '\0'};
 
-  int index = get_end_of_substring(line, get_number_of_cells(line) - 1);
+  int index = get_end_of_substring(line, line->final_cols - 1);
   if (index < 0)
   {
     return;
@@ -900,7 +896,7 @@ int remove_cell(struct line_struct *line, int index)
 
   int start_index = get_start_of_substring(line, index);
   // offset to delim in front of substring if there is any to delete it
-  if (index != 0 && (get_number_of_cells(line) - 1) == index)
+  if (index != 0 && (line->final_cols - 1) == index)
     start_index -= 1;
 
   // offset to delim char after the substring
@@ -1204,7 +1200,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
     {
     case 0:
       // cset C STR
-      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line) >= argument_to_int(argv, argc, com_index + 1)) && (com_index + 2) < argc)
+      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (line->final_cols >= argument_to_int(argv, argc, com_index + 1)) && (com_index + 2) < argc)
       {
         clear_cell(line, argument_to_int(argv, argc, com_index + 1) - 1);
         insert_to_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, argv[com_index + 2]);
@@ -1213,7 +1209,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
 
     case 1:
       // tolower C
-      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line) >= argument_to_int(argv, argc, com_index + 1)))
+      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (line->final_cols >= argument_to_int(argv, argc, com_index + 1)))
       {
         char cell_buff[MAX_CELL_LEN + 1];
 
@@ -1232,7 +1228,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
 
     case 2:
       // toupper C
-      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line) >= argument_to_int(argv, argc, com_index + 1)))
+      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (line->final_cols >= argument_to_int(argv, argc, com_index + 1)))
       {
         char cell_buff[MAX_CELL_LEN + 1];
 
@@ -1251,7 +1247,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
 
     case 3:
       // round C
-      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line) >= argument_to_int(argv, argc, com_index + 1)))
+      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (line->final_cols >= argument_to_int(argv, argc, com_index + 1)))
       {
         char cell_buff[MAX_CELL_LEN + 1];
 
@@ -1271,7 +1267,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
 
     case 4:
       // int C
-      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line) >= argument_to_int(argv, argc, com_index + 1)))
+      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (line->final_cols >= argument_to_int(argv, argc, com_index + 1)))
       {
         char cell_buff[MAX_CELL_LEN + 1];
 
@@ -1292,7 +1288,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
     case 5:
       // copy N M
       if ((argument_to_int(argv, argc, com_index + 1) > 0) && (argument_to_int(argv, argc, com_index + 2) > 0) &&
-          (get_number_of_cells(line) >= argument_to_int(argv, argc, com_index + 1)) && (get_number_of_cells(line) >= argument_to_int(argv, argc, com_index + 2)) &&
+          (line->final_cols >= argument_to_int(argv, argc, com_index + 1)) && (line->final_cols >= argument_to_int(argv, argc, com_index + 2)) &&
           argument_to_int(argv, argc, com_index + 1) != argument_to_int(argv, argc, com_index + 2))
       {
         char cell_buff[MAX_CELL_LEN + 1];
@@ -1308,7 +1304,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
     case 6:
       // swap N M
       if ((argument_to_int(argv, argc, com_index + 1) > 0) && (argument_to_int(argv, argc, com_index + 2) > 0) &&
-          (get_number_of_cells(line) >= argument_to_int(argv, argc, com_index + 1)) && (get_number_of_cells(line) >= argument_to_int(argv, argc, com_index + 2)) &&
+          (line->final_cols >= argument_to_int(argv, argc, com_index + 1)) && (line->final_cols >= argument_to_int(argv, argc, com_index + 2)) &&
           argument_to_int(argv, argc, com_index + 1) != argument_to_int(argv, argc, com_index + 2))
       {
         char cell_buff1[MAX_CELL_LEN + 1];
@@ -1328,7 +1324,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
     case 7:
       // move N M
       if ((argument_to_int(argv, argc, com_index + 1) > 0) && (argument_to_int(argv, argc, com_index + 2) > 0) &&
-          (get_number_of_cells(line) >= argument_to_int(argv, argc, com_index + 1)) && (get_number_of_cells(line) >= argument_to_int(argv, argc, com_index + 2)) &&
+          (line->final_cols >= argument_to_int(argv, argc, com_index + 1)) && (line->final_cols >= argument_to_int(argv, argc, com_index + 2)) &&
           argument_to_int(argv, argc, com_index + 1) != argument_to_int(argv, argc, com_index + 2))
       {
         char cell_buff[MAX_CELL_LEN + 1];
@@ -1354,6 +1350,18 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
     default:
       break;
     }
+  }
+}
+
+void line_buffer_processing(struct line_struct *line, char *line_buffer, struct selector_arguments *selector, int argc, char *argv[], int operating_mode)
+{
+  // Check if there is any line in buffer
+  if (line_buffer[0] != 0)
+  {
+    // If there is line in buffer copy it to line structure, clear buffer and recursively call this function to process that line
+    strcpy(line->line_string, line_buffer);
+    line_buffer[0] = 0;
+    process_line(line, selector, argc, argv, operating_mode, 0);
   }
 }
 
@@ -1406,14 +1414,8 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
   // Print line from line structure
   print_line(line);
 
-  // Check if there is any line in buffer
-  if (line_buffer[0] != 0)
-  {
-    // If there is line in buffer copy it to line structure, clear buffer and recursively call this function to process that line
-    strcpy(line->line_string, line_buffer);
-    line_buffer[0] = 0;
-    process_line(line, selector, argc, argv, operating_mode, 0);
-  }
+  // Process line buffer if its not empty
+  line_buffer_processing(line, line_buffer, selector, argc, argv, operating_mode);
 
   // There will be processed appending of new rows
   if (line->last_line_flag && !last_line_executed)
