@@ -300,18 +300,17 @@ int count_specific_chars(char *string, char ch)
   return delim_counter;
 }
 
-int get_number_of_cells(char *string, char delim)
+int get_number_of_cells(struct line_struct *line)
 {
   /*
-  Get number of cells in string
+  Get number of cells in row
   Cell is substring separated by deliminator
 
   params:
-  :string - input string with cells
-  :delim - deliminator char
+  :line - structure with line data
   */
 
-  return count_specific_chars(string, delim) + 1;
+  return count_specific_chars(line->line_string, line->delim) + 1;
 }
 
 int get_position_of_character(char *string, char ch, int index)
@@ -384,7 +383,7 @@ int get_end_of_substring(struct line_struct *line, int index)
           - -1 on error
   */
 
-  int number_of_cells = get_number_of_cells(line->line_string, line->delim);
+  int number_of_cells = get_number_of_cells(line);
 
   if (index > (number_of_cells - 1))
     return -1;
@@ -416,7 +415,7 @@ int get_value_of_cell(struct line_struct *line, int index, char *substring)
           - -1 on error
   */
 
-  int number_of_cells = get_number_of_cells(line->line_string, line->delim);
+  int number_of_cells = get_number_of_cells(line);
 
   if (index > (number_of_cells - 1) || index < 0)
     return -1;
@@ -867,16 +866,17 @@ void append_empty_cell(struct line_struct *line)
   :line - structure with line data
   */
 
-  line->final_cols++;
-
   if (line->final_cols < 1)
   {
+    line->final_cols++;
     return;
   }
 
+  line->final_cols++;
+
   char empty_col[2] = {line->delim, '\0'};
 
-  int index = get_end_of_substring(line, get_number_of_cells(line->line_string, line->delim) - 1);
+  int index = get_end_of_substring(line, get_number_of_cells(line) - 1);
   if (index < 0)
   {
     return;
@@ -900,7 +900,7 @@ int remove_cell(struct line_struct *line, int index)
 
   int start_index = get_start_of_substring(line, index);
   // offset to delim in front of substring if there is any to delete it
-  if (index != 0 && (get_number_of_cells(line->line_string, line->delim) - 1) == index)
+  if (index != 0 && (get_number_of_cells(line) - 1) == index)
     start_index -= 1;
 
   // offset to delim char after the substring
@@ -1008,6 +1008,7 @@ void get_selector(struct selector_arguments *selector, int argc, char *argv[])
     }
   }
 
+  // If valid selector not found set selector type to -1
   selector->selector_type = -1;
 }
 
@@ -1071,10 +1072,82 @@ void validate_line_processing(struct line_struct *line, struct selector_argument
 
 void create_emty_row_at(struct line_struct *line, char *line_buffer, int index)
 {
+  /*
+  Create empty row before index row in line string
+
+  params:
+  :line - structure with line data
+  :line_buffer - output buffer for current content of line
+  :index - index of row where to create empty line
+  */
+
   if ((index > 0) && (index == (line->line_index + 1)))
   {
     strcpy(line_buffer, line->unedited_line_string);
     generate_empty_row(line);
+  }
+}
+
+void delete_rows_in_interval(struct line_struct *line, int start_index, int end_index)
+{
+  /*
+  Delete row if index of line is in passed interval
+  Start and end indexes included
+
+  params:
+  :line - structure with line data
+  :start_index - start index value
+  :end_index - end index value
+  */
+
+  if (start_index > 0 && end_index > 0 &&
+      start_index <= end_index)
+  {
+    if (start_index <= (line->line_index + 1) && end_index >= (line->line_index + 1))
+    {
+      delete_line_content(line);
+    }
+  }
+}
+
+void insert_empty_cell_at(struct line_struct *line, int index)
+{
+  /*
+  Insert empty cell before cell of passed index if that cell exist
+
+  params:
+  :line - structure with line data
+  :index - input index of cell
+  */
+
+  if (index > 0 && line->final_cols >= index)
+  {
+    insert_empty_cell(line, index - 1);
+  }
+}
+
+void delete_cells_in_interval(struct line_struct *line, int start_index, int end_index)
+{
+  /*
+  Delete cells with indexes in input interval
+  In loop delete first cell several times
+
+  params:
+  :line - structure with line data
+  :start_index - start index value
+  :end_index - end index value
+  */
+
+  if (start_index > 0 && end_index > 0 && start_index <= end_index &&
+      line->final_cols >= start_index)
+  {
+
+    // I am lazy to count number of loops
+    for (int j=start_index; j <= end_index; j++)
+    {
+      if (!is_line_empty(line))
+        remove_cell(line, start_index - 1);
+    }
   }
 }
 
@@ -1089,29 +1162,17 @@ void table_edit(struct line_struct *line, char *line_buffer, int argc, char *arg
 
   case 2:
     // drow R
-    if (argument_to_int(argv, argc, com_index + 1) > 0 && (argument_to_int(argv, argc, com_index + 1) == (line->line_index + 1)))
-    {
-      delete_line_content(line);
-    }
+    delete_rows_in_interval(line, argument_to_int(argv, argc, com_index + 1), argument_to_int(argv, argc, com_index + 1));
     break;
 
   case 3:
     // drows N M
-    if ((argument_to_int(argv, argc, com_index + 1) > 0) && (argument_to_int(argv, argc, com_index + 2) > 0))
-    {
-      if ((argument_to_int(argv, argc, com_index + 1) <= (line->line_index + 1)) && (argument_to_int(argv, argc, com_index + 2) >= (line->line_index + 1)))
-      {
-        delete_line_content(line);
-      }
-    }
+    delete_rows_in_interval(line, argument_to_int(argv, argc, com_index + 1), argument_to_int(argv, argc, com_index + 2));
     break;
 
   case 4:
     // icol C
-    if ((argument_to_int(argv, argc, com_index + 1) > 0) && !is_line_empty(line) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)))
-    {
-      insert_empty_cell(line, argument_to_int(argv, argc, com_index + 1) - 1);
-    }
+    insert_empty_cell_at(line, argument_to_int(argv, argc, com_index + 1));
     break;
 
   case 5:
@@ -1121,21 +1182,12 @@ void table_edit(struct line_struct *line, char *line_buffer, int argc, char *arg
 
   case 6:
     // dcol C
-    if ((argument_to_int(argv, argc, com_index + 1) > 0) && !is_line_empty(line) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)))
-    {
-      remove_cell(line, (argument_to_int(argv, argc, com_index + 1) - 1));
-    }
+    delete_cells_in_interval(line, argument_to_int(argv, argc, com_index + 1), argument_to_int(argv, argc, com_index + 1));
     break;
 
   case 7:
     // dcols N M
-    if ((argument_to_int(argv, argc, com_index + 1) > 0) && (argument_to_int(argv, argc, com_index + 2) > 0) && !is_line_empty(line))
-    {
-      for (int j = argument_to_int(argv, argc, com_index + 1); j <= argument_to_int(argv, argc, com_index + 2); j++)
-      {
-        remove_cell(line, argument_to_int(argv, argc, com_index + 1) - 1);
-      }
-    }
+    delete_cells_in_interval(line, argument_to_int(argv, argc, com_index + 1), argument_to_int(argv, argc, com_index + 2));
     break;
 
   default:
@@ -1152,7 +1204,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
     {
     case 0:
       // cset C STR
-      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)) && (com_index + 2) < argc)
+      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line) >= argument_to_int(argv, argc, com_index + 1)) && (com_index + 2) < argc)
       {
         clear_cell(line, argument_to_int(argv, argc, com_index + 1) - 1);
         insert_to_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, argv[com_index + 2]);
@@ -1161,7 +1213,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
 
     case 1:
       // tolower C
-      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)))
+      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line) >= argument_to_int(argv, argc, com_index + 1)))
       {
         char cell_buff[MAX_CELL_LEN + 1];
 
@@ -1180,7 +1232,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
 
     case 2:
       // toupper C
-      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)))
+      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line) >= argument_to_int(argv, argc, com_index + 1)))
       {
         char cell_buff[MAX_CELL_LEN + 1];
 
@@ -1199,7 +1251,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
 
     case 3:
       // round C
-      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)))
+      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line) >= argument_to_int(argv, argc, com_index + 1)))
       {
         char cell_buff[MAX_CELL_LEN + 1];
 
@@ -1219,7 +1271,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
 
     case 4:
       // int C
-      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)))
+      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (get_number_of_cells(line) >= argument_to_int(argv, argc, com_index + 1)))
       {
         char cell_buff[MAX_CELL_LEN + 1];
 
@@ -1240,7 +1292,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
     case 5:
       // copy N M
       if ((argument_to_int(argv, argc, com_index + 1) > 0) && (argument_to_int(argv, argc, com_index + 2) > 0) &&
-          (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 2)) &&
+          (get_number_of_cells(line) >= argument_to_int(argv, argc, com_index + 1)) && (get_number_of_cells(line) >= argument_to_int(argv, argc, com_index + 2)) &&
           argument_to_int(argv, argc, com_index + 1) != argument_to_int(argv, argc, com_index + 2))
       {
         char cell_buff[MAX_CELL_LEN + 1];
@@ -1256,7 +1308,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
     case 6:
       // swap N M
       if ((argument_to_int(argv, argc, com_index + 1) > 0) && (argument_to_int(argv, argc, com_index + 2) > 0) &&
-          (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 2)) &&
+          (get_number_of_cells(line) >= argument_to_int(argv, argc, com_index + 1)) && (get_number_of_cells(line) >= argument_to_int(argv, argc, com_index + 2)) &&
           argument_to_int(argv, argc, com_index + 1) != argument_to_int(argv, argc, com_index + 2))
       {
         char cell_buff1[MAX_CELL_LEN + 1];
@@ -1276,7 +1328,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
     case 7:
       // move N M
       if ((argument_to_int(argv, argc, com_index + 1) > 0) && (argument_to_int(argv, argc, com_index + 2) > 0) &&
-          (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 1)) && (get_number_of_cells(line->line_string, line->delim) >= argument_to_int(argv, argc, com_index + 2)) &&
+          (get_number_of_cells(line) >= argument_to_int(argv, argc, com_index + 1)) && (get_number_of_cells(line) >= argument_to_int(argv, argc, com_index + 2)) &&
           argument_to_int(argv, argc, com_index + 1) != argument_to_int(argv, argc, com_index + 2))
       {
         char cell_buff[MAX_CELL_LEN + 1];
@@ -1410,14 +1462,11 @@ int main(int argc, char *argv[])
 
   struct selector_arguments selector;
   int operating_mode = get_operating_mode(argv, argc);
-  if (operating_mode == DATA_EDIT)
-    get_selector(&selector, argc, argv);
-  else
-    selector.selector_type = -1;  
+
+  get_selector(&selector, argc, argv);
 
   struct line_struct line_holder;
   line_holder.delim = delims[0];
-  line_holder.num_of_cols = get_number_of_cells(buffer_line, delims[0]);
 
   // Iterate over lines
   while (!line_holder.last_line_flag)
@@ -1428,6 +1477,9 @@ int main(int argc, char *argv[])
     remove_newline_character(line);
     replace_unused_delims(line, delims);
     line_holder.line_string = line;
+
+    if (line_holder.line_index == 0)
+      line_holder.num_of_cols = get_number_of_cells(&line_holder);
 
     process_line(&line_holder, &selector, argc, argv, operating_mode, 0);
   }
