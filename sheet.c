@@ -23,8 +23,8 @@ Program to process tables from standard input and outputs it to standard output
 
 const char *TABLE_EDIT_COMS[] = {"irow", "arow", "drow", "drows", "icol", "acol", "dcol", "dcols"};
 #define NUMBER_OF_TABLE_EDIT_COMS 8
-const char *DATA_EDIT_COMS[] = {"cset", "tolower", "toupper", "round", "int", "copy", "swap", "move"};
-#define NUMBER_OF_DATA_EDIT_COMS 8
+const char *DATA_EDIT_COMS[] = {"cset", "tolower", "toupper", "round", "int", "copy", "swap", "move", "csum", "cavg", "cmin", "cmax", "ccount", "cseq"};
+#define NUMBER_OF_DATA_EDIT_COMS 14
 const char *AREA_SELECTOR_COMS[] = {"rows", "beginswith", "contains"};
 #define NUMBER_OF_AREA_SELECTOR_COMS 3
 
@@ -414,6 +414,9 @@ int get_value_of_cell(struct line_struct *line, int index, char *substring)
           - -1 on error
   */
 
+  // Clear output string
+  substring[0] = 0;
+
   if (index > (line->final_cols - 1) || index < 0)
     return -1;
 
@@ -545,6 +548,11 @@ int is_string_int(char *string)
     return 0;
 
   return 1;
+}
+
+int is_double_int(double val)
+{
+  return floor(val) == val;
 }
 
 int string_to_int(char *string, int *val)
@@ -703,6 +711,10 @@ void print_line(struct line_struct *line)
 
   if (!is_line_empty(line))
   {
+    #ifdef DEBUG
+    printf("[Line debug] LI: %d, FC: %d Line data:\t\t", line->line_index, line->final_cols);
+    #endif
+
     printf("%s\n", line->line_string);
   }
 
@@ -1067,6 +1079,22 @@ void validate_line_processing(struct line_struct *line, struct selector_argument
   line->process_flag = 0;
 }
 
+int is_cell_index_valid(struct line_struct *line, int index)
+{
+  /*
+  Check if input index is valid index of cell in row
+
+  params:
+  :line - structure with line data
+  :index - index of cell to check
+
+  :return - 1 if is valid
+          - 0 if not
+  */
+
+  return ((index > 0) && (index <= line->final_cols));
+}
+
 void create_emty_row_at(struct line_struct *line, char *line_buffer, int index)
 {
   /*
@@ -1117,7 +1145,7 @@ void insert_empty_cell_at(struct line_struct *line, int index)
   :index - input index of cell
   */
 
-  if (index > 0 && line->final_cols >= index)
+  if (is_cell_index_valid(line, index))
   {
     insert_empty_cell(line, index - 1);
   }
@@ -1135,8 +1163,7 @@ void delete_cells_in_interval(struct line_struct *line, int start_index, int end
   :end_index - end index value
   */
 
-  if (start_index > 0 && end_index > 0 && start_index <= end_index &&
-      line->final_cols >= start_index)
+  if (is_cell_index_valid(line, start_index) && end_index > 0 && start_index <= end_index)
   {
 
     // I am lazy to count number of loops
@@ -1150,7 +1177,15 @@ void delete_cells_in_interval(struct line_struct *line, int start_index, int end
 
 void set_value_in_cell(struct line_struct *line, int index, char *value)
 {
-  if (index > 0 && line->final_cols >= index)
+  /*
+  Clear content of cell and insert new one
+
+  :line - structure with line data
+  :index - index of cell set value
+  :value - string to set
+  */
+
+  if (is_cell_index_valid(line, index))
   {
     clear_cell(line, index - 1);
     insert_to_cell(line, index - 1, value);
@@ -1159,7 +1194,20 @@ void set_value_in_cell(struct line_struct *line, int index, char *value)
 
 void cell_value_processing(struct line_struct *line, int index, int processing_flag)
 {
-  if (index > 0 && (line->final_cols >= index))
+  /*
+  Function to process value of single cell
+  Supported functions: UPPER - to uppercase
+                       LOWER - to lowercase
+                       ROUND - round value if its number
+                       INT - conver value to int if its number
+
+  params:
+  :line - structure with line data
+  :index - index of cell
+  :processing_flag - flag of function
+  */
+
+  if (is_cell_index_valid(line, index))
   {
     char cell_buff[MAX_CELL_LEN + 1];
 
@@ -1193,8 +1241,17 @@ void cell_value_processing(struct line_struct *line, int index, int processing_f
 
 void copy_cell_value_to(struct line_struct *line, int source_index, int target_index)
 {
-  if (source_index > 0 && target_index > 0 &&
-      source_index <= line->final_cols && target_index <= line->final_cols &&
+  /*
+  Copy value from one cell to another
+  Source and target index cant be same
+
+  params:
+  :line - structure with line data
+  :source_index - index of source cell
+  :target_index - index of destination cell
+  */
+
+  if (is_cell_index_valid(line, source_index) && is_cell_index_valid(line, target_index) &&
       source_index != target_index)
   {
     char cell_buff[MAX_CELL_LEN + 1];
@@ -1206,8 +1263,17 @@ void copy_cell_value_to(struct line_struct *line, int source_index, int target_i
 
 void swap_cell_values(struct line_struct *line, int index1, int index2)
 {
-  if (index1 > 0 && index2 > 0 &&
-      index1 <= line->final_cols && index2 <= line->final_cols &&
+  /*
+  Swap values of cells
+  Index1 and index2 can be same
+
+  params:
+  :line - structure with line data
+  :index1 - index of first cell
+  :index2 - index of second cell
+  */
+
+  if (is_cell_index_valid(line, index1) && is_cell_index_valid(line, index2) &&
       index1 != index2)
   {
     char cell_buff1[MAX_CELL_LEN + 1];
@@ -1223,8 +1289,17 @@ void swap_cell_values(struct line_struct *line, int index1, int index2)
 
 void move_cell_to(struct line_struct *line, int source_index, int target_index)
 {
-  if (source_index > 0 && target_index > 0 &&
-      source_index <= line->final_cols && target_index <= line->final_cols &&
+  /*
+  Move cell of source index before cell of target index
+  Source and target index cant be same
+
+  params:
+  :line - structure with line data
+  :source_index - index of cell to move
+  :target_index - index of cell to move to
+  */
+
+  if (is_cell_index_valid(line, source_index) && is_cell_index_valid(line, target_index) &&
       source_index != target_index)
   {
     char cell_buff[MAX_CELL_LEN + 1];
@@ -1244,6 +1319,48 @@ void move_cell_to(struct line_struct *line, int source_index, int target_index)
         insert_to_cell(line, target_index - 1, cell_buff);
       }
     }
+  }
+}
+
+void sum_cells(struct line_struct *line, int output_index, int start_index, int end_index)
+{
+  /*
+  Sum numbers in cells from inputed interval and save it to output cell
+  Output index cant be in sum interval
+
+  params:
+  :line - structure with line data
+  :output_index - index of cell where sum value will be saved
+  :start_index - start index of sum interval
+  :end_index - end index of sum interval
+  */
+
+  if (is_cell_index_valid(line, output_index) && is_cell_index_valid(line, start_index) && end_index > 0 &&
+      start_index <= end_index &&
+      (output_index < start_index || output_index > end_index))
+  {
+    char cell_buff[MAX_CELL_LEN + 1];
+    double sum_val = 0;
+
+    for (int i=start_index; i <= end_index; i++)
+    {
+      if (get_value_of_cell(line, i - 1, cell_buff) == 0)
+      {
+        if (cell_buff[0] != 0 && is_string_double(cell_buff))
+        {
+          double buf;
+          if (string_to_double(cell_buff, &buf) == 0)
+            sum_val += buf;
+        }
+      }
+    }
+
+    if (is_double_int(sum_val))
+      snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", (int)sum_val);
+    else
+      snprintf(cell_buff, MAX_CELL_LEN + 1, "%lf", sum_val);
+
+    set_value_in_cell(line, output_index, cell_buff);
   }
 }
 
@@ -1339,6 +1456,26 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
     case 7:
       // move N M
       move_cell_to(line, argument_to_int(argv, argc, com_index + 1), argument_to_int(argv, argc, com_index + 2));
+      break;
+
+    case 8:
+      // csum C N M
+      sum_cells(line, argument_to_int(argv, argc, com_index + 1), argument_to_int(argv, argc, com_index + 2), argument_to_int(argv, argc, com_index + 3));
+      break;
+
+    case 9:
+      break;
+
+    case 10:
+      break;
+    
+    case 11:
+      break;
+
+    case 12:
+      break;
+
+    case 13:
       break;
 
     default:
