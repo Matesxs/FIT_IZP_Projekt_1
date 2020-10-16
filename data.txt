@@ -6,7 +6,7 @@ Funkce 1:0:
 Struktury:2:
 Ukazatele:2:
 Funkce:0:Obhajoba 1
-Malloc, dbg:2:
+Malloc, dbg:2.777:
 :0:
 :0:
 Iterace, rekurze:2:

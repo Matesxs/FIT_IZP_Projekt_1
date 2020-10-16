@@ -30,6 +30,7 @@ const char *AREA_SELECTOR_COMS[] = {"rows", "beginswith", "contains"};
 
 enum Mode {PASS, TABLE_EDIT, DATA_EDIT};
 enum ReturnCodes {SUCESS, MAX_LINE_LEN_EXCEDED, MAX_CELL_LEN_EXCEDED, ARG_ERROR, INPUT_ERROR};
+enum CellConversion {UPPER, LOWER, ROUND, INT};
 
 struct line_struct
 {
@@ -54,26 +55,6 @@ struct selector_arguments
   char *a1, *a2, *str;
   int ai1, ai2;
 };
-
-void check_arguments(int argc, char *argv[])
-{
-  /*
-  Check if lenght of every single argument is in limit and exit if max length is exceded
-
-  params:
-  :argc - length of argument array
-  :argv - array of arguments
-  */
-
-  for (int i=1; i < argc; i++)
-  {
-    if (strlen(argv[i]) > (MAX_CELL_LEN + 1))
-    {
-      fprintf(stderr, "Argument %d exceded maximum allowed size! Maximum size is %d characters\n", i, MAX_CELL_LEN);
-      exit(MAX_CELL_LEN_EXCEDED);
-    }
-  }
-}
 
 int are_strings_same(const char *s1, const char *s2)
 {
@@ -107,6 +88,26 @@ int is_string_start_with(const char *base_string, const char *start_string)
     return 0;
 
   return strncmp(start_string, base_string, strlen(start_string)) == 0;
+}
+
+void check_arguments(int argc, char *argv[])
+{
+  /*
+  Check if lenght of every single argument is in limit and exit if max length is exceded
+
+  params:
+  :argc - length of argument array
+  :argv - array of arguments
+  */
+
+  for (int i=1; i < argc; i++)
+  {
+    if (strlen(argv[i]) > (MAX_CELL_LEN + 1))
+    {
+      fprintf(stderr, "Argument %d exceded maximum allowed size! Maximum size is %d characters\n", i, MAX_CELL_LEN);
+      exit(MAX_CELL_LEN_EXCEDED);
+    }
+  }
 }
 
 // command_selectors
@@ -1147,10 +1148,111 @@ void delete_cells_in_interval(struct line_struct *line, int start_index, int end
   }
 }
 
+void set_value_in_cell(struct line_struct *line, int index, char *value)
+{
+  if (index > 0 && line->final_cols >= index)
+  {
+    clear_cell(line, index - 1);
+    insert_to_cell(line, index - 1, value);
+  }
+}
+
+void cell_value_processing(struct line_struct *line, int index, int processing_flag)
+{
+  if (index > 0 && (line->final_cols >= index))
+  {
+    char cell_buff[MAX_CELL_LEN + 1];
+
+    if (get_value_of_cell(line, index - 1, cell_buff) == 0)
+    {
+      // Check if the cell is not number (int should be double too)
+      if (!is_string_double(cell_buff))
+      {
+        if (processing_flag == UPPER)
+          string_to_upper(cell_buff);
+        else if (processing_flag == LOWER)
+          string_to_lower(cell_buff);
+      }
+      else if (processing_flag == ROUND || processing_flag == INT)
+      {
+        double cell_double;
+
+        if (string_to_double(cell_buff, &cell_double) == 0)
+        {
+          if (processing_flag == ROUND)
+            snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", (int)round(cell_double));
+          else if (processing_flag == INT)
+            snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", (int)cell_double);
+        }
+      }
+
+      set_value_in_cell(line, index, cell_buff);
+    }
+  }
+}
+
+void copy_cell_value_to(struct line_struct *line, int source_index, int target_index)
+{
+  if (source_index > 0 && target_index > 0 &&
+      source_index <= line->final_cols && target_index <= line->final_cols &&
+      source_index != target_index)
+  {
+    char cell_buff[MAX_CELL_LEN + 1];
+
+    if (get_value_of_cell(line, source_index - 1, cell_buff) == 0)
+      set_value_in_cell(line, target_index, cell_buff);
+  }
+}
+
+void swap_cell_values(struct line_struct *line, int index1, int index2)
+{
+  if (index1 > 0 && index2 > 0 &&
+      index1 <= line->final_cols && index2 <= line->final_cols &&
+      index1 != index2)
+  {
+    char cell_buff1[MAX_CELL_LEN + 1];
+    char cell_buff2[MAX_CELL_LEN + 1];
+
+    if ((get_value_of_cell(line, index1 - 1, cell_buff1) == 0) && (get_value_of_cell(line, index2 - 1, cell_buff2) == 0))
+    {
+      set_value_in_cell(line, index1, cell_buff2);
+      set_value_in_cell(line, index2, cell_buff1);
+    }
+  }
+}
+
+void move_cell_to(struct line_struct *line, int source_index, int target_index)
+{
+  if (source_index > 0 && target_index > 0 &&
+      source_index <= line->final_cols && target_index <= line->final_cols &&
+      source_index != target_index)
+  {
+    char cell_buff[MAX_CELL_LEN + 1];
+
+    if (get_value_of_cell(line, source_index - 1, cell_buff) == 0)
+    {
+      if (source_index < target_index)
+      {
+        insert_empty_cell(line, target_index - 1);
+        remove_cell(line, source_index - 1);
+        insert_to_cell(line, target_index - 2, cell_buff);
+      }
+      else
+      {
+        insert_empty_cell(line, target_index - 1);
+        remove_cell(line, source_index);
+        insert_to_cell(line, target_index - 1, cell_buff);
+      }
+    }
+  }
+}
+
 void table_edit(struct line_struct *line, char *line_buffer, int argc, char *argv[], int com_index)
 {
   switch (get_table_edit_com_index(argv[com_index]))
   {
+
+  // TODO: Make row indexing consistent after removing/adding lines
   case 0:
     // irow R
     create_emty_row_at(line, line_buffer, argument_to_int(argv, argc, com_index + 1));
@@ -1200,168 +1302,48 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
     {
     case 0:
       // cset C STR
-      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (line->final_cols >= argument_to_int(argv, argc, com_index + 1)) && (com_index + 2) < argc)
-      {
-        clear_cell(line, argument_to_int(argv, argc, com_index + 1) - 1);
-        insert_to_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, argv[com_index + 2]);
-      }
+      if ((com_index + 2) < argc)
+        set_value_in_cell(line, argument_to_int(argv, argc, com_index + 1), argv[com_index + 2]);
       break;
 
     case 1:
       // tolower C
-      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (line->final_cols >= argument_to_int(argv, argc, com_index + 1)))
-      {
-        char cell_buff[MAX_CELL_LEN + 1];
-
-        if (get_value_of_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff) == 0)
-        {
-          // Check if the cell is not number (int should be double too)
-          if (!is_string_double(cell_buff))
-          {
-            string_to_lower(cell_buff);
-            clear_cell(line, argument_to_int(argv, argc, com_index + 1) - 1);
-            insert_to_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff);
-          }
-        }
-      }
+      cell_value_processing(line, argument_to_int(argv, argc, com_index + 1), LOWER);
       break;
 
     case 2:
       // toupper C
-      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (line->final_cols >= argument_to_int(argv, argc, com_index + 1)))
-      {
-        char cell_buff[MAX_CELL_LEN + 1];
-
-        if (get_value_of_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff) == 0)
-        {
-          // Check if the cell is not number (int should be double too)
-          if (!is_string_double(cell_buff))
-          {
-            string_to_upper(cell_buff);
-            clear_cell(line, argument_to_int(argv, argc, com_index + 1) - 1);
-            insert_to_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff);
-          }
-        }
-      }
+      cell_value_processing(line, argument_to_int(argv, argc, com_index + 1), UPPER);
       break;
 
     case 3:
       // round C
-      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (line->final_cols >= argument_to_int(argv, argc, com_index + 1)))
-      {
-        char cell_buff[MAX_CELL_LEN + 1];
-
-        if (get_value_of_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff) == 0)
-        {
-          double cell_double;
-
-          if (string_to_double(cell_buff, &cell_double) == 0)
-          {
-            snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", (int)round(cell_double));
-            clear_cell(line, argument_to_int(argv, argc, com_index + 1) - 1);
-            insert_to_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff);
-          }
-        }
-      }
+      cell_value_processing(line, argument_to_int(argv, argc, com_index + 1), ROUND);
       break;
 
     case 4:
       // int C
-      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (line->final_cols >= argument_to_int(argv, argc, com_index + 1)))
-      {
-        char cell_buff[MAX_CELL_LEN + 1];
-
-        if (get_value_of_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff) == 0)
-        {
-          double cell_double;
-
-          if (string_to_double(cell_buff, &cell_double) == 0)
-          {
-            snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", (int)cell_double);
-            clear_cell(line, argument_to_int(argv, argc, com_index + 1) - 1);
-            insert_to_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff);
-          }
-        }
-      }
+      cell_value_processing(line, argument_to_int(argv, argc, com_index + 1), INT);
       break;
 
     case 5:
       // copy N M
-      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (argument_to_int(argv, argc, com_index + 2) > 0) &&
-          (line->final_cols >= argument_to_int(argv, argc, com_index + 1)) && (line->final_cols >= argument_to_int(argv, argc, com_index + 2)) &&
-          argument_to_int(argv, argc, com_index + 1) != argument_to_int(argv, argc, com_index + 2))
-      {
-        char cell_buff[MAX_CELL_LEN + 1];
-
-        if (get_value_of_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff) == 0)
-        {
-          clear_cell(line, argument_to_int(argv, argc, com_index + 2) - 1);
-          insert_to_cell(line, argument_to_int(argv, argc, com_index + 2) - 1, cell_buff);
-        }
-      }
+      copy_cell_value_to(line, argument_to_int(argv, argc, com_index + 1), argument_to_int(argv, argc, com_index + 2));
       break;
 
     case 6:
       // swap N M
-      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (argument_to_int(argv, argc, com_index + 2) > 0) &&
-          (line->final_cols >= argument_to_int(argv, argc, com_index + 1)) && (line->final_cols >= argument_to_int(argv, argc, com_index + 2)) &&
-          argument_to_int(argv, argc, com_index + 1) != argument_to_int(argv, argc, com_index + 2))
-      {
-        char cell_buff1[MAX_CELL_LEN + 1];
-        char cell_buff2[MAX_CELL_LEN + 1];
-
-        if ((get_value_of_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff1) == 0) && (get_value_of_cell(line, argument_to_int(argv, argc, com_index + 2) - 1, cell_buff2) == 0))
-        {
-          clear_cell(line, argument_to_int(argv, argc, com_index + 1) - 1);
-          clear_cell(line, argument_to_int(argv, argc, com_index + 2) - 1);
-
-          insert_to_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff2);
-          insert_to_cell(line, argument_to_int(argv, argc, com_index + 2) - 1, cell_buff1);
-        }
-      }
+      swap_cell_values(line, argument_to_int(argv, argc, com_index + 1), argument_to_int(argv, argc, com_index + 2));
       break;
 
     case 7:
       // move N M
-      if ((argument_to_int(argv, argc, com_index + 1) > 0) && (argument_to_int(argv, argc, com_index + 2) > 0) &&
-          (line->final_cols >= argument_to_int(argv, argc, com_index + 1)) && (line->final_cols >= argument_to_int(argv, argc, com_index + 2)) &&
-          argument_to_int(argv, argc, com_index + 1) != argument_to_int(argv, argc, com_index + 2))
-      {
-        char cell_buff[MAX_CELL_LEN + 1];
-
-        if (get_value_of_cell(line, argument_to_int(argv, argc, com_index + 1) - 1, cell_buff) == 0)
-        {
-          if (argument_to_int(argv, argc, com_index + 1) < argument_to_int(argv, argc, com_index + 2))
-          {
-            insert_empty_cell(line, argument_to_int(argv, argc, com_index + 2) - 1);
-            remove_cell(line, argument_to_int(argv, argc, com_index + 1) - 1);
-            insert_to_cell(line, argument_to_int(argv, argc, com_index + 2) - 2, cell_buff);
-          }
-          else
-          {
-            insert_empty_cell(line, argument_to_int(argv, argc, com_index + 2) - 1);
-            remove_cell(line, argument_to_int(argv, argc, com_index + 1));
-            insert_to_cell(line, argument_to_int(argv, argc, com_index + 2) - 1, cell_buff);
-          }
-        }
-      }
+      move_cell_to(line, argument_to_int(argv, argc, com_index + 1), argument_to_int(argv, argc, com_index + 2));
       break;
 
     default:
       break;
     }
-  }
-}
-
-void line_buffer_processing(struct line_struct *line, char *line_buffer, struct selector_arguments *selector, int argc, char *argv[], int operating_mode)
-{
-  // Check if there is any line in buffer
-  if (line_buffer[0] != 0)
-  {
-    // If there is line in buffer copy it to line structure, clear buffer and recursively call this function to process that line
-    strcpy(line->line_string, line_buffer);
-    line_buffer[0] = 0;
-    process_line(line, selector, argc, argv, operating_mode, 0);
   }
 }
 
@@ -1391,6 +1373,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
   // Create buffer for cases when we are inserting new line
   char line_buffer[MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET + 1];
 
+  // Initialize line states
   line->deleted = 0;
   line->final_cols = line->num_of_cols;
 
@@ -1414,8 +1397,14 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
   // Print line from line structure
   print_line(line);
 
-  // Process line buffer if its not empty
-  line_buffer_processing(line, line_buffer, selector, argc, argv, operating_mode);
+  // Check if there is any line in buffer
+  if (line_buffer[0] != 0)
+  {
+    // If there is line in buffer copy it to line structure, clear buffer and recursively call this function to process that line
+    strcpy(line->line_string, line_buffer);
+    line_buffer[0] = 0;
+    process_line(line, selector, argc, argv, operating_mode, 0);
+  }
 
   // There will be processed appending of new rows
   if (line->last_line_flag && !last_line_executed)
@@ -1429,7 +1418,6 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
           // arow
           generate_empty_row(line);
           print_line(line);
-          //process_line(line, selector, argc, argv, operating_mode, 1);
         }
       }
     }
