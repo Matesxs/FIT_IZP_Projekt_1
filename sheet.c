@@ -29,7 +29,7 @@ const char *AREA_SELECTOR_COMS[] = {"rows", "beginswith", "contains"};
 #define NUMBER_OF_AREA_SELECTOR_COMS 3
 
 enum Mode {PASS, TABLE_EDIT, DATA_EDIT};
-enum ReturnCodes {SUCESS, MAX_LINE_LEN_EXCEDED, MAX_CELL_LEN_EXCEDED, ARG_ERROR, INPUT_ERROR};
+enum ReturnCodes {SUCCESS, MAX_LINE_LEN_EXCEDED, MAX_CELL_LEN_EXCEDED, ARG_ERROR, INPUT_ERROR};
 enum CellConversion {UPPER, LOWER, ROUND, INT};
 
 struct line_struct
@@ -90,14 +90,17 @@ int is_string_start_with(const char *base_string, const char *start_string)
   return strncmp(start_string, base_string, strlen(start_string)) == 0;
 }
 
-void check_arguments(int argc, char *argv[])
+int check_arguments(int argc, char *argv[])
 {
   /*
-  Check if lenght of every single argument is in limit and exit if max length is exceded
+  Check if lenght of every single argument is in limit
 
   params:
   :argc - length of argument array
   :argv - array of arguments
+
+  :return - SUCCESS if all arguments are in length limits
+          - MAX_CELL_LEN_EXCEDED if some argument is longer
   */
 
   for (int i=1; i < argc; i++)
@@ -105,9 +108,11 @@ void check_arguments(int argc, char *argv[])
     if (strlen(argv[i]) > MAX_CELL_LEN)
     {
       fprintf(stderr, "Argument %d exceded maximum allowed size! Maximum size is %d characters\n", i, MAX_CELL_LEN);
-      exit(MAX_CELL_LEN_EXCEDED);
+      return MAX_CELL_LEN_EXCEDED;
     }
   }
+
+  return SUCCESS;
 }
 
 // command_selectors
@@ -227,7 +232,7 @@ int check_delim_characters(char *delims)
   return 0;
 }
 
-void get_delims(char *input_array[], int array_len, char *delim)
+int get_delims(char *input_array[], int array_len, char *delim)
 {
   /*
   Extract delims string from args
@@ -240,18 +245,20 @@ void get_delims(char *input_array[], int array_len, char *delim)
 
   for (int i=1; i < array_len; i++)
   {
-      if (are_strings_same(input_array[i], "-d"))
+    if (are_strings_same(input_array[i], "-d"))
+    {
+      if ((i + 1) >= array_len)
       {
-        if ((i + 1) >= array_len)
-        {
-          fprintf(stderr, "Found delimiter flag without any value\n");
-          exit(ARG_ERROR);
-        }
-
-        strcpy(delim, input_array[i + 1]);
-        return;
+        fprintf(stderr, "Found delimiter flag without any value\n");
+        return ARG_ERROR;
       }
+
+      strcpy(delim, input_array[i + 1]);
+      return SUCCESS;
+    }
   }
+
+  return SUCCESS;
 }
 
 void replace_unused_delims(char *string, char* delims)
@@ -1108,6 +1115,51 @@ int is_cell_index_valid(struct line_struct *line, int index)
   return ((index > 0) && (index <= line->final_cols));
 }
 
+int get_sum_of_cells(struct line_struct *line, int start_index, int end_index, double *ret_val)
+{
+  /*
+  Sum numbers in cells from inputed interval
+
+  params:
+  :line - structure with line data
+  :start_index - start index of sum interval
+  :end_index - end index of sum interval
+  :ret_val - return pointer for value
+
+  :return - number of summed number on success
+          - -1 on fail
+  */
+
+  if (is_cell_index_valid(line, start_index) && end_index > 0 &&
+      start_index <= end_index)
+  {
+    char cell_buff[MAX_CELL_LEN + 1];
+    double sum_val = 0;
+    int summed_counter = 0;
+
+    for (int i=start_index; i <= end_index; i++)
+    {
+      if (get_value_of_cell(line, i - 1, cell_buff) == 0)
+      {
+        if (cell_buff[0] != 0 && is_string_double(cell_buff))
+        {
+          double buf;
+          if (string_to_double(cell_buff, &buf) == 0)
+          {
+            sum_val += buf;
+            summed_counter++;
+          }
+        }
+      }
+    }
+
+    (*ret_val) = sum_val;
+    return summed_counter;
+  }
+
+  return -1;
+}
+
 void create_emty_row_at(struct line_struct *line, char *line_buffer, int index)
 {
   /*
@@ -1348,32 +1400,45 @@ void sum_cells(struct line_struct *line, int output_index, int start_index, int 
   :end_index - end index of sum interval
   */
 
-  if (is_cell_index_valid(line, output_index) && is_cell_index_valid(line, start_index) && end_index > 0 &&
-      start_index <= end_index &&
+  if (is_cell_index_valid(line, output_index) &&
       (output_index < start_index || output_index > end_index))
   {
-    char cell_buff[MAX_CELL_LEN + 1];
-    double sum_val = 0;
+    double sum_val;
 
-    for (int i=start_index; i <= end_index; i++)
+    if (get_sum_of_cells(line, start_index, end_index, &sum_val) >= 0)
     {
-      if (get_value_of_cell(line, i - 1, cell_buff) == 0)
-      {
-        if (cell_buff[0] != 0 && is_string_double(cell_buff))
-        {
-          double buf;
-          if (string_to_double(cell_buff, &buf) == 0)
-            sum_val += buf;
-        }
-      }
+      char cell_buff[MAX_CELL_LEN + 1];
+    
+      if (is_double_int(sum_val))
+        snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", (int)sum_val);
+      else
+        snprintf(cell_buff, MAX_CELL_LEN + 1, "%lf", sum_val);
+
+      set_value_in_cell(line, output_index, cell_buff);
     }
+  }
+}
 
-    if (is_double_int(sum_val))
-      snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", (int)sum_val);
-    else
-      snprintf(cell_buff, MAX_CELL_LEN + 1, "%lf", sum_val);
+void avg_cells(struct line_struct *line, int output_index, int start_index, int end_index)
+{
+  if (is_cell_index_valid(line, output_index) &&
+      (output_index < start_index || output_index > end_index))
+  {
+    double sum_val;
+    int summed_cells = get_sum_of_cells(line, start_index, end_index, &sum_val);
 
-    set_value_in_cell(line, output_index, cell_buff);
+    if (summed_cells != -1)
+    {
+      sum_val /= summed_cells;
+      char cell_buff[MAX_CELL_LEN + 1];
+    
+      if (is_double_int(sum_val))
+        snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", (int)sum_val);
+      else
+        snprintf(cell_buff, MAX_CELL_LEN + 1, "%lf", sum_val);
+
+      set_value_in_cell(line, output_index, cell_buff);
+    }
   }
 }
 
@@ -1477,18 +1542,24 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
       break;
 
     case 9:
+      // cavg C N M
+      avg_cells(line, argument_to_int(argv, argc, com_index + 1), argument_to_int(argv, argc, com_index + 2), argument_to_int(argv, argc, com_index + 3));
       break;
 
     case 10:
+      // cmin C N M
       break;
     
     case 11:
+      // cmax C N M
       break;
 
     case 12:
+      // ccount C N M
       break;
 
     case 13:
+      // cseq N M B
       break;
 
     default:
@@ -1576,7 +1647,8 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
 
 int main(int argc, char *argv[])
 {
-  check_arguments(argc, argv);
+  if (check_arguments(argc, argv) == MAX_CELL_LEN_EXCEDED)
+    return MAX_CELL_LEN_EXCEDED;
 
   char delims[MAX_CELL_LEN + 1] = " ";
 
