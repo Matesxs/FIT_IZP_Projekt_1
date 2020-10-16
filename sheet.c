@@ -102,7 +102,7 @@ void check_arguments(int argc, char *argv[])
 
   for (int i=1; i < argc; i++)
   {
-    if (strlen(argv[i]) > (MAX_CELL_LEN + 1))
+    if (strlen(argv[i]) > MAX_CELL_LEN)
     {
       fprintf(stderr, "Argument %d exceded maximum allowed size! Maximum size is %d characters\n", i, MAX_CELL_LEN);
       exit(MAX_CELL_LEN_EXCEDED);
@@ -437,7 +437,7 @@ int get_value_of_cell(struct line_struct *line, int index, char *substring)
   }
 
   // exit if length of substring is larger than maximum size of one cell
-  if ((end_index - start_index) > (MAX_CELL_LEN + 1))
+  if ((end_index - start_index) > MAX_CELL_LEN)
   {
     fprintf(stderr, "\nCell %d on line %d exceded max memory size! Max length of cell is %d characters (exclude delims)\n", index + 1, line->line_index + 1, MAX_CELL_LEN);
     exit(MAX_CELL_LEN_EXCEDED);
@@ -460,19 +460,32 @@ int get_value_of_cell(struct line_struct *line, int index, char *substring)
   return 0;
 }
 
-void check_line_length(struct line_struct *line)
+void check_line_sanity(struct line_struct *line)
 {
   /*
-  Check if line is no longer than maximum allowed length of one line
+  Check if line is no longer than maximum allowed length of one line and 
+  check if each cell is not larger than maximum allowed length of one cell
 
   params:
   :line - structure with line data
   */
 
-  if (strlen(line->line_string) > (MAX_LINE_LEN + 1))
+
+  if (strlen(line->line_string) > MAX_LINE_LEN)
   {
     fprintf(stderr, "\nLine %d exceded max memory size! Max length of line is %d characters (including delims)\n", line->line_index+1, MAX_LINE_LEN);
     exit(MAX_LINE_LEN_EXCEDED);
+  }
+
+  char cell_buff[MAX_CELL_LEN + 1];
+  for (int i=0; i < get_number_of_cells(line); i++)
+  {
+    get_value_of_cell(line, i, cell_buff);
+    if (strlen(cell_buff) > MAX_CELL_LEN)
+    {
+      fprintf(stderr, "\nCell %d on line %d exceded max memory size! Max length of cell is %d characters (excluding delims)\n", i + 1, line->line_index+1, MAX_CELL_LEN);
+      exit(MAX_CELL_LEN_EXCEDED);
+    }
   }
 }
 
@@ -752,7 +765,7 @@ void insert_string(struct line_struct *line, char *insert_string, int index)
   size_t base_string_length = strlen(line->line_string);
   size_t insert_string_length = strlen(insert_string);
 
-  if ((base_string_length + insert_string_length) > (MAX_LINE_LEN + 1))
+  if ((base_string_length + insert_string_length) > MAX_LINE_LEN)
   {
     fprintf(stderr, "\nLine %d exceded max memory size! Max length of line is %d characters (including delims)\n", line->line_index+1, MAX_LINE_LEN);
     exit(MAX_LINE_LEN_EXCEDED);
@@ -1501,8 +1514,8 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
   // Check if data in line should be processed
   validate_line_processing(line, selector);
 
-  // Check if line length is in boundaries
-  check_line_length(line);
+  // Sanity of line
+  check_line_sanity(line);
 
   // Create copy of line
   strcpy(line->unedited_line_string, line->line_string);
