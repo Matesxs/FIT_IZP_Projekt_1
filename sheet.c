@@ -29,7 +29,7 @@ const char *AREA_SELECTOR_COMS[] = {"rows", "beginswith", "contains"};
 
 enum Mode {PASS, TABLE_EDIT, DATA_EDIT};
 enum ReturnCodes {NO_ERROR, MAX_LINE_LEN_EXCEDED, MAX_CELL_LEN_EXCEDED, ARG_ERROR, INPUT_ERROR};
-enum CellConversion {UPPER, LOWER, ROUND, INT};
+enum Conversions {UPPER, LOWER, ROUND, INT};
 
 struct line_struct
 {
@@ -362,7 +362,7 @@ int get_start_of_substring(struct line_struct *line, int index)
             - -1 on error
     */
 
-    if (index < 0)
+    if (index < 0 || index > line->final_cols)
         return -1;
 
     if (index == 0)
@@ -599,45 +599,29 @@ int string_to_int(char *string, int *val)
     return 0;
 }
 
-void string_to_upper(char *string)
+void string_conversion(char *string, int conversion_flag)
 {
     /*
-    Converts string to upper case
+    Converts string based on selected functions
+    Supported functions: UPPER - string to uppercase
+                         LOWER - string to lowercase
 
     params:
     :string - input string
+    :conversion_flag - flag to select function
     */
 
     for (size_t i=0; i < strlen(string); i++)
     {
+        // iterate over string
         while (*string)
         {
-            if (*string >= 'a' && *string <= 'z')
+            if ((*string >= 'a' && *string <= 'z') || (*string >= 'A' && *string <= 'Z'))
             {
-                *string = toupper(*string);
-            }
-
-            string++;
-        }
-    }
-}
-
-void string_to_lower(char *string)
-{
-    /*
-    Converts string to lower case
-
-    params:
-    :string - input string
-    */
-
-    for (size_t i=0; i < strlen(string); i++)
-    {
-        while (*string)
-        {
-            if (*string >= 'A' && *string <= 'Z')
-            {
-                *string = tolower(*string);
+                if (conversion_flag == UPPER)
+                    *string = (char)toupper(*string);
+                else if (conversion_flag == LOWER)
+                    *string = (char)tolower(*string);
             }
 
             string++;
@@ -661,13 +645,7 @@ int argument_to_int(char *input_array[], int array_len, int index)
 
     int val;
 
-    if (index > (array_len - 1))
-        return 0;
-
-    if (string_to_int(input_array[index], &val) != 0)
-        return 0;
-
-    if (val <= 0)
+    if (index > (array_len - 1) || string_to_int(input_array[index], &val) != 0 || val <= 0)
         return 0;
 
     return val;
@@ -730,7 +708,7 @@ void print_line(struct line_struct *line)
     if (!is_line_empty(line))
     {
 #ifdef DEBUG
-        printf("[Line debug] LI: %d, FC: %d Line data:\t\t", line->line_index, line->final_cols);
+        printf("[Line debug] LI: %d, FC: %d, PF: %d Line data:\t\t", line->line_index, line->final_cols, line->process_flag);
 #endif
 
         printf("%s\n", line->line_string);
@@ -1286,9 +1264,9 @@ void cell_value_processing(struct line_struct *line, int index, int processing_f
             if (!is_string_double(cell_buff))
             {
                 if (processing_flag == UPPER)
-                    string_to_upper(cell_buff);
+                    string_conversion(cell_buff, UPPER);
                 else if (processing_flag == LOWER)
-                    string_to_lower(cell_buff);
+                    string_conversion(cell_buff, LOWER);
             }
             else if (processing_flag == ROUND || processing_flag == INT)
             {
