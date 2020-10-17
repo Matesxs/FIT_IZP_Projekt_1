@@ -14,6 +14,7 @@ Program to process tables from standard input and outputs it to standard output
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
+#include <float.h>
 
 #define MAX_CELL_LEN 100
 #define MAX_LINE_LEN 10240
@@ -30,6 +31,7 @@ const char *AREA_SELECTOR_COMS[] = {"rows", "beginswith", "contains"};
 enum Mode {PASS, TABLE_EDIT, DATA_EDIT};
 enum ReturnCodes {NO_ERROR, MAX_LINE_LEN_EXCEDED, MAX_CELL_LEN_EXCEDED, ARG_ERROR, INPUT_ERROR};
 enum Conversions {UPPER, LOWER, ROUND, INT};
+enum CellNumberProcessingFunction {SUM, MIN, MAX};
 
 struct line_struct
 {
@@ -467,7 +469,7 @@ int get_value_of_cell(struct line_struct *line, int index, char *substring)
     return 0;
 }
 
-void check_line_sanity(struct line_struct *line)
+int check_line_sanity(struct line_struct *line)
 {
     /*
     Check if line is no longer than maximum allowed length of one line and
@@ -475,14 +477,19 @@ void check_line_sanity(struct line_struct *line)
 
     params:
     :line - structure with line data
+
+    :return - 1 if line is ok
+            - 0 on fail
     */
 
+    if (line->error_flag)
+        return 0;
 
     if (strlen(line->line_string) > MAX_LINE_LEN)
     {
         fprintf(stderr, "\nLine %d exceded max memory size! Max length of line is %d characters (including delims)\n", line->line_index+1, MAX_LINE_LEN);
         line->error_flag = MAX_LINE_LEN_EXCEDED;
-        return;
+        return 0;
     }
 
     char cell_buff[MAX_CELL_LEN + 1];
@@ -490,8 +497,10 @@ void check_line_sanity(struct line_struct *line)
     {
         get_value_of_cell(line, i, cell_buff);
         if (line->error_flag)
-            return;
+            return 0;
     }
+
+    return 1;
 }
 
 int is_string_double(char *string)
@@ -1092,7 +1101,7 @@ int is_cell_index_valid(struct line_struct *line, int index)
     return ((index > 0) && (index <= line->final_cols));
 }
 
-int get_sum_of_cells(struct line_struct *line, int start_index, int end_index, double *ret_val)
+int process_cell_number_values(struct line_struct *line, int start_index, int end_index, double *ret_val, int function_flag)
 {
     /*
     Sum numbers in cells from inputed interval
@@ -1103,7 +1112,7 @@ int get_sum_of_cells(struct line_struct *line, int start_index, int end_index, d
     :end_index - end index of sum interval
     :ret_val - return pointer for value
 
-    :return - number of summed number on success
+    :return - number cells it run thru
             - -1 on fail
     */
 
@@ -1111,8 +1120,13 @@ int get_sum_of_cells(struct line_struct *line, int start_index, int end_index, d
         start_index <= end_index)
     {
         char cell_buff[MAX_CELL_LEN + 1];
-        double sum_val = 0;
-        int summed_counter = 0;
+        double return_value = 0;
+        int cell_count = 0;
+
+        if (function_flag == MIN)
+            return_value = DBL_MAX;
+        else if (function_flag == MAX)
+            return_value = DBL_MIN;
 
         for (int i=start_index; i <= end_index; i++)
         {
@@ -1121,22 +1135,39 @@ int get_sum_of_cells(struct line_struct *line, int start_index, int end_index, d
                 if (cell_buff[0] != 0 && is_string_double(cell_buff))
                 {
                     double buf;
+
                     if (string_to_double(cell_buff, &buf) == 0)
                     {
-                        sum_val += buf;
-                        summed_counter++;
+                        switch (function_flag)
+                        {
+                            case SUM:
+                                return_value += buf;
+                                break;
+
+                            case MIN:
+                                if (buf < return_value)
+                                    return_value = buf;
+                                break;
+
+                            case MAX:
+                                if (buf > return_value)
+                                    return_value = buf;
+                                break;
+
+                            default:
+                                break;
+                        }
                     }
                 }
+
+                cell_count++;
             }
-            else
-            {
-                if (line->error_flag)
-                    return -1;
-            }
+            else if (line->error_flag)
+                return -1;
         }
 
-        (*ret_val) = sum_val;
-        return summed_counter;
+        (*ret_val) = return_value;
+        return cell_count;
     }
 
     return -1;
@@ -1355,8 +1386,7 @@ void move_cell_to(struct line_struct *line, int source_index, int target_index)
         {
             if (source_index < target_index)
             {
-                insert_empty_cell(line, target_index - 1);
-                if (line->error_flag)
+                if (insert_empty_cell(line, target_index - 1) != 0)
                     return;
 
                 remove_cell(line, source_index - 1);
@@ -1364,8 +1394,7 @@ void move_cell_to(struct line_struct *line, int source_index, int target_index)
             }
             else
             {
-                insert_empty_cell(line, target_index - 1);
-                if (line->error_flag)
+                if (insert_empty_cell(line, target_index - 1) != 0)
                     return;
 
                 remove_cell(line, source_index);
@@ -1393,7 +1422,7 @@ void sum_cells(struct line_struct *line, int output_index, int start_index, int 
     {
         double sum_val;
 
-        if (get_sum_of_cells(line, start_index, end_index, &sum_val) >= 0)
+        if (process_cell_number_values(line, start_index, end_index, &sum_val, SUM) >= 0)
         {
             char cell_buff[MAX_CELL_LEN + 1];
 
@@ -1413,22 +1442,40 @@ void avg_cells(struct line_struct *line, int output_index, int start_index, int 
         (output_index < start_index || output_index > end_index))
     {
         double sum_val;
-        int summed_cells = get_sum_of_cells(line, start_index, end_index, &sum_val);
-        if (line->error_flag)
+        int summed_cells;
+        if ((summed_cells = process_cell_number_values(line, start_index, end_index, &sum_val, SUM)) == -1)
             return;
 
-        if (summed_cells != -1)
-        {
-            sum_val /= summed_cells;
-            char cell_buff[MAX_CELL_LEN + 1];
+        sum_val /= summed_cells;
+        char cell_buff[MAX_CELL_LEN + 1];
 
-            if (is_double_int(sum_val))
-                snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", (int)sum_val);
-            else
-                snprintf(cell_buff, MAX_CELL_LEN + 1, "%lf", sum_val);
+        if (is_double_int(sum_val))
+            snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", (int)sum_val);
+        else
+            snprintf(cell_buff, MAX_CELL_LEN + 1, "%lf", sum_val);
 
-            set_value_in_cell(line, output_index, cell_buff);
-        }
+        set_value_in_cell(line, output_index, cell_buff);
+    }
+}
+
+void min_cells(struct line_struct *line, int output_index, int start_index, int end_index)
+{
+    if (is_cell_index_valid(line, output_index) &&
+        (output_index < start_index || output_index > end_index))
+    {
+        double min_val;
+
+        if (process_cell_number_values(line, start_index, end_index, &min_val, MIN) == -1)
+            return;
+
+        char cell_buff[MAX_CELL_LEN + 1];
+
+        if (is_double_int(min_val))
+            snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", (int)min_val);
+        else
+            snprintf(cell_buff, MAX_CELL_LEN + 1, "%lf", min_val);
+
+        set_value_in_cell(line, output_index, cell_buff);
     }
 }
 
@@ -1538,6 +1585,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
 
             case 10:
                 // cmin C N M
+                min_cells(line, argument_to_int(argv, argc, com_index + 1), argument_to_int(argv, argc, com_index + 2), argument_to_int(argv, argc, com_index + 3));
                 break;
 
             case 11:
@@ -1574,12 +1622,9 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
 
     // Check if data in line should be processed
     validate_line_processing(line, selector);
-    if (line->error_flag)
-        return;
 
     // Sanity of line
-    check_line_sanity(line);
-    if (line->error_flag)
+    if (!check_line_sanity(line))
         return;
 
     // Create copy of line
