@@ -18,7 +18,6 @@ Program to process tables from standard input and outputs it to standard output
 
 #define MAX_CELL_LEN 100
 #define MAX_LINE_LEN 10240
-#define LINE_LENGTH_TEST_OFFSET 1
 #define BLACKLISTED_DELIMS "\n\0\r"
 
 const char *TABLE_EDIT_COMS[] = {"irow", "arow", "drow", "drows", "icol", "acol", "dcol", "dcols"};
@@ -36,7 +35,7 @@ enum MultiCellFunction {SUM, MIN, MAX, AVG, COUNT};
 struct line_struct
 {
     char *line_string;
-    char unedited_line_string[MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET + 1];
+    char unedited_line_string[MAX_LINE_LEN + 2];
     char delim;
     int line_index;
 
@@ -397,8 +396,8 @@ int get_end_of_substring(struct line_struct *line, int index)
 
     if (index == (line->final_cols - 1))
     {
-        // if we are on the last cell we are going to the end of that line
-        return (int)strlen(line->line_string);
+        // if we are on the last cell we are going to the end of that line to the index of last char
+        return (int)strlen(line->line_string) - 1;
     }
     else
     {
@@ -445,7 +444,7 @@ int get_value_of_cell(struct line_struct *line, int index, char *substring)
     }
 
     // exit if length of substring is larger than maximum size of one cell
-    if ((end_index - start_index) > MAX_CELL_LEN)
+    if ((end_index - start_index + 1) > MAX_CELL_LEN)
     {
         fprintf(stderr, "\nCell %d on line %d exceded max memory size! Max length of cell is %d characters (exclude delims)\n", index + 1, line->line_index + 1, MAX_CELL_LEN);
         line->error_flag = MAX_CELL_LEN_EXCEDED;
@@ -485,7 +484,7 @@ int check_line_sanity(struct line_struct *line)
     if (line->error_flag)
         return 0;
 
-    if (strlen(line->line_string) > MAX_LINE_LEN)
+    if ((strlen(line->line_string) == MAX_LINE_LEN + 1) && (line->line_string[MAX_LINE_LEN + 1] != '\n'))
     {
         fprintf(stderr, "\nLine %d exceded max memory size! Max length of line is %d characters (including delims)\n", line->line_index+1, MAX_LINE_LEN);
         line->error_flag = MAX_LINE_LEN_EXCEDED;
@@ -655,7 +654,7 @@ int argument_to_int(char *input_array[], int array_len, int index)
 
     int val;
 
-    if (index > (array_len - 1) || string_to_int(input_array[index], &val) != 0 || val <= 0)
+    if (index > (array_len - 1) || string_to_int(input_array[index], &val) != 0)
         return 0;
 
     return val;
@@ -1105,17 +1104,21 @@ int is_cell_index_valid(struct line_struct *line, int index)
 int get_processed_cells_value(struct line_struct *line, int start_index, int end_index, double *ret_val, int function_flag)
 {
     /*
-    Sum numbers in cells from inputed interval
-
-    params:
-    :line - structure with line data
-    :start_index - start index of sum interval
-    :end_index - end index of sum interval
-    :ret_val - return pointer for value
-
-    :return - number cells it run thru
-            - -1 on fail
-    */
+     * Process and return value of operation performed on row
+     * Supported functions: SUM - sum of selected number cells
+     *                      MIN - minimum value of selected number cells
+     *                      MAX - maximum value of selected number cells
+     *                      COUNT - count number of non empty cells
+     * params:
+     * :line - structure with line data
+     * :start_index - start index of sum interval
+     * :end_index - end index of sum interval
+     * :ret_val - return pointer for value
+     * :function_flag - flag of function used to aquire return value
+     *
+     * :return - number cells it run thru
+     *         - -1 on fail
+     */
 
     if (function_flag == AVG)
         function_flag = SUM;
@@ -1264,7 +1267,7 @@ void delete_cells_in_interval(struct line_struct *line, int start_index, int end
     }
 }
 
-void set_value_in_cell(struct line_struct *line, int index, char *value)
+int set_value_in_cell(struct line_struct *line, int index, char *value)
 {
     /*
     Clear content of cell and insert new one
@@ -1272,13 +1275,18 @@ void set_value_in_cell(struct line_struct *line, int index, char *value)
     :line - structure with line data
     :index - index of cell set value
     :value - string to set
+
+     :return - 0 on sucess
+             - -1 on error
     */
 
     if (is_cell_index_valid(line, index))
     {
         clear_cell(line, index - 1);
-        insert_to_cell(line, index - 1, value);
+        return insert_to_cell(line, index - 1, value);
     }
+
+    return -1;
 }
 
 void single_cell_processing(struct line_struct *line, int index, int processing_flag)
@@ -1397,10 +1405,13 @@ void move_cell_to(struct line_struct *line, int source_index, int target_index)
         {
             if (source_index < target_index)
             {
+                // Insert empty cell before target cell
                 if (insert_empty_cell(line, target_index - 1) != 0)
                     return;
 
+                // Remove original cell
                 remove_cell(line, source_index - 1);
+                // Insert value to before created empty cell
                 insert_to_cell(line, target_index - 2, cell_buff);
             }
             else
@@ -1417,6 +1428,22 @@ void move_cell_to(struct line_struct *line, int source_index, int target_index)
 
 void row_values_processing(struct line_struct *line, int output_index, int start_index, int end_index, int function_flag)
 {
+    /*
+     * Process cells with index in inputed interval by function selected by flag
+     * Supported functions: SUM - sum of selected number cells
+     *                      AVG - count average value of selected number cells
+     *                      MIN - minimum value of selected number cells
+     *                      MAX - maximum value of selected number cells
+     *                      COUNT - count number of non empty cells
+     *
+     * params:
+     * :line - structure with line data
+     * :output_index - index of cell where to output processed value
+     * :start_index - start index of processing interval
+     * :end_index - end index of processing interval
+     * :function_flag - flag of function to use
+     */
+
     if (is_cell_index_valid(line, output_index) &&
         (output_index < start_index || output_index > end_index))
     {
@@ -1430,12 +1457,38 @@ void row_values_processing(struct line_struct *line, int output_index, int start
         if (function_flag == AVG)
             setval /= processed_cells;
 
+        // Check if double can be converted to int without loss
         if (is_double_int(setval))
             snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", (int)setval);
         else
             snprintf(cell_buff, MAX_CELL_LEN + 1, "%lf", setval);
 
         set_value_in_cell(line, output_index, cell_buff);
+    }
+}
+
+void set_row_sequence(struct line_struct *line, int start_index, int end_index, int start_value)
+{
+    /*
+     * Create sequence of number starting from start value in cells with index from inputed interval
+     *
+     * params:
+     * :line - structure with line data
+     * :start_index - start index of processing interval
+     * :end_index - end index of processing interval
+     * :start_value - start value of number sequence
+     */
+
+    if (is_cell_index_valid(line, start_index) && end_index > 0)
+    {
+        char cell_buff[MAX_CELL_LEN + 1];
+
+        for (int i=start_index; i <= end_index; i++, start_value++)
+        {
+            snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", start_value);
+            if (set_value_in_cell(line, i, cell_buff) != 0)
+                return;
+        }
     }
 }
 
@@ -1559,6 +1612,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
 
             case 13:
                 // cseq N M B
+                set_row_sequence(line, argument_to_int(argv, argc, com_index + 1), argument_to_int(argv, argc, com_index + 2), argument_to_int(argv, argc, com_index + 3));
                 break;
 
             default:
@@ -1592,7 +1646,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
     strcpy(line->unedited_line_string, line->line_string);
 
     // Create buffer for cases when we are inserting new line
-    char line_buffer[MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET + 1];
+    char line_buffer[MAX_LINE_LEN + 2];
 
     // Initialize/clear line states
     line->deleted = 0;
@@ -1667,10 +1721,10 @@ int main(int argc, char *argv[])
         return error_flag;
 
     // Create buffer strings for line and cell
-    char line[MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET + 1];
-    char buffer_line[MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET + 1];
+    char line[MAX_LINE_LEN + 2];
+    char buffer_line[MAX_LINE_LEN + 2];
 
-    if (fgets(buffer_line, (MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET + 1), stdin) == NULL)
+    if (fgets(buffer_line, (MAX_LINE_LEN + 2), stdin) == NULL)
     {
         fprintf(stderr, "Input cant be empty");
         return INPUT_ERROR;
@@ -1690,7 +1744,7 @@ int main(int argc, char *argv[])
     while (!line_holder.last_line_flag)
     {
         strcpy(line, buffer_line);
-        line_holder.last_line_flag = fgets(buffer_line, (MAX_LINE_LEN + LINE_LENGTH_TEST_OFFSET + 1), stdin) == NULL;
+        line_holder.last_line_flag = fgets(buffer_line, (MAX_LINE_LEN + 2), stdin) == NULL;
 
         remove_newline_character(line);
         replace_unused_delims(line, delims);
