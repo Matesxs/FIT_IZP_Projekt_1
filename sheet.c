@@ -30,8 +30,8 @@ const char *AREA_SELECTOR_COMS[] = {"rows", "beginswith", "contains"};
 
 enum Mode {PASS, TABLE_EDIT, DATA_EDIT};
 enum ReturnCodes {NO_ERROR, MAX_LINE_LEN_EXCEDED, MAX_CELL_LEN_EXCEDED, ARG_ERROR, INPUT_ERROR};
-enum Conversions {UPPER, LOWER, ROUND, INT};
-enum CellNumberProcessingFunction {SUM, MIN, MAX};
+enum SingleCellFunction {UPPER, LOWER, ROUND, INT};
+enum MultiCellFunction {SUM, MIN, MAX, AVG, COUNT};
 
 struct line_struct
 {
@@ -579,6 +579,7 @@ int is_string_int(char *string)
 
 int is_double_int(double val)
 {
+    if (val == 0) return 1;
     return floor(val) == val;
 }
 
@@ -1101,7 +1102,7 @@ int is_cell_index_valid(struct line_struct *line, int index)
     return ((index > 0) && (index <= line->final_cols));
 }
 
-int process_cell_number_values(struct line_struct *line, int start_index, int end_index, double *ret_val, int function_flag)
+int get_processed_cells_value(struct line_struct *line, int start_index, int end_index, double *ret_val, int function_flag)
 {
     /*
     Sum numbers in cells from inputed interval
@@ -1115,6 +1116,9 @@ int process_cell_number_values(struct line_struct *line, int start_index, int en
     :return - number cells it run thru
             - -1 on fail
     */
+
+    if (function_flag == AVG)
+        function_flag = SUM;
 
     if (is_cell_index_valid(line, start_index) && end_index > 0 &&
         start_index <= end_index)
@@ -1160,13 +1164,20 @@ int process_cell_number_values(struct line_struct *line, int start_index, int en
                     }
                 }
 
-                cell_count++;
+                // When we are in counting mode then cell count is our output value and we want count only not empty cells
+                if (function_flag != COUNT || cell_buff[0] != 0)
+                    cell_count++;
             }
             else if (line->error_flag)
                 return -1;
         }
 
-        (*ret_val) = return_value;
+        // If mode is count then we want return cell count as output
+        if (function_flag == COUNT)
+            (*ret_val) = (double)cell_count;
+        else
+            (*ret_val) = return_value;
+
         return cell_count;
     }
 
@@ -1270,7 +1281,7 @@ void set_value_in_cell(struct line_struct *line, int index, char *value)
     }
 }
 
-void cell_value_processing(struct line_struct *line, int index, int processing_flag)
+void single_cell_processing(struct line_struct *line, int index, int processing_flag)
 {
     /*
     Function to process value of single cell
@@ -1404,76 +1415,25 @@ void move_cell_to(struct line_struct *line, int source_index, int target_index)
     }
 }
 
-void sum_cells(struct line_struct *line, int output_index, int start_index, int end_index)
-{
-    /*
-    Sum numbers in cells from inputed interval and save it to output cell
-    Output index cant be in sum interval
-
-    params:
-    :line - structure with line data
-    :output_index - index of cell where sum value will be saved
-    :start_index - start index of sum interval
-    :end_index - end index of sum interval
-    */
-
-    if (is_cell_index_valid(line, output_index) &&
-        (output_index < start_index || output_index > end_index))
-    {
-        double sum_val;
-
-        if (process_cell_number_values(line, start_index, end_index, &sum_val, SUM) >= 0)
-        {
-            char cell_buff[MAX_CELL_LEN + 1];
-
-            if (is_double_int(sum_val))
-                snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", (int)sum_val);
-            else
-                snprintf(cell_buff, MAX_CELL_LEN + 1, "%lf", sum_val);
-
-            set_value_in_cell(line, output_index, cell_buff);
-        }
-    }
-}
-
-void avg_cells(struct line_struct *line, int output_index, int start_index, int end_index)
+void row_values_processing(struct line_struct *line, int output_index, int start_index, int end_index, int function_flag)
 {
     if (is_cell_index_valid(line, output_index) &&
         (output_index < start_index || output_index > end_index))
     {
-        double sum_val;
-        int summed_cells;
-        if ((summed_cells = process_cell_number_values(line, start_index, end_index, &sum_val, SUM)) == -1)
+        double setval;
+        char cell_buff[MAX_CELL_LEN + 1];
+        int processed_cells;
+
+        if ((processed_cells = get_processed_cells_value(line, start_index, end_index, &setval, function_flag)) == -1)
             return;
 
-        sum_val /= summed_cells;
-        char cell_buff[MAX_CELL_LEN + 1];
+        if (function_flag == AVG)
+            setval /= processed_cells;
 
-        if (is_double_int(sum_val))
-            snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", (int)sum_val);
+        if (is_double_int(setval))
+            snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", (int)setval);
         else
-            snprintf(cell_buff, MAX_CELL_LEN + 1, "%lf", sum_val);
-
-        set_value_in_cell(line, output_index, cell_buff);
-    }
-}
-
-void min_cells(struct line_struct *line, int output_index, int start_index, int end_index)
-{
-    if (is_cell_index_valid(line, output_index) &&
-        (output_index < start_index || output_index > end_index))
-    {
-        double min_val;
-
-        if (process_cell_number_values(line, start_index, end_index, &min_val, MIN) == -1)
-            return;
-
-        char cell_buff[MAX_CELL_LEN + 1];
-
-        if (is_double_int(min_val))
-            snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", (int)min_val);
-        else
-            snprintf(cell_buff, MAX_CELL_LEN + 1, "%lf", min_val);
+            snprintf(cell_buff, MAX_CELL_LEN + 1, "%lf", setval);
 
         set_value_in_cell(line, output_index, cell_buff);
     }
@@ -1483,7 +1443,6 @@ void table_edit(struct line_struct *line, char *line_buffer, int argc, char *arg
 {
     switch (get_table_edit_com_index(argv[com_index]))
     {
-
         // TODO: Make row indexing consistent after removing/adding lines
         case 0:
             // irow R
@@ -1540,22 +1499,22 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
 
             case 1:
                 // tolower C
-                cell_value_processing(line, argument_to_int(argv, argc, com_index + 1), LOWER);
+                single_cell_processing(line, argument_to_int(argv, argc, com_index + 1), LOWER);
                 break;
 
             case 2:
                 // toupper C
-                cell_value_processing(line, argument_to_int(argv, argc, com_index + 1), UPPER);
+                single_cell_processing(line, argument_to_int(argv, argc, com_index + 1), UPPER);
                 break;
 
             case 3:
                 // round C
-                cell_value_processing(line, argument_to_int(argv, argc, com_index + 1), ROUND);
+                single_cell_processing(line, argument_to_int(argv, argc, com_index + 1), ROUND);
                 break;
 
             case 4:
                 // int C
-                cell_value_processing(line, argument_to_int(argv, argc, com_index + 1), INT);
+                single_cell_processing(line, argument_to_int(argv, argc, com_index + 1), INT);
                 break;
 
             case 5:
@@ -1575,25 +1534,27 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
 
             case 8:
                 // csum C N M
-                sum_cells(line, argument_to_int(argv, argc, com_index + 1), argument_to_int(argv, argc, com_index + 2), argument_to_int(argv, argc, com_index + 3));
+                row_values_processing(line, argument_to_int(argv, argc, com_index + 1), argument_to_int(argv, argc, com_index + 2), argument_to_int(argv, argc, com_index + 3), SUM);
                 break;
 
             case 9:
                 // cavg C N M
-                avg_cells(line, argument_to_int(argv, argc, com_index + 1), argument_to_int(argv, argc, com_index + 2), argument_to_int(argv, argc, com_index + 3));
+                row_values_processing(line, argument_to_int(argv, argc, com_index + 1), argument_to_int(argv, argc, com_index + 2), argument_to_int(argv, argc, com_index + 3), AVG);
                 break;
 
             case 10:
                 // cmin C N M
-                min_cells(line, argument_to_int(argv, argc, com_index + 1), argument_to_int(argv, argc, com_index + 2), argument_to_int(argv, argc, com_index + 3));
+                row_values_processing(line, argument_to_int(argv, argc, com_index + 1), argument_to_int(argv, argc, com_index + 2), argument_to_int(argv, argc, com_index + 3), MIN);
                 break;
 
             case 11:
                 // cmax C N M
+                row_values_processing(line, argument_to_int(argv, argc, com_index + 1), argument_to_int(argv, argc, com_index + 2), argument_to_int(argv, argc, com_index + 3), MAX);
                 break;
 
             case 12:
                 // ccount C N M
+                row_values_processing(line, argument_to_int(argv, argc, com_index + 1), argument_to_int(argv, argc, com_index + 2), argument_to_int(argv, argc, com_index + 3), COUNT);
                 break;
 
             case 13:
