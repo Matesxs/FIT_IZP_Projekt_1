@@ -76,15 +76,15 @@ int round_double(double val)
 int are_strings_same(const char *s1, const char *s2)
 {
     /*
-    Check if two string are same
-
-    params:
-    :s1 - first string
-    :s2 - second string
-
-    :return - 1 if strings are same
-            - 0 if strings are different
-    */
+     * Check if two string are same
+     *
+     * params:
+     * :s1 - first string
+     * :s2 - second string
+     *
+     * :return - 1 if strings are same
+     *         - 0 if strings are different
+     */
 
     return strcmp(s1, s2) == 0;
 }
@@ -92,14 +92,14 @@ int are_strings_same(const char *s1, const char *s2)
 int is_string_start_with(const char *base_string, const char *start_string)
 {
     /*
-    Check if string starts with other string
-
-    params:
-    :base_string - string where to look for substring
-    :start_string - substring to look for at start of base_string
-
-    :return - 1 if base_string starts with start_string, 0 if dont
-    */
+     * Check if string starts with other string
+     *
+     * params:
+     * :base_string - string where to look for substring
+     * :start_string - substring to look for at start of base_string
+     *
+     * :return - 1 if base_string starts with start_string, 0 if dont
+     */
 
     if (strlen(start_string) > strlen(base_string))
         return 0;
@@ -110,15 +110,15 @@ int is_string_start_with(const char *base_string, const char *start_string)
 void check_arguments(int argc, char *argv[], int *error_flag)
 {
     /*
-    Check if lenght of every single argument is in limit
-
-    params:
-    :argc - length of argument array
-    :argv - array of arguments
-
-    :return - SUCCESS if all arguments are in length limits
-            - MAX_CELL_LEN_EXCEDED if some argument is longer
-    */
+     * Check if lenght of every single argument is in limit
+     *
+     * params:
+     * :argc - length of argument array
+     * :argv - array of arguments
+     *
+     * :return - SUCCESS if all arguments are in length limits
+     *         - MAX_CELL_LEN_EXCEDED if some argument is longer
+     */
 
     for (int i=1; i < argc; i++)
     {
@@ -133,14 +133,14 @@ void check_arguments(int argc, char *argv[], int *error_flag)
 
 // command_selectors
 /*
-Selectors that will return index of command from arrays of commands
-
-params:
-:com - command string
-
-:return - index of command in commands array if command is found
-        - -1 if command not found
-*/
+ * Selectors that will return index of command from arrays of commands
+ *
+ * params:
+ * :com - command string
+ *
+ * :return - index of command in commands array if command is found
+ *         - -1 if command not found
+ */
 
 int get_table_edit_com_index(char *com)
 {
@@ -201,12 +201,12 @@ int get_operating_mode(char *input_array[], int array_len)
 
 void remove_newline_character(char *s) {
     /*
-    Function to remove new line characters
-    Iterate over string until it new line character then replace it with 0
-
-    params:
-    :s - pointer to string (char array)
-    */
+     * Function to remove new line characters
+     * Iterate over string until it new line character then replace it with 0
+     *
+     * params:
+     * :s - pointer to string (char array)
+     */
 
     while(*s && *s != '\n' && *s != '\r')
         s++;
@@ -217,13 +217,13 @@ void remove_newline_character(char *s) {
 void check_delim_characters(char *delims, int *error_flag)
 {
     /*
-    Check if in delims string isnt any blacklisted char
-
-    params:
-    :delims - string with delim characters
-
-    :return 0 if all chars are right else -1
-    */
+     * Check if in delims string isnt any blacklisted char
+     *
+     * params:
+     * :delims - string with delim characters
+     *
+     * :return 0 if all chars are right else -1
+     */
 
     for (size_t i=0; i < strlen(delims); i++)
     {
@@ -241,16 +241,16 @@ void check_delim_characters(char *delims, int *error_flag)
 void get_delims(char *input_array[], int array_len, char *delim)
 {
     /*
-    Extract delims string from args
-
-    params:
-    :input_array - array of strings (args)
-    :array_len - number of args
-    :delim - return string
-
-     :return - SUCCESS on success parsing
-             - ARG_ERROR on failed parsing
-    */
+     * Extract delims string from args
+     *
+     * params:
+     * :input_array - array of strings (args)
+     * :array_len - number of args
+     * :delim - return string
+     *
+     * :return - SUCCESS on success parsing
+     *         - ARG_ERROR on failed parsing
+     */
 
     for (int i=1; i < array_len; i++)
     {
@@ -271,12 +271,12 @@ void get_delims(char *input_array[], int array_len, char *delim)
 void replace_unused_delims(char *string, char* delims)
 {
     /*
-    Iterate over string and replace delims that are not on 0 position in delims string with delim on 0 position
-
-    params:
-    :string - string where to replace delims
-    :delims - string with delims
-    */
+     * Iterate over string and replace delims that are not on 0 position in delims string with delim on 0 position
+     *
+     * params:
+     * :string - string where to replace delims
+     * :delims - string with delims
+     */
 
     for (size_t i=0; i < strlen(string); i++)
     {
@@ -297,14 +297,14 @@ void replace_unused_delims(char *string, char* delims)
 int count_specific_chars(char *string, char ch)
 {
     /*
-    Count number of specific characters in string
-
-    params:
-    :string - input string where count chars
-    :ch - char we want to count
-
-    :return - number of chars we found
-    */
+     * Count number of specific characters in string
+     *
+     * params:
+     * :string - input string where count chars
+     * :ch - char we want to count
+     *
+     * :return - number of chars we found
+     */
 
     int delim_counter = 0;
     for (size_t i=0; i < strlen(string); i++)
@@ -318,12 +318,12 @@ int count_specific_chars(char *string, char ch)
 int get_number_of_cells(struct line_struct *line)
 {
     /*
-    Get number of cells in row
-    Cell is substring separated by deliminator
-
-    params:
-    :line - structure with line data
-    */
+     * Get number of cells in row
+     * Cell is substring separated by deliminator
+     *
+     * params:
+     * :line - structure with line data
+     */
 
     return count_specific_chars(line->line_string, line->delim) + 1;
 }
@@ -331,15 +331,15 @@ int get_number_of_cells(struct line_struct *line)
 int get_position_of_character(char *string, char ch, int index)
 {
     /*
-    Get position of character of certain index in string
-
-    params:
-    :string - string where to find delims
-    :ch - character we are looking for
-    :index - index of occurence of character in string
-
-    :return - 0 if character position found else -1
-    */
+     * Get position of character of certain index in string
+     *
+     * params:
+     * :string - string where to find delims
+     * :ch - character we are looking for
+     * :index - index of occurence of character in string
+     *
+     * :return - 0 if character position found else -1
+     */
 
     if (index > (count_specific_chars(string, ch) - 1) || index < 0) return -1;
 
@@ -360,15 +360,15 @@ int get_position_of_character(char *string, char ch, int index)
 int get_start_of_substring(struct line_struct *line, int index)
 {
     /*
-    Get start index of substring from line string limited by delim
-
-    params:
-    :line - structure with line data
-    :index - index of substring in line
-
-    :return - index of first char of substring if found
-            - -1 on error
-    */
+     * Get start index of substring from line string limited by delim
+     *
+     * params:
+     * :line - structure with line data
+     * :index - index of substring in line
+     *
+     * :return - index of first char of substring if found
+     *         - -1 on error
+     */
 
     if (index < 0 || index > line->final_cols)
         return -1;
@@ -388,15 +388,15 @@ int get_start_of_substring(struct line_struct *line, int index)
 int get_end_of_substring(struct line_struct *line, int index)
 {
     /*
-    Get last index of substring from line string limited by delim
-
-    params:
-    :line - structure with line data
-    :index - index of substring in line
-
-    :return - index of last char of substring if found
-            - -1 on error
-    */
+     * Get last index of substring from line string limited by delim
+     *
+     * params:
+     * :line - structure with line data
+     * :index - index of substring in line
+     *
+     * :return - index of last char of substring if found
+     *         - -1 on error
+     */
 
     if (index > (line->final_cols - 1))
         return -1;
@@ -416,17 +416,17 @@ int get_end_of_substring(struct line_struct *line, int index)
 int get_value_of_cell(struct line_struct *line, int index, char *substring)
 {
     /*
-    Extract value of cell
-
-    params:
-    :line - structure with line data
-    :index - index of cell
-    :substring - string for saving result
-    :max_length - maximal length of one cell
-
-    :return - 0 on success
-            - -1 on error
-    */
+     * Extract value of cell
+     *
+     * params:
+     * :line - structure with line data
+     * :index - index of cell
+     * :substring - string for saving result
+     * :max_length - maximal length of one cell
+     *
+     * :return - 0 on success
+     *         - -1 on error
+     */
 
     // Clear output string
     substring[0] = 0;
@@ -478,15 +478,15 @@ int get_value_of_cell(struct line_struct *line, int index, char *substring)
 int check_line_sanity(struct line_struct *line)
 {
     /*
-    Check if line is no longer than maximum allowed length of one line and
-    check if each cell is not larger than maximum allowed length of one cell
-
-    params:
-    :line - structure with line data
-
-    :return - 1 if line is ok
-            - 0 on fail
-    */
+     * Check if line is no longer than maximum allowed length of one line and
+     * check if each cell is not larger than maximum allowed length of one cell
+     *
+     * params:
+     * :line - structure with line data
+     *
+     * :return - 1 if line is ok
+     *         - 0 on fail
+     */
 
     if (line->error_flag)
         return 0;
@@ -512,14 +512,14 @@ int check_line_sanity(struct line_struct *line)
 int is_string_double(char *string)
 {
     /*
-    Check if input string is double
-
-    params:
-    :string - string to convertion
-
-    :return - 1 if is double
-            - 0 if not
-    */
+     * Check if input string is double
+     *
+     * params:
+     * :string - string to convertion
+     *
+     * :return - 1 if is double
+     *         - 0 if not
+     */
 
     if (string[0] == 0)
         return 0;
@@ -536,15 +536,15 @@ int is_string_double(char *string)
 int string_to_double(char *string, double *val)
 {
     /*
-    Check if input string could be double and then convert it to double
-
-    params:
-    :string - string to convertion
-    :val - output double value
-
-    :return - 0 if conversion is success
-            - -1 if whole string is not double
-    */
+     * Check if input string could be double and then convert it to double
+     *
+     * params:
+     * :string - string to convertion
+     * :val - output double value
+     *
+     * :return - 0 if conversion is success
+     *         - -1 if whole string is not double
+     */
 
     // we dont want to convert empty strings to 0
     if (string[0] == 0)
@@ -562,14 +562,14 @@ int string_to_double(char *string, double *val)
 int is_string_int(char *string)
 {
     /*
-    Check if input string is intiger
-
-    params:
-    :string - string to convertion
-
-    :return - 1 if is intiger
-            - 0 if not
-    */
+     * Check if input string is intiger
+     *
+     * params:
+     * :string - string to convertion
+     *
+     * :return - 1 if is intiger
+     *         - 0 if not
+     */
 
     if (string[0] == 0)
         return 0;
@@ -592,15 +592,15 @@ int is_double_int(double val)
 int string_to_int(char *string, int *val)
 {
     /*
-    Check if input string could be intiger and then convert it to intiger
-
-    params:
-    :string - string to convertion
-    :val - output intiger value
-
-    :return - 0 if conversion is success
-            - -1 if whole string is not int
-    */
+     * Check if input string could be intiger and then convert it to intiger
+     *
+     * params:
+     * :string - string to convertion
+     * :val - output intiger value
+     *
+     * :return - 0 if conversion is success
+     *         - -1 if whole string is not int
+     */
 
     // we dont want to convert empty strings to 0
     if (string[0] == 0)
@@ -618,14 +618,14 @@ int string_to_int(char *string, int *val)
 void string_conversion(char *string, int conversion_flag)
 {
     /*
-    Converts string based on selected functions
-    Supported functions: UPPER - string to uppercase
-                         LOWER - string to lowercase
-
-    params:
-    :string - input string
-    :conversion_flag - flag to select function
-    */
+     * Converts string based on selected functions
+     * Supported functions: UPPER - string to uppercase
+     *                      LOWER - string to lowercase
+     *
+     * params:
+     * :string - input string
+     * :conversion_flag - flag to select function
+     */
 
     for (size_t i=0; i < strlen(string); i++)
     {
@@ -648,16 +648,16 @@ void string_conversion(char *string, int conversion_flag)
 int argument_to_int(char *input_array[], int array_len, int index)
 {
     /*
-    Try to convert argument to int
-
-    params:
-    :input_array - array with all arguments
-    :array_len - lenght of array with arguments
-    :index - index of argument we want convert to int
-
-    :return - int value of argument
-            - on error 0
-    */
+     * Try to convert argument to int
+     *
+     * params:
+     * :input_array - array with all arguments
+     * :array_len - lenght of array with arguments
+     * :index - index of argument we want convert to int
+     *
+     * :return - int value of argument
+     *         - on error 0
+     */
 
     int val;
 
@@ -670,13 +670,13 @@ int argument_to_int(char *input_array[], int array_len, int index)
 void generate_empty_row(struct line_struct *line)
 {
     /*
-    Create string with empty line format based on wanted line length and delim char
-    Empty line is saved to line structure instead of current line string
-    Line will have same number of cells as saved number of cells from first line
-
-    params:
-    :line - structure with line data
-    */
+     * Create string with empty line format based on wanted line length and delim char
+     * Empty line is saved to line structure instead of current line string
+     * Line will have same number of cells as saved number of cells from first line
+     *
+     * params:
+     * :line - structure with line data
+     */
 
     if (line->final_cols <= 0)
     {
@@ -701,13 +701,13 @@ void generate_empty_row(struct line_struct *line)
 int is_line_empty(struct line_struct *line)
 {
     /*
-    Check if currentl line is empty
-
-    params:
-    :line - structure with line data
-
-    :return - 1 if line is empty else 0
-    */
+     * Check if currentl line is empty
+     *
+     * params:
+     * :line - structure with line data
+     *
+     * :return - 1 if line is empty else 0
+     */
 
     return (line->deleted || (line->final_cols == 0));
 }
@@ -715,11 +715,11 @@ int is_line_empty(struct line_struct *line)
 void print_line(struct line_struct *line)
 {
     /*
-    Print line and clear it from buffer
-
-    params:
-    :line - structure with line data
-    */
+     * Print line and clear it from buffer
+     *
+     * params:
+     * :line - structure with line data
+     */
 
     if (!is_line_empty(line))
     {
@@ -737,11 +737,11 @@ void print_line(struct line_struct *line)
 void delete_line_content(struct line_struct *line)
 {
     /*
-    Delete line string and if line wasnt already empty switch delete flag to true
-
-    params:
-    :line - structure with line data
-    */
+     * Delete line string and if line wasnt already empty switch delete flag to true
+     *
+     * params:
+     * :line - structure with line data
+     */
 
     if (!is_line_empty(line))
     {
@@ -753,16 +753,16 @@ void delete_line_content(struct line_struct *line)
 int insert_string_to_line(struct line_struct *line, char *insert_string, int index)
 {
     /*
-    Insert string to line string
-
-    params:
-    :line - structure with line data
-    :insert_string - string that will be inserted to base_string
-    :index - index of character from which insert_string will be inserted to base_string
-
-     :return - 0 on success
-             - -1 on error
-    */
+     * Insert string to line string
+     *
+     * params:
+     * :line - structure with line data
+     * :insert_string - string that will be inserted to base_string
+     * :index - index of character from which insert_string will be inserted to base_string
+     *
+     * :return - 0 on success
+     *         - -1 on error
+     */
 
     size_t base_string_length = strlen(line->line_string);
     size_t insert_string_length = strlen(insert_string);
@@ -802,16 +802,16 @@ int insert_string_to_line(struct line_struct *line, char *insert_string, int ind
 int remove_substring(char *base_string, int start_index, int end_index)
 {
     /*
-    Remove substring from string base on input indexes
-
-    params:
-    :base_string - string from what will be substring removed
-    :start_index - index of first removed char of substring
-    :end_index - index of last removed char of substring
-
-    :return - 0 on success
-            - -1 on error
-    */
+     * Remove substring from string base on input indexes
+     *
+     * params:
+     * :base_string - string from what will be substring removed
+     * :start_index - index of first removed char of substring
+     * :end_index - index of last removed char of substring
+     *
+     * :return - 0 on success
+     *         - -1 on error
+     */
 
     if (start_index < 0 || end_index < 0 || start_index > end_index)
         return -1;
@@ -841,16 +841,16 @@ int remove_substring(char *base_string, int start_index, int end_index)
 int insert_to_cell(struct line_struct *line, int index, char *string)
 {
     /*
-    Insert string to column
-
-    params:
-    :line - structure with line data
-    :index - index of column to insert string
-    :string - string that will be inserted to cell
-
-    :return - 0 on success
-            - -1 on error
-    */
+     * Insert string to column
+     *
+     * params:
+     * :line - structure with line data
+     * :index - index of column to insert string
+     * :string - string that will be inserted to cell
+     *
+     * :return - 0 on success
+     *         - -1 on error
+     */
 
     // Get position of first character in cell
     index = get_start_of_substring(line, index);
@@ -864,15 +864,15 @@ int insert_to_cell(struct line_struct *line, int index, char *string)
 int insert_empty_cell(struct line_struct *line, int index)
 {
     /*
-    Insert new cell before the one selected by index
-
-    params:
-    :line - structure with line data
-    :index - index of cell before which will be inserted new cell
-
-    :return - 0 on success
-            - -1 on error
-    */
+     * Insert new cell before the one selected by index
+     *
+     * params:
+     * :line - structure with line data
+     * :index - index of cell before which will be inserted new cell
+     *
+     * :return - 0 on success
+     *         - -1 on error
+     */
 
     // When inserting to existing row of cells there is always delim
     char empty_col[2] = {line->delim, '\0'};
@@ -888,12 +888,12 @@ int insert_empty_cell(struct line_struct *line, int index)
 void append_empty_cell(struct line_struct *line)
 {
     /*
-    Insert empty cell on the end of the line
-    (Should be replaced by strcat)
-
-    params:
-    :line - structure with line data
-    */
+     * Insert empty cell on the end of the line
+     * (Should be replaced by strcat)
+     *
+     * params:
+     * :line - structure with line data
+     */
 
     if (line->final_cols < 1)
     {
@@ -917,15 +917,15 @@ void append_empty_cell(struct line_struct *line)
 int remove_cell(struct line_struct *line, int index)
 {
     /*
-    Remove whole cell
-
-    params:
-    :line - structure with line data
-    :index - index of cell to remove
-
-    :return - 0 on success
-            - -1 on error
-    */
+     * Remove whole cell
+     *
+     * params:
+     * :line - structure with line data
+     * :index - index of cell to remove
+     *
+     * :return - 0 on success
+     *         - -1 on error
+     */
 
     int start_index = get_start_of_substring(line, index);
     // offset to delim in front of substring if there is any to delete it
@@ -945,15 +945,15 @@ int remove_cell(struct line_struct *line, int index)
 int clear_cell(struct line_struct *line, int index)
 {
     /*
-    Clear value from cell
-
-    param:
-    :line - structure with line data
-    :index - index of cell to clear
-
-    :return - 0 on success
-            - -1 on error
-    */
+     * Clear value from cell
+     *
+     * param:
+     * :line - structure with line data
+     * :index - index of cell to clear
+     *
+     * :return - 0 on success
+     *         - -1 on error
+     */
 
     if (index < 0)
         return -1;
@@ -970,14 +970,14 @@ int clear_cell(struct line_struct *line, int index)
 void get_selector(struct selector_arguments *selector, int argc, char *argv[])
 {
     /*
-    Get line selector from arguments
-    Only first valid selector is loaded
-
-    params:
-    :selector - structor to save params for selector
-    :argc - length of argument array
-    :argv - argument array
-    */
+     * Get line selector from arguments
+     * Only first valid selector is loaded
+     *
+     * params:
+     * :selector - structor to save params for selector
+     * :argc - length of argument array
+     * :argv - argument array
+     */
 
     // Offset -2 to be sure that there will be another 2 args after the selector flag
     for (int i=1; i < (argc - 2); i++)
@@ -1034,15 +1034,15 @@ void get_selector(struct selector_arguments *selector, int argc, char *argv[])
 int is_cell_index_valid(struct line_struct *line, int index)
 {
     /*
-    Check if input index is valid index of cell in row
-
-    params:
-    :line - structure with line data
-    :index - index of cell to check
-
-    :return - 1 if is valid
-            - 0 if not
-    */
+     * Check if input index is valid index of cell in row
+     *
+     * params:
+     * :line - structure with line data
+     * :index - index of cell to check
+     *
+     * :return - 1 if is valid
+     *         - 0 if not
+     */
 
     return ((index > 0) && (index <= line->final_cols));
 }
@@ -1050,12 +1050,12 @@ int is_cell_index_valid(struct line_struct *line, int index)
 void validate_line_processing(struct line_struct *line, struct selector_arguments *selector)
 {
     /*
-    Check if current line is valid for processing (selected by selector)
-
-    params:
-    :line - structure with line data
-    :selector - structure with selector params
-    */
+     * Check if current line is valid for processing (selected by selector)
+     *
+     * params:
+     * :line - structure with line data
+     * :selector - structure with selector params
+     */
 
     switch (selector->selector_type)
     {
@@ -1206,13 +1206,13 @@ int get_processed_cells_value(struct line_struct *line, int start_index, int end
 void create_emty_row_at(struct line_struct *line, char *line_buffer, int index)
 {
     /*
-    Create empty row before index row in line string
-
-    params:
-    :line - structure with line data
-    :line_buffer - output buffer for current content of line
-    :index - index of row where to create empty line
-    */
+     * Create empty row before index row in line string
+     *
+     * params:
+     * :line - structure with line data
+     * :line_buffer - output buffer for current content of line
+     * :index - index of row where to create empty line
+     */
 
     if ((index > 0) && (index == (line->line_index + 1)))
     {
@@ -1224,14 +1224,14 @@ void create_emty_row_at(struct line_struct *line, char *line_buffer, int index)
 void delete_rows_in_interval(struct line_struct *line, int start_index, int end_index)
 {
     /*
-    Delete row if index of line is in passed interval
-    Start and end indexes included
-
-    params:
-    :line - structure with line data
-    :start_index - start index value
-    :end_index - end index value
-    */
+     * Delete row if index of line is in passed interval
+     * Start and end indexes included
+     *
+     * params:
+     * :line - structure with line data
+     * :start_index - start index value
+     * :end_index - end index value
+     */
 
     if (start_index > 0 && end_index > 0 &&
         start_index <= end_index)
@@ -1246,12 +1246,12 @@ void delete_rows_in_interval(struct line_struct *line, int start_index, int end_
 void insert_empty_cell_at(struct line_struct *line, int index)
 {
     /*
-    Insert empty cell before cell of passed index if that cell exist
-
-    params:
-    :line - structure with line data
-    :index - input index of cell
-    */
+     * Insert empty cell before cell of passed index if that cell exist
+     *
+     * params:
+     * :line - structure with line data
+     * :index - input index of cell
+     */
 
     if (is_cell_index_valid(line, index))
     {
@@ -1262,14 +1262,14 @@ void insert_empty_cell_at(struct line_struct *line, int index)
 void delete_cells_in_interval(struct line_struct *line, int start_index, int end_index)
 {
     /*
-    Delete cells with indexes in input interval
-    In loop delete first cell several times
-
-    params:
-    :line - structure with line data
-    :start_index - start index value
-    :end_index - end index value
-    */
+     * Delete cells with indexes in input interval
+     * In loop delete first cell several times
+     *
+     * params:
+     * :line - structure with line data
+     * :start_index - start index value
+     * :end_index - end index value
+     */
 
     if (is_cell_index_valid(line, start_index) && end_index > 0 && start_index <= end_index)
     {
@@ -1286,15 +1286,15 @@ void delete_cells_in_interval(struct line_struct *line, int start_index, int end
 int set_value_in_cell(struct line_struct *line, int index, char *value)
 {
     /*
-    Clear content of cell and insert new one
-
-    :line - structure with line data
-    :index - index of cell set value
-    :value - string to set
-
-     :return - 0 on sucess
-             - -1 on error
-    */
+     * Clear content of cell and insert new one
+     *
+     * :line - structure with line data
+     * :index - index of cell set value
+     * :value - string to set
+     *
+     * :return - 0 on sucess
+     *         - -1 on error
+     */
 
     if (is_cell_index_valid(line, index))
     {
@@ -1308,17 +1308,17 @@ int set_value_in_cell(struct line_struct *line, int index, char *value)
 void single_cell_processing(struct line_struct *line, int index, int processing_flag)
 {
     /*
-    Function to process value of single cell
-    Supported functions: UPPER - to uppercase
-                         LOWER - to lowercase
-                         ROUND - round value if its number
-                         INT - conver value to int if its number
-
-    params:
-    :line - structure with line data
-    :index - index of cell
-    :processing_flag - flag of function
-    */
+     * Function to process value of single cell
+     * Supported functions: UPPER - to uppercase
+     *                      LOWER - to lowercase
+     *                      ROUND - round value if its number
+     *                      INT - conver value to int if its number
+     *
+     * params:
+     * :line - structure with line data
+     * :index - index of cell
+     * :processing_flag - flag of function
+     */
 
     if (is_cell_index_valid(line, index))
     {
@@ -1355,14 +1355,14 @@ void single_cell_processing(struct line_struct *line, int index, int processing_
 void copy_cell_value_to(struct line_struct *line, int source_index, int target_index)
 {
     /*
-    Copy value from one cell to another
-    Source and target index cant be same
-
-    params:
-    :line - structure with line data
-    :source_index - index of source cell
-    :target_index - index of destination cell
-    */
+     * Copy value from one cell to another
+     * Source and target index cant be same
+     *
+     * params:
+     * :line - structure with line data
+     * :source_index - index of source cell
+     * :target_index - index of destination cell
+     */
 
     if (is_cell_index_valid(line, source_index) && is_cell_index_valid(line, target_index) &&
         source_index != target_index)
@@ -1377,14 +1377,14 @@ void copy_cell_value_to(struct line_struct *line, int source_index, int target_i
 void swap_cell_values(struct line_struct *line, int index1, int index2)
 {
     /*
-    Swap values of cells
-    Index1 and index2 can be same
-
-    params:
-    :line - structure with line data
-    :index1 - index of first cell
-    :index2 - index of second cell
-    */
+     * Swap values of cells
+     * Index1 and index2 can be same
+     *
+     * params:
+     * :line - structure with line data
+     * :index1 - index of first cell
+     * :index2 - index of second cell
+     */
 
     if (is_cell_index_valid(line, index1) && is_cell_index_valid(line, index2) &&
         index1 != index2)
@@ -1403,14 +1403,14 @@ void swap_cell_values(struct line_struct *line, int index1, int index2)
 void move_cell_to(struct line_struct *line, int source_index, int target_index)
 {
     /*
-    Move cell of source index before cell of target index
-    Source and target index cant be same
-
-    params:
-    :line - structure with line data
-    :source_index - index of cell to move
-    :target_index - index of cell to move to
-    */
+     * Move cell of source index before cell of target index
+     * Source and target index cant be same
+     *
+     * params:
+     * :line - structure with line data
+     * :source_index - index of cell to move
+     * :target_index - index of cell to move to
+     */
 
     if (is_cell_index_valid(line, source_index) && is_cell_index_valid(line, target_index) &&
         source_index != target_index)
@@ -1510,6 +1510,19 @@ void row_sequence_gen(struct line_struct *line, int start_index, int end_index, 
 
 void table_edit(struct line_struct *line, char *line_buffer, int argc, char *argv[], int com_index)
 {
+    /*
+     * Function to apply table edit command to line
+     *
+     * params:
+     * :line - structure with line data
+     * :argc - lenght of argument array
+     * :argv - argument array
+     * :com_index - index of command to use
+     */
+
+    if (line->error_flag)
+        return;
+
     switch (get_table_edit_com_index(argv[com_index]))
     {
         // TODO: Make row indexing consistent after removing/adding lines
@@ -1555,6 +1568,19 @@ void table_edit(struct line_struct *line, char *line_buffer, int argc, char *arg
 
 void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
 {
+    /*
+     * Function to apply data edit command to line
+     *
+     * params:
+     * :line - structure with line data
+     * :argc - lenght of argument array
+     * :argv - argument array
+     * :com_index - index of command to use
+     */
+
+    if (line->error_flag)
+        return;
+
     // Edit line data only when its flagged as line to edit
     if (line->process_flag)
     {
@@ -1747,9 +1773,11 @@ int main(int argc, char *argv[])
         return INPUT_ERROR;
     }
 
-    struct selector_arguments selector;
+    // Check operating mode of program based on inputed arguments
     int operating_mode = get_operating_mode(argv, argc);
 
+    // Get selector
+    struct selector_arguments selector;
     get_selector(&selector, argc, argv);
 
     // Init line hodler
@@ -1760,10 +1788,14 @@ int main(int argc, char *argv[])
     // Iterate over lines
     while (!line_holder.last_line_flag)
     {
+        // Copy line from buffer to line holder
         strcpy(line, buffer_line);
+        // Load new line to buffer
         line_holder.last_line_flag = fgets(buffer_line, (MAX_LINE_LEN + 2), stdin) == NULL;
 
+        // Remove new line character from line
         remove_newline_character(line);
+        // Go thru line and replace all delims with one
         replace_unused_delims(line, delims);
         line_holder.line_string = line;
 
