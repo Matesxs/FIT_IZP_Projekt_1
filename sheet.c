@@ -428,19 +428,17 @@ int get_value_of_cell(struct line_struct *line, int index, char *substring)
      *         - -1 on error
      */
 
-    // Clear output string
-    substring[0] = 0;
-
+    // Check if index of cell is valid
     if (index > (line->final_cols - 1) || index < 0)
         return -1;
 
+    // Get indexes of substring
     int start_index = get_start_of_substring(line, index);
     int end_index = get_end_of_substring(line, index);
 
+    // If both indexes are bad then its error
     if (start_index < 0 && end_index < 0)
-    {
         return -1;
-    }
 
     // if start index is 0 and end index is -1 it means its first cell in row and its empty
     // then its not problem only it needs to set substring to empty string
@@ -450,7 +448,7 @@ int get_value_of_cell(struct line_struct *line, int index, char *substring)
         return 0;
     }
 
-    // exit if length of substring is larger than maximum size of one cell
+    // Return if length of substring is larger than maximum size of one cell
     if ((end_index - start_index + 1) > MAX_CELL_LEN)
     {
         fprintf(stderr, "\nCell %d on line %d exceded max memory size! Max length of cell is %d characters (exclude delims)\n", index + 1, line->line_index + 1, MAX_CELL_LEN);
@@ -458,19 +456,9 @@ int get_value_of_cell(struct line_struct *line, int index, char *substring)
         return -1;
     }
 
-    // iterate over whole substring (we are recycling one and then we want to clear it)
-    for (int i=0; i < (MAX_CELL_LEN + 1); i++, start_index++)
-    {
-        if (start_index <= end_index)
-        {
-            substring[i] = line->line_string[start_index];
-        }
-        else
-        {
-            substring[i] = 0;
-            break;
-        }
-    }
+    // Save wanted substring to substring array
+    int length = end_index - start_index + 1;
+    strncpy(substring, &(line->line_string[start_index]), length);
 
     return 0;
 }
@@ -585,14 +573,24 @@ int is_string_int(char *string)
 
 int is_double_int(double val)
 {
+    /*
+     * Check if double could be converted to int without loss of precision
+     *
+     * params:
+     * @val - double value to check
+     *
+     * @return - 1 if it could be converted without loss of precision
+     *         - 0 if couldnt
+     */
+
     if (val == 0) return 1;
-    return (double)(int)(val) == val;
+    return (int)(val) == val;
 }
 
 int string_to_int(char *string, int *val)
 {
     /*
-     * Check if input string could be intiger and then convert it to intiger
+     * Try to convert string to int
      *
      * params:
      * @string - string to convertion
@@ -1697,6 +1695,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
 
     for (int i=1; i < argc; i++)
     {
+        // Perform actions based on operating mode (command from other operating modes will be ignored)
         switch (operating_mode)
         {
             case TABLE_EDIT:
