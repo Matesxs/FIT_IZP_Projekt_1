@@ -607,7 +607,7 @@ int string_to_int(char *string, int *val)
         return -1;
 
     char *foo;
-    (*val) = strtol(string, &foo, 10);
+    (*val) = (int)strtol(string, &foo, 10);
 
     if (foo[0] != 0)
         return -1;
