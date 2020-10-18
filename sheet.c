@@ -13,7 +13,6 @@ Program to process tables from standard input and outputs it to standard output
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <math.h>
 #include <float.h>
 
 #define MAX_CELL_LEN 100
@@ -56,6 +55,23 @@ struct selector_arguments
     char *a1, *a2, *str;
     int ai1, ai2;
 };
+
+int round_double(double val)
+{
+    /*
+     * Round double value to int
+     *
+     * params:
+     * :val - double value to round
+     *
+     * :return - rounded value (int)
+     */
+
+    if (val < 0)
+        return (int)(val - 0.5);
+    else
+        return (int)(val + 0.5);
+}
 
 int are_strings_same(const char *s1, const char *s2)
 {
@@ -149,18 +165,6 @@ int get_data_edit_com_index(char *com)
     }
     return -1;
 }
-
-int get_area_selector_com_index(char *com)
-{
-    for (int i=0; i < NUMBER_OF_AREA_SELECTOR_COMS; i++)
-    {
-        if (are_strings_same(com, AREA_SELECTOR_COMS[i]))
-        {
-            return i;
-        }
-    }
-    return -1;
-}
 // command_selectors
 
 int get_operating_mode(char *input_array[], int array_len)
@@ -185,8 +189,11 @@ int get_operating_mode(char *input_array[], int array_len)
         if (get_data_edit_com_index(input_array[i]) >= 0)
             return DATA_EDIT;
 
-        if (get_area_selector_com_index(input_array[i]) >= 0)
-            return DATA_EDIT;
+        for (int j=0; j < NUMBER_OF_AREA_SELECTOR_COMS; j++)
+        {
+            if (are_strings_same(input_array[i], AREA_SELECTOR_COMS[j]))
+                return DATA_EDIT;
+        }
     }
 
     return PASS;
@@ -579,7 +586,7 @@ int is_string_int(char *string)
 int is_double_int(double val)
 {
     if (val == 0) return 1;
-    return floor(val) == val;
+    return (double)(int)(val) == val;
 }
 
 int string_to_int(char *string, int *val)
@@ -772,7 +779,7 @@ int insert_string_to_line(struct line_struct *line, char *insert_string, int ind
 
     char final_string[MAX_LINE_LEN + 1];
 
-    // Add first part of base string
+    // Add first part of base string (exclude character on pos index)
     for (size_t i=0; i < pos; ++i)
         final_string[i] = line->line_string[i];
 
@@ -845,10 +852,12 @@ int insert_to_cell(struct line_struct *line, int index, char *string)
             - -1 on error
     */
 
+    // Get position of first character in cell
     index = get_start_of_substring(line, index);
     if (index < 0)
         return -1;
 
+    // This will insert string BEFORE the index
     return insert_string_to_line(line, string, index);
 }
 
@@ -865,7 +874,10 @@ int insert_empty_cell(struct line_struct *line, int index)
             - -1 on error
     */
 
+    // When inserting to existing row of cells there is always delim
     char empty_col[2] = {line->delim, '\0'};
+
+    // Insert string with delim in front of value in cell
     int ret = insert_to_cell(line, index, empty_col);
     if (ret == 0)
         line->final_cols++;
@@ -1019,72 +1031,6 @@ void get_selector(struct selector_arguments *selector, int argc, char *argv[])
     selector->selector_type = -1;
 }
 
-void validate_line_processing(struct line_struct *line, struct selector_arguments *selector)
-{
-    /*
-    Check if current line is valid for processing (selected by selector)
-
-    params:
-    :line - structure with line data
-    :selector - structure with selector params
-    */
-
-    switch (selector->selector_type)
-    {
-        case 0:
-            if ((are_strings_same(selector->a1, "-") && are_strings_same(selector->a2, "-") && line->last_line_flag) ||
-                (selector->ai1 > 0 && are_strings_same(selector->a2, "-") && line->line_index >= (selector->ai1 - 1)) ||
-                (selector->ai1 > 0 && selector->ai2 > 0 && line->line_index >= (selector->ai1 - 1) && line->line_index <= (selector->ai2 - 1)))
-            {
-                line->process_flag = 1;
-                return;
-            }
-            break;
-
-        case 1:
-            if (selector->ai1 > 0 && selector->ai1 <= line->num_of_cols)
-            {
-                char substr[MAX_CELL_LEN + 1];
-                if (get_value_of_cell(line, selector->ai1 - 1, substr) == 0)
-                {
-                    if (is_string_start_with(substr, selector->str))
-                    {
-                        line->process_flag = 1;
-                        return;
-                    }
-                }
-
-                if (line->error_flag)
-                    return;
-            }
-            break;
-
-        case 2:
-            if (selector->ai1 > 0 && selector->ai1 <= line->num_of_cols)
-            {
-                char substr[MAX_CELL_LEN + 1];
-                if (get_value_of_cell(line, selector->ai1 - 1, substr) == 0)
-                {
-                    if (strstr(substr, selector->str) != NULL)
-                    {
-                        line->process_flag = 1;
-                        return;
-                    }
-                }
-
-                if (line->error_flag)
-                    return;
-            }
-            break;
-
-        default:
-            line->process_flag = 1;
-            return;
-    }
-
-    line->process_flag = 0;
-}
-
 int is_cell_index_valid(struct line_struct *line, int index)
 {
     /*
@@ -1099,6 +1045,76 @@ int is_cell_index_valid(struct line_struct *line, int index)
     */
 
     return ((index > 0) && (index <= line->final_cols));
+}
+
+void validate_line_processing(struct line_struct *line, struct selector_arguments *selector)
+{
+    /*
+    Check if current line is valid for processing (selected by selector)
+
+    params:
+    :line - structure with line data
+    :selector - structure with selector params
+    */
+
+    switch (selector->selector_type)
+    {
+        case 0:
+            // rows N M
+            // If both args are - then allow only last line
+            // If arg 1 is larger than 0 and arg 2 is - then check if current line index is larger or equal arg 1
+            // If both args are numbers larger than 0 then check if current line index is between or equal
+            if ((are_strings_same(selector->a1, "-") && are_strings_same(selector->a2, "-") && line->last_line_flag) ||
+                (selector->ai1 > 0 && are_strings_same(selector->a2, "-") && line->line_index >= (selector->ai1 - 1)) ||
+                (selector->ai1 > 0 && selector->ai2 > 0 && line->line_index >= (selector->ai1 - 1) && line->line_index <= (selector->ai2 - 1)))
+            {
+                line->process_flag = 1;
+                return;
+            }
+            break;
+
+        case 1:
+            // beginswith C STR
+            if (is_cell_index_valid(line, selector->ai1))
+            {
+                char substr[MAX_CELL_LEN + 1];
+                if (get_value_of_cell(line, selector->ai1 - 1, substr) == 0)
+                {
+                    // Check if selected cell starts with string from argument
+                    if (is_string_start_with(substr, selector->str))
+                    {
+                        line->process_flag = 1;
+                        return;
+                    }
+                }
+            }
+            break;
+
+        case 2:
+            // contains C STR
+            if (is_cell_index_valid(line, selector->ai1))
+            {
+                char substr[MAX_CELL_LEN + 1];
+                if (get_value_of_cell(line, selector->ai1 - 1, substr) == 0)
+                {
+                    // Check if cell contains string from argument
+                    if (strstr(substr, selector->str) != NULL)
+                    {
+                        line->process_flag = 1;
+                        return;
+                    }
+                }
+            }
+            break;
+
+        default:
+            // If there is no valid selector then set processing flag to 1
+            line->process_flag = 1;
+            return;
+    }
+
+    // If selector contains some garbage or the current line is not valid by selector then set processing flag to 0
+    line->process_flag = 0;
 }
 
 int get_processed_cells_value(struct line_struct *line, int start_index, int end_index, double *ret_val, int function_flag)
@@ -1325,9 +1341,9 @@ void single_cell_processing(struct line_struct *line, int index, int processing_
                 if (string_to_double(cell_buff, &cell_double) == 0)
                 {
                     if (processing_flag == ROUND)
-                        snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", (int)round(cell_double));
+                        snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", round_double(cell_double));
                     else
-                        snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", (int) cell_double);
+                        snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", (int)cell_double);
                 }
             }
 
@@ -1467,7 +1483,7 @@ void row_values_processing(struct line_struct *line, int output_index, int start
     }
 }
 
-void set_row_sequence(struct line_struct *line, int start_index, int end_index, int start_value)
+void row_sequence_gen(struct line_struct *line, int start_index, int end_index, int start_value)
 {
     /*
      * Create sequence of number starting from start value in cells with index from inputed interval
@@ -1612,7 +1628,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
 
             case 13:
                 // cseq N M B
-                set_row_sequence(line, argument_to_int(argv, argc, com_index + 1), argument_to_int(argv, argc, com_index + 2), argument_to_int(argv, argc, com_index + 3));
+                row_sequence_gen(line, argument_to_int(argv, argc, com_index + 1), argument_to_int(argv, argc, com_index + 2), argument_to_int(argv, argc, com_index + 3));
                 break;
 
             default:
@@ -1635,6 +1651,10 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
     :last_line_executed - flag to indicate that last line is executed
     */
 
+    // Initialize/clear line states
+    line->deleted = 0;
+    line->final_cols = line->num_of_cols;
+
     // Check if data in line should be processed
     validate_line_processing(line, selector);
 
@@ -1647,10 +1667,6 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
 
     // Create buffer for cases when we are inserting new line
     char line_buffer[MAX_LINE_LEN + 2];
-
-    // Initialize/clear line states
-    line->deleted = 0;
-    line->final_cols = line->num_of_cols;
 
     for (int i=1; i < argc; i++)
     {
@@ -1668,6 +1684,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
                 break;
         }
 
+        // If there was some memory error return to main
         if (line->error_flag)
             return;
     }
