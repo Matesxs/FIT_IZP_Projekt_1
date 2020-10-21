@@ -27,11 +27,11 @@ const char *AREA_SELECTOR_COMS[] = {"rows", "beginswith", "contains"};
 #define NUMBER_OF_AREA_SELECTOR_COMS 3
 
 enum Mode {PASS, TABLE_EDIT, DATA_EDIT};
-enum ReturnCodes {NO_ERROR, MAX_LINE_LEN_EXCEDED, MAX_CELL_LEN_EXCEDED, ARG_ERROR, INPUT_ERROR};
+enum ErrorCodes {NO_ERROR, MAX_LINE_LEN_EXCEDED, MAX_CELL_LEN_EXCEDED, ARG_ERROR, INPUT_ERROR};
 enum SingleCellFunction {UPPER, LOWER, ROUND, INT};
 enum MultiCellFunction {SUM, MIN, MAX, AVG, COUNT};
 
-struct line_struct
+typedef struct
 {
     char *line_string;
     char unedited_line_string[MAX_LINE_LEN + 2];
@@ -47,14 +47,14 @@ struct line_struct
     int deleted;
     int process_flag;
     int error_flag;
-};
+} Line;
 
-struct selector_arguments
+typedef struct
 {
     int selector_type;
     char *a1, *a2, *str;
     int ai1, ai2;
-};
+} Selector;
 
 int round_double(double val)
 {
@@ -67,10 +67,7 @@ int round_double(double val)
      * @return - rounded value (int)
      */
 
-    if (val < 0)
-        return (int)(val - 0.5);
-    else
-        return (int)(val + 0.5);
+    return val < 0 ? (int)(val - 0.5) : (int)(val + 0.5);
 }
 
 int are_strings_same(const char *s1, const char *s2)
@@ -89,7 +86,7 @@ int are_strings_same(const char *s1, const char *s2)
     return strcmp(s1, s2) == 0;
 }
 
-int is_string_start_with(const char *base_string, const char *start_string)
+int string_start_with(const char *base_string, const char *start_string)
 {
     /*
      * Check if string starts with other string
@@ -120,7 +117,7 @@ void check_arguments(int argc, char *argv[], int *error_flag)
      *         - MAX_CELL_LEN_EXCEDED if some argument is longer
      */
 
-    for (int i=1; i < argc; i++)
+    for (int i = 1; i < argc; i++)
     {
         if (strlen(argv[i]) > MAX_CELL_LEN)
         {
@@ -144,7 +141,7 @@ void check_arguments(int argc, char *argv[], int *error_flag)
 
 int get_table_edit_com_index(char *com)
 {
-    for (int i=0; i < NUMBER_OF_TABLE_EDIT_COMS; i++)
+    for (int i = 0; i < NUMBER_OF_TABLE_EDIT_COMS; i++)
     {
         if (are_strings_same(com, TABLE_EDIT_COMS[i]))
         {
@@ -156,7 +153,7 @@ int get_table_edit_com_index(char *com)
 
 int get_data_edit_com_index(char *com)
 {
-    for (int i=0; i < NUMBER_OF_DATA_EDIT_COMS; i++)
+    for (int i = 0; i < NUMBER_OF_DATA_EDIT_COMS; i++)
     {
         if (are_strings_same(com, DATA_EDIT_COMS[i]))
         {
@@ -170,18 +167,17 @@ int get_data_edit_com_index(char *com)
 int get_operating_mode(char *input_array[], int array_len)
 {
     /*
-    Check arguments to determinate operating mode of program
+     * Check arguments to determinate operating mode of program
+     * If first not delim argument is row selector or data editing command then
+     *
+     * params:
+     * @input_array - array of arguments
+     * @array_len - length of array with arguments
+     *
+     * @return - Flag of mode to use
+     */
 
-    params:
-    @input_array - array of arguments
-    @array_len - length of array with arguments
-
-    @return - 0 if no valid argument found (pass thru mode)
-            - 1 if first is table edit command
-            - 2 if first is data edit command
-    */
-
-    for (int i=1; i < array_len; i++)
+    for (int i = 1; i < array_len; i++)
     {
         if (get_table_edit_com_index(input_array[i]) >= 0)
             return TABLE_EDIT;
@@ -189,7 +185,7 @@ int get_operating_mode(char *input_array[], int array_len)
         if (get_data_edit_com_index(input_array[i]) >= 0)
             return DATA_EDIT;
 
-        for (int j=0; j < NUMBER_OF_AREA_SELECTOR_COMS; j++)
+        for (int j = 0; j < NUMBER_OF_AREA_SELECTOR_COMS; j++)
         {
             if (are_strings_same(input_array[i], AREA_SELECTOR_COMS[j]))
                 return DATA_EDIT;
@@ -214,7 +210,7 @@ void remove_newline_character(char *s) {
     *s = 0;
 }
 
-void check_delim_characters(char *delims, int *error_flag)
+void check_delim_characters(const char *delims, int *error_flag)
 {
     /*
      * Check if in delims string isnt any blacklisted char
@@ -225,9 +221,9 @@ void check_delim_characters(char *delims, int *error_flag)
      * @return 0 if all chars are right else -1
      */
 
-    for (size_t i=0; i < strlen(delims); i++)
+    for (size_t i = 0; delims[i]; i++)
     {
-        for (size_t j=0; j < strlen(BLACKLISTED_DELIMS); j++)
+        for (size_t j = 0; BLACKLISTED_DELIMS[j]; j++)
         {
             if (delims[i] == BLACKLISTED_DELIMS[j])
             {
@@ -252,7 +248,7 @@ void get_delims(char *input_array[], int array_len, char *delim)
      *         - ARG_ERROR on failed parsing
      */
 
-    for (int i=1; i < array_len; i++)
+    for (int i = 1; i < array_len; i++)
     {
         if (are_strings_same(input_array[i], "-d"))
         {
@@ -268,7 +264,7 @@ void get_delims(char *input_array[], int array_len, char *delim)
     }
 }
 
-void replace_unused_delims(char *string, char* delims)
+void replace_unused_delims(char *string, const char* delims)
 {
     /*
      * Iterate over string and replace delims that are not on 0 position in delims string with delim on 0 position
@@ -278,9 +274,9 @@ void replace_unused_delims(char *string, char* delims)
      * @delims - string with delims
      */
 
-    for (size_t i=0; i < strlen(string); i++)
+    for (size_t i = 0; string[i]; i++)
     {
-        for (size_t j=1; j < strlen(delims); j++)
+        for (size_t j = 1; delims[j]; j++)
         {
             // Ignore duplicates of first delim
             if (delims[j] == delims[0])
@@ -294,7 +290,7 @@ void replace_unused_delims(char *string, char* delims)
     }
 }
 
-int count_specific_chars(char *string, char ch)
+int count_specific_chars(const char *string, char ch)
 {
     /*
      * Count number of specific characters in string
@@ -307,7 +303,7 @@ int count_specific_chars(char *string, char ch)
      */
 
     int delim_counter = 0;
-    for (size_t i=0; i < strlen(string); i++)
+    for (size_t i = 0; string[i]; i++)
     {
         if (string[i] == ch) delim_counter++;
     }
@@ -315,7 +311,7 @@ int count_specific_chars(char *string, char ch)
     return delim_counter;
 }
 
-int get_number_of_cells(struct line_struct *line)
+int get_number_of_cells(Line *line)
 {
     /*
      * Get number of cells in row
@@ -344,7 +340,7 @@ int get_position_of_character(char *string, char ch, int index)
     if (index > (count_specific_chars(string, ch) - 1) || index < 0) return -1;
 
     int delim_counter = 0;
-    for (size_t i=0; i < strlen(string); i++)
+    for (size_t i = 0; string[i]; i++)
     {
         if (string[i] == ch)
         {
@@ -357,7 +353,7 @@ int get_position_of_character(char *string, char ch, int index)
     return -1;
 }
 
-int get_start_of_substring(struct line_struct *line, int index)
+int get_start_of_substring(Line *line, int index)
 {
     /*
      * Get start index of substring from line string limited by delim
@@ -385,7 +381,7 @@ int get_start_of_substring(struct line_struct *line, int index)
     }
 }
 
-int get_end_of_substring(struct line_struct *line, int index)
+int get_end_of_substring(Line *line, int index)
 {
     /*
      * Get last index of substring from line string limited by delim
@@ -413,7 +409,7 @@ int get_end_of_substring(struct line_struct *line, int index)
     }
 }
 
-int get_value_of_cell(struct line_struct *line, int index, char *substring)
+int get_value_of_cell(Line *line, int index, char *substring)
 {
     /*
      * Extract value of cell
@@ -463,7 +459,7 @@ int get_value_of_cell(struct line_struct *line, int index, char *substring)
     return 0;
 }
 
-int check_line_sanity(struct line_struct *line)
+int check_line_sanity(Line *line)
 {
     /*
      * Check if line is no longer than maximum allowed length of one line and
@@ -487,7 +483,9 @@ int check_line_sanity(struct line_struct *line)
     }
 
     char cell_buff[MAX_CELL_LEN + 1];
-    for (int i=0; i < get_number_of_cells(line); i++)
+    int num_of_cells = get_number_of_cells(line);
+
+    for (int i = 0; i < num_of_cells; i++)
     {
         get_value_of_cell(line, i, cell_buff);
         if (line->error_flag)
@@ -625,7 +623,7 @@ void string_conversion(char *string, int conversion_flag)
      * @conversion_flag - flag to select function
      */
 
-    for (size_t i=0; i < strlen(string); i++)
+    for (size_t i = 0; string[i]; i++)
     {
         // iterate over string
         while (*string)
@@ -659,13 +657,13 @@ int argument_to_int(char *input_array[], int array_len, int index)
 
     int val;
 
-    if (index > (array_len - 1) || string_to_int(input_array[index], &val) != 0)
+    if (index >= array_len || string_to_int(input_array[index], &val) != 0)
         return 0;
 
     return val;
 }
 
-void generate_empty_row(struct line_struct *line)
+void generate_empty_row(Line *line)
 {
     /*
      * Create string with empty line format based on wanted line length and delim char
@@ -683,23 +681,19 @@ void generate_empty_row(struct line_struct *line)
     }
 
     int i = 0;
-    for (; i < line->final_cols; i++)
+    for (; i < (line->final_cols - 1); i++)
     {
-        if (i < (line->final_cols - 1))
-            line->line_string[i] = line->delim;
-        else
-        {
-            line->line_string[i] = 0;
-            break;
-        }
-
+        line->line_string[i] = line->delim;
     }
+
+    line->line_string[i] = 0;
 }
 
-int is_line_empty(struct line_struct *line)
+int is_line_empty(Line *line)
 {
     /*
      * Check if currentl line is empty
+     * Line is empty when line is flagged as deleted or number of colms is 0
      *
      * params:
      * @line - structure with line data
@@ -710,7 +704,7 @@ int is_line_empty(struct line_struct *line)
     return (line->deleted || (line->final_cols == 0));
 }
 
-void print_line(struct line_struct *line)
+void print_line(Line *line)
 {
     /*
      * Print line and clear it from buffer
@@ -732,7 +726,7 @@ void print_line(struct line_struct *line)
     line->line_string[0] = 0;
 }
 
-void delete_line_content(struct line_struct *line)
+void delete_line_content(Line *line)
 {
     /*
      * Delete line string and if line wasnt already empty switch delete flag to true
@@ -748,7 +742,7 @@ void delete_line_content(struct line_struct *line)
     }
 }
 
-int insert_string_to_line(struct line_struct *line, char *insert_string, int index)
+int insert_string_to_line(Line *line, char *insert_string, int index)
 {
     /*
      * Insert string to line string
@@ -778,15 +772,15 @@ int insert_string_to_line(struct line_struct *line, char *insert_string, int ind
     char final_string[MAX_LINE_LEN + 1];
 
     // Add first part of base string (exclude character on pos index)
-    for (size_t i=0; i < pos; ++i)
+    for (size_t i = 0; i < pos; ++i)
         final_string[i] = line->line_string[i];
 
     // Add insert string
-    for (size_t i=0; i < insert_string_length; ++i)
+    for (size_t i = 0; i < insert_string_length; ++i)
         final_string[pos+i] = insert_string[i];
 
     // Add rest of base string
-    for (size_t i=pos; i < base_string_length; ++i)
+    for (size_t i = pos; i < base_string_length; ++i)
         final_string[i + insert_string_length] = line->line_string[i];
 
     // Add terminate character to the end
@@ -820,12 +814,12 @@ int remove_substring(char *base_string, int start_index, int end_index)
     int i;
     size_t j;
 
-    for (i=0; i < start_index; i++)
+    for (i = 0; i < start_index; i++)
     {
         final_string[i] = base_string[i];
     }
 
-    for (j=end_index + 1; j < string_len; ++j, ++i)
+    for (j = end_index + 1; j < string_len; ++j, ++i)
     {
         final_string[i] = base_string[j];
     }
@@ -836,7 +830,7 @@ int remove_substring(char *base_string, int start_index, int end_index)
     return 0;
 }
 
-int insert_to_cell(struct line_struct *line, int index, char *string)
+int insert_to_cell(Line *line, int index, char *string)
 {
     /*
      * Insert string to column
@@ -859,7 +853,7 @@ int insert_to_cell(struct line_struct *line, int index, char *string)
     return insert_string_to_line(line, string, index);
 }
 
-int insert_empty_cell(struct line_struct *line, int index)
+int insert_empty_cell(Line *line, int index)
 {
     /*
      * Insert new cell before the one selected by index
@@ -883,7 +877,7 @@ int insert_empty_cell(struct line_struct *line, int index)
     return ret;
 }
 
-void append_empty_cell(struct line_struct *line)
+void append_empty_cell(Line *line)
 {
     /*
      * Insert empty cell on the end of the line
@@ -912,7 +906,7 @@ void append_empty_cell(struct line_struct *line)
     insert_string_to_line(line, empty_col, index);
 }
 
-int remove_cell(struct line_struct *line, int index)
+int remove_cell(Line *line, int index)
 {
     /*
      * Remove whole cell
@@ -940,7 +934,7 @@ int remove_cell(struct line_struct *line, int index)
     return ret;
 }
 
-int clear_cell(struct line_struct *line, int index)
+int clear_cell(Line *line, int index)
 {
     /*
      * Clear value from cell
@@ -965,7 +959,7 @@ int clear_cell(struct line_struct *line, int index)
     return remove_substring(line->line_string, start_index, end_index);
 }
 
-void get_selector(struct selector_arguments *selector, int argc, char *argv[])
+void get_selector(Selector *selector, int argc, char *argv[])
 {
     /*
      * Get line selector from arguments
@@ -978,9 +972,9 @@ void get_selector(struct selector_arguments *selector, int argc, char *argv[])
      */
 
     // Offset -2 to be sure that there will be another 2 args after the selector flag
-    for (int i=1; i < (argc - 2); i++)
+    for (int i = 1; i < (argc - 2); i++)
     {
-        for (int j=0; j < NUMBER_OF_AREA_SELECTOR_COMS; j++)
+        for (int j = 0; j < NUMBER_OF_AREA_SELECTOR_COMS; j++)
         {
             if (strcmp(argv[i], AREA_SELECTOR_COMS[j]) == 0)
             {
@@ -1029,7 +1023,7 @@ void get_selector(struct selector_arguments *selector, int argc, char *argv[])
     selector->selector_type = -1;
 }
 
-int is_cell_index_valid(struct line_struct *line, int index)
+int is_cell_index_valid(Line *line, int index)
 {
     /*
      * Check if input index is valid index of cell in row
@@ -1045,10 +1039,10 @@ int is_cell_index_valid(struct line_struct *line, int index)
     return ((index > 0) && (index <= line->final_cols));
 }
 
-void validate_line_processing(struct line_struct *line, struct selector_arguments *selector)
+void validate_line_processing(Line *line, Selector *selector)
 {
     /*
-     * Check if current line is valid for processing (selected by selector)
+     * Check if current line is marked by selector for processing (selected by selector)
      *
      * params:
      * @line - structure with line data
@@ -1079,7 +1073,7 @@ void validate_line_processing(struct line_struct *line, struct selector_argument
                 if (get_value_of_cell(line, selector->ai1 - 1, substr) == 0)
                 {
                     // Check if selected cell starts with string from argument
-                    if (is_string_start_with(substr, selector->str))
+                    if (string_start_with(substr, selector->str))
                     {
                         line->process_flag = 1;
                         return;
@@ -1115,7 +1109,7 @@ void validate_line_processing(struct line_struct *line, struct selector_argument
     line->process_flag = 0;
 }
 
-int get_processed_cells_value(struct line_struct *line, int start_index, int end_index, double *ret_val, int function_flag)
+int get_processed_cells_value(Line *line, int start_index, int end_index, double *ret_val, int function_flag)
 {
     /*
      * Process and return value of operation performed on row
@@ -1149,7 +1143,7 @@ int get_processed_cells_value(struct line_struct *line, int start_index, int end
         else if (function_flag == MAX)
             return_value = DBL_MIN;
 
-        for (int i=start_index; i <= end_index; i++)
+        for (int i = start_index; i <= end_index; i++)
         {
             if (get_value_of_cell(line, i - 1, cell_buff) == 0)
             {
@@ -1201,7 +1195,7 @@ int get_processed_cells_value(struct line_struct *line, int start_index, int end
     return -1;
 }
 
-void create_emty_row_at(struct line_struct *line, char *line_buffer, int index)
+void create_emty_row_at(Line *line, char *line_buffer, int index)
 {
     /*
      * Create empty row before index row in line string
@@ -1219,7 +1213,7 @@ void create_emty_row_at(struct line_struct *line, char *line_buffer, int index)
     }
 }
 
-void delete_rows_in_interval(struct line_struct *line, int start_index, int end_index)
+void delete_rows_in_interval(Line *line, int start_index, int end_index)
 {
     /*
      * Delete row if index of line is in passed interval
@@ -1241,7 +1235,7 @@ void delete_rows_in_interval(struct line_struct *line, int start_index, int end_
     }
 }
 
-void insert_empty_cell_at(struct line_struct *line, int index)
+void insert_empty_cell_at(Line *line, int index)
 {
     /*
      * Insert empty cell before cell of passed index if that cell exist
@@ -1257,7 +1251,7 @@ void insert_empty_cell_at(struct line_struct *line, int index)
     }
 }
 
-void delete_cells_in_interval(struct line_struct *line, int start_index, int end_index)
+void delete_cells_in_interval(Line *line, int start_index, int end_index)
 {
     /*
      * Delete cells with indexes in input interval
@@ -1273,7 +1267,7 @@ void delete_cells_in_interval(struct line_struct *line, int start_index, int end
     {
 
         // I am lazy to count number of loops
-        for (int j=start_index; j <= end_index; j++)
+        for (int j = start_index; j <= end_index; j++)
         {
             if (!is_line_empty(line))
                 remove_cell(line, start_index - 1);
@@ -1281,7 +1275,7 @@ void delete_cells_in_interval(struct line_struct *line, int start_index, int end
     }
 }
 
-int set_value_in_cell(struct line_struct *line, int index, char *value)
+int set_value_in_cell(Line *line, int index, char *value)
 {
     /*
      * Clear content of cell and insert new one
@@ -1304,7 +1298,7 @@ int set_value_in_cell(struct line_struct *line, int index, char *value)
     return -1;
 }
 
-void single_cell_processing(struct line_struct *line, int index, int processing_flag)
+void cell_value_editing(Line *line, int index, int processing_flag)
 {
     /*
      * Function to process value of single cell
@@ -1351,7 +1345,7 @@ void single_cell_processing(struct line_struct *line, int index, int processing_
     }
 }
 
-void copy_cell_value_to(struct line_struct *line, int source_index, int target_index)
+void copy_cell_value_to(Line *line, int source_index, int target_index)
 {
     /*
      * Copy value from one cell to another
@@ -1373,7 +1367,7 @@ void copy_cell_value_to(struct line_struct *line, int source_index, int target_i
     }
 }
 
-void swap_cell_values(struct line_struct *line, int index1, int index2)
+void swap_cell_values(Line *line, int index1, int index2)
 {
     /*
      * Swap values of cells
@@ -1399,7 +1393,7 @@ void swap_cell_values(struct line_struct *line, int index1, int index2)
     }
 }
 
-void move_cell_to(struct line_struct *line, int source_index, int target_index)
+void move_cell_to(Line *line, int source_index, int target_index)
 {
     /*
      * Move cell of source index before cell of target index
@@ -1441,7 +1435,7 @@ void move_cell_to(struct line_struct *line, int source_index, int target_index)
     }
 }
 
-void row_values_processing(struct line_struct *line, int output_index, int start_index, int end_index, int function_flag)
+void row_values_processing(Line *line, int output_index, int start_index, int end_index, int function_flag)
 {
     /*
      * Process cells with index in inputed interval by function selected by flag
@@ -1482,7 +1476,7 @@ void row_values_processing(struct line_struct *line, int output_index, int start
     }
 }
 
-void row_sequence_gen(struct line_struct *line, int start_index, int end_index, int start_value)
+void row_sequence_gen(Line *line, int start_index, int end_index, int start_value)
 {
     /*
      * Create sequence of number starting from start value in cells with index from inputed interval
@@ -1498,7 +1492,7 @@ void row_sequence_gen(struct line_struct *line, int start_index, int end_index, 
     {
         char cell_buff[MAX_CELL_LEN + 1];
 
-        for (int i=start_index; i <= end_index; i++, start_value++)
+        for (int i = start_index; i <= end_index; i++, start_value++)
         {
             snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", start_value);
             if (set_value_in_cell(line, i, cell_buff) != 0)
@@ -1507,7 +1501,7 @@ void row_sequence_gen(struct line_struct *line, int start_index, int end_index, 
     }
 }
 
-void table_edit(struct line_struct *line, char *line_buffer, int argc, char *argv[], int com_index)
+void table_edit(Line *line, char *line_buffer, int argc, char *argv[], int com_index)
 {
     /*
      * Function to apply table edit command to line
@@ -1565,7 +1559,7 @@ void table_edit(struct line_struct *line, char *line_buffer, int argc, char *arg
     }
 }
 
-void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
+void data_edit(Line *line, int argc, char *argv[], int com_index)
 {
     /*
      * Function to apply data edit command to line
@@ -1593,22 +1587,22 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
 
             case 1:
                 // tolower C
-                single_cell_processing(line, argument_to_int(argv, argc, com_index + 1), LOWER);
+                cell_value_editing(line, argument_to_int(argv, argc, com_index + 1), LOWER);
                 break;
 
             case 2:
                 // toupper C
-                single_cell_processing(line, argument_to_int(argv, argc, com_index + 1), UPPER);
+                cell_value_editing(line, argument_to_int(argv, argc, com_index + 1), UPPER);
                 break;
 
             case 3:
                 // round C
-                single_cell_processing(line, argument_to_int(argv, argc, com_index + 1), ROUND);
+                cell_value_editing(line, argument_to_int(argv, argc, com_index + 1), ROUND);
                 break;
 
             case 4:
                 // int C
-                single_cell_processing(line, argument_to_int(argv, argc, com_index + 1), INT);
+                cell_value_editing(line, argument_to_int(argv, argc, com_index + 1), INT);
                 break;
 
             case 5:
@@ -1662,7 +1656,7 @@ void data_edit(struct line_struct *line, int argc, char *argv[], int com_index)
     }
 }
 
-void process_line(struct line_struct *line, struct selector_arguments *selector, int argc, char *argv[], int operating_mode, int last_line_executed)
+void process_line(Line *line, Selector *selector, int argc, char *argv[], int operating_mode, int last_line_executed)
 {
     /*
     Process loaded line data
@@ -1693,7 +1687,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
     // Create buffer for cases when we are inserting new line
     char line_buffer[MAX_LINE_LEN + 2];
 
-    for (int i=1; i < argc; i++)
+    for (int i = 1; i < argc; i++)
     {
         // Perform actions based on operating mode (command from other operating modes will be ignored)
         switch (operating_mode)
@@ -1732,7 +1726,7 @@ void process_line(struct line_struct *line, struct selector_arguments *selector,
     {
         if (operating_mode == TABLE_EDIT)
         {
-            for (int i=1; i < argc; i++)
+            for (int i = 1; i < argc; i++)
             {
                 if (get_table_edit_com_index(argv[i]) == 1)
                 {
@@ -1777,11 +1771,11 @@ int main(int argc, char *argv[])
     int operating_mode = get_operating_mode(argv, argc);
 
     // Get selector
-    struct selector_arguments selector;
+    Selector selector;
     get_selector(&selector, argc, argv);
 
     // Init line hodler
-    struct line_struct line_holder;
+    Line line_holder;
     line_holder.delim = delims[0];
     line_holder.error_flag = NO_ERROR;
 
@@ -1814,7 +1808,7 @@ int main(int argc, char *argv[])
     printf("Selector: type %d, a1: %s, a2: %s, str: %s\n", selector.selector_type, selector.a1, selector.a2, selector.str);
 
     printf("Args: ");
-    for (int i=1; i < argc; i++)
+    for (int i = 1; i < argc; i++)
     {
         printf("%s ", argv[i]);
     }
