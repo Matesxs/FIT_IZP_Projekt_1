@@ -17,17 +17,16 @@ Program to process tables from standard input and outputs it to standard output
 
 #define MAX_CELL_LEN 100
 #define MAX_LINE_LEN 10240
-#define BLACKLISTED_DELIMS "\n\0\r"
 
-const char *TABLE_EDIT_COMS[] = {"irow", "arow", "drow", "drows", "icol", "acol", "dcol", "dcols"};
-#define NUMBER_OF_TABLE_EDIT_COMS 8
-const char *DATA_EDIT_COMS[] = {"cset", "tolower", "toupper", "round", "int", "copy", "swap", "move", "csum", "cavg", "cmin", "cmax", "ccount", "cseq"};
-#define NUMBER_OF_DATA_EDIT_COMS 14
-const char *AREA_SELECTOR_COMS[] = {"rows", "beginswith", "contains"};
-#define NUMBER_OF_AREA_SELECTOR_COMS 3
+const char *TABLE_COMS[] = {"irow", "arow", "drow", "drows", "icol", "acol", "dcol", "dcols"};
+#define NUMBER_OF_TABLE_COMS 8
+const char *DATA_COMS[] = {"cset", "tolower", "toupper", "round", "int", "copy", "swap", "move", "csum", "cavg", "cmin", "cmax", "ccount", "cseq"};
+#define NUMBER_OF_DATA_COMS 14
+const char *SELECTOR_COMS[] = {"rows", "beginswith", "contains"};
+#define NUMBER_OF_SELECTOR_COMS 3
 
 enum Mode {PASS, TABLE_EDIT, DATA_EDIT};
-enum ErrorCodes {NO_ERROR, MAX_LINE_LEN_EXCEDED, MAX_CELL_LEN_EXCEDED, ARG_ERROR, INPUT_ERROR};
+enum ErrorCodes {NO_ERROR, MAX_LINE_LEN_EXCEDED, MAX_CELL_LEN_EXCEDED, INPUT_ERROR};
 enum SingleCellFunction {UPPER, LOWER, ROUND, INT};
 enum MultiCellFunction {SUM, MIN, MAX, AVG, COUNT};
 
@@ -67,10 +66,10 @@ int round_double(double val)
      * @return - rounded value (int)
      */
 
-    return val < 0 ? (int)(val - 0.5) : (int)(val + 0.5);
+    return (int)(val + 0.5);
 }
 
-int are_strings_same(const char *s1, const char *s2)
+int strings_equal(const char *s1, const char *s2)
 {
     /*
      * Check if two string are same
@@ -104,7 +103,7 @@ int string_start_with(const char *base_string, const char *start_string)
     return strncmp(start_string, base_string, strlen(start_string)) == 0;
 }
 
-void check_arguments(int argc, char *argv[], int *error_flag)
+int chck_args(int argc, char **argv)
 {
     /*
      * Check if lenght of every single argument is in limit
@@ -113,7 +112,7 @@ void check_arguments(int argc, char *argv[], int *error_flag)
      * @argc - length of argument array
      * @argv - array of arguments
      *
-     * @return - SUCCESS if all arguments are in length limits
+     * @return - NO_ERROR if all arguments are in length limits
      *         - MAX_CELL_LEN_EXCEDED if some argument is longer
      */
 
@@ -122,10 +121,11 @@ void check_arguments(int argc, char *argv[], int *error_flag)
         if (strlen(argv[i]) > MAX_CELL_LEN)
         {
             fprintf(stderr, "Argument %d exceded maximum allowed size! Maximum size is %d characters\n", i, MAX_CELL_LEN);
-            (*error_flag) = MAX_CELL_LEN_EXCEDED;
-            return;
+            return MAX_CELL_LEN_EXCEDED;
         }
     }
+
+    return NO_ERROR;
 }
 
 // command_selectors
@@ -139,11 +139,11 @@ void check_arguments(int argc, char *argv[], int *error_flag)
  *         - -1 if command not found
  */
 
-int get_table_edit_com_index(char *com)
+int get_table_com_index(char *com)
 {
-    for (int i = 0; i < NUMBER_OF_TABLE_EDIT_COMS; i++)
+    for (int i = 0; i < NUMBER_OF_TABLE_COMS; i++)
     {
-        if (are_strings_same(com, TABLE_EDIT_COMS[i]))
+        if (strings_equal(com, TABLE_COMS[i]))
         {
             return i;
         }
@@ -151,11 +151,11 @@ int get_table_edit_com_index(char *com)
     return -1;
 }
 
-int get_data_edit_com_index(char *com)
+int get_data_com_index(char *com)
 {
-    for (int i = 0; i < NUMBER_OF_DATA_EDIT_COMS; i++)
+    for (int i = 0; i < NUMBER_OF_DATA_COMS; i++)
     {
-        if (are_strings_same(com, DATA_EDIT_COMS[i]))
+        if (strings_equal(com, DATA_COMS[i]))
         {
             return i;
         }
@@ -164,7 +164,7 @@ int get_data_edit_com_index(char *com)
 }
 // command_selectors
 
-int get_operating_mode(char *input_array[], int array_len)
+int get_op_mode(char **input_array, int array_len)
 {
     /*
      * Check arguments to determinate operating mode of program
@@ -179,15 +179,15 @@ int get_operating_mode(char *input_array[], int array_len)
 
     for (int i = 1; i < array_len; i++)
     {
-        if (get_table_edit_com_index(input_array[i]) >= 0)
+        if (get_table_com_index(input_array[i]) >= 0)
             return TABLE_EDIT;
 
-        if (get_data_edit_com_index(input_array[i]) >= 0)
+        if (get_data_com_index(input_array[i]) >= 0)
             return DATA_EDIT;
 
-        for (int j = 0; j < NUMBER_OF_AREA_SELECTOR_COMS; j++)
+        for (int j = 0; j < NUMBER_OF_SELECTOR_COMS; j++)
         {
-            if (are_strings_same(input_array[i], AREA_SELECTOR_COMS[j]))
+            if (strings_equal(input_array[i], SELECTOR_COMS[j]))
                 return DATA_EDIT;
         }
     }
@@ -195,7 +195,7 @@ int get_operating_mode(char *input_array[], int array_len)
     return PASS;
 }
 
-void remove_newline_character(char *s) {
+void rm_newline_chars(char *s) {
     /*
      * Function to remove new line characters
      * Iterate over string until it new line character then replace it with 0
@@ -208,30 +208,6 @@ void remove_newline_character(char *s) {
         s++;
 
     *s = 0;
-}
-
-void check_delim_characters(const char *delims, int *error_flag)
-{
-    /*
-     * Check if in delims string isnt any blacklisted char
-     *
-     * params:
-     * @delims - string with delim characters
-     *
-     * @return 0 if all chars are right else -1
-     */
-
-    for (size_t i = 0; delims[i]; i++)
-    {
-        for (size_t j = 0; BLACKLISTED_DELIMS[j]; j++)
-        {
-            if (delims[i] == BLACKLISTED_DELIMS[j])
-            {
-                (*error_flag) = ARG_ERROR;
-                return;
-            }
-        }
-    }
 }
 
 void get_delims(char *input_array[], int array_len, char *delim)
@@ -250,7 +226,7 @@ void get_delims(char *input_array[], int array_len, char *delim)
 
     for (int i = 1; i < array_len; i++)
     {
-        if (are_strings_same(input_array[i], "-d"))
+        if (strings_equal(input_array[i], "-d"))
         {
             if ((i + 1) >= array_len)
             {
@@ -264,7 +240,7 @@ void get_delims(char *input_array[], int array_len, char *delim)
     }
 }
 
-void replace_unused_delims(char *string, const char* delims)
+void normalize_delims(char *string, const char* delims)
 {
     /*
      * Iterate over string and replace delims that are not on 0 position in delims string with delim on 0 position
@@ -397,7 +373,7 @@ int get_end_of_substring(Line *line, int index)
     if (index > (line->final_cols - 1))
         return -1;
 
-    if (index == (line->final_cols - 1))
+    if (index >= (line->final_cols - 1))
     {
         // if we are on the last cell we are going to the end of that line to the index of last char
         return (int)strlen(line->line_string) - 1;
@@ -405,6 +381,7 @@ int get_end_of_substring(Line *line, int index)
     else
     {
         // last character of substring before delim
+        // position of delim - 1
         return get_position_of_character(line->line_string, line->delim, index) - 1;
     }
 }
@@ -454,6 +431,11 @@ int get_value_of_cell(Line *line, int index, char *substring)
 
     // Save wanted substring to substring array
     int length = end_index - start_index + 1;
+
+    // Check if length is valid (only for case when the cell of inputed index doesnt exist)
+    if (length < 0)
+        return -1;
+
     strncpy(substring, &(line->line_string[start_index]), length);
 
     return 0;
@@ -510,10 +492,11 @@ int is_string_double(char *string)
     if (string[0] == 0)
         return 0;
 
-    char *foo;
-    strtod(string, &foo);
+    // Pointer to unprocessed part of string
+    char *rest;
+    strtod(string, &rest);
 
-    if (foo[0] != 0)
+    if (rest[0] != 0)
         return 0;
 
     return 1;
@@ -536,10 +519,12 @@ int string_to_double(char *string, double *val)
     if (string[0] == 0)
         return -1;
 
-    char *foo;
-    (*val) = strtod(string, &foo);
+    // Pointer to unprocessed part of string
+    char *rest;
+    (*val) = strtod(string, &rest);
 
-    if (foo[0] != 0)
+    // If rest of string is not empty then string cant be converted to double
+    if (rest[0] != 0)
         return -1;
 
     return 0;
@@ -560,29 +545,14 @@ int is_string_int(char *string)
     if (string[0] == 0)
         return 0;
 
-    char *foo;
-    strtol(string, &foo, 10);
+    // Pointer to unprocessed part of string
+    char *rest;
+    strtol(string, &rest, 10);
 
-    if (foo[0] != 0)
+    if (rest[0] != 0)
         return 0;
 
     return 1;
-}
-
-int is_double_int(double val)
-{
-    /*
-     * Check if double could be converted to int without loss of precision
-     *
-     * params:
-     * @val - double value to check
-     *
-     * @return - 1 if it could be converted without loss of precision
-     *         - 0 if couldnt
-     */
-
-    if (val == 0) return 1;
-    return (int)(val) == val;
 }
 
 int string_to_int(char *string, int *val)
@@ -602,13 +572,31 @@ int string_to_int(char *string, int *val)
     if (string[0] == 0)
         return -1;
 
-    char *foo;
-    (*val) = (int)strtol(string, &foo, 10);
+    // Pointer to unprocessed part of string
+    char *rest;
+    (*val) = (int)strtol(string, &rest, 10);
 
-    if (foo[0] != 0)
+    // If rest of string is not empty then string cant be converted to int
+    if (rest[0] != 0)
         return -1;
 
     return 0;
+}
+
+int is_double_int(double val)
+{
+    /*
+     * Check if double could be converted to int without loss of precision
+     *
+     * params:
+     * @val - double value to check
+     *
+     * @return - 1 if it could be converted without loss of precision
+     *         - 0 if couldnt
+     */
+
+    if (val == 0) return 1;
+    return (int)(val) == val;
 }
 
 void string_conversion(char *string, int conversion_flag)
@@ -812,14 +800,15 @@ int remove_substring(char *base_string, int start_index, int end_index)
 
     char final_string[MAX_LINE_LEN + 1];
     int i;
-    size_t j;
 
+    // Add first part of string
     for (i = 0; i < start_index; i++)
     {
         final_string[i] = base_string[i];
     }
 
-    for (j = end_index + 1; j < string_len; ++j, ++i)
+    // Skip middle part of string and add end part
+    for (size_t j = end_index + 1; j < string_len; ++j, ++i)
     {
         final_string[i] = base_string[j];
     }
@@ -881,7 +870,6 @@ void append_empty_cell(Line *line)
 {
     /*
      * Insert empty cell on the end of the line
-     * (Should be replaced by strcat)
      *
      * params:
      * @line - structure with line data
@@ -897,13 +885,9 @@ void append_empty_cell(Line *line)
 
     char empty_col[2] = {line->delim, '\0'};
 
-    int index = get_end_of_substring(line, line->final_cols - 1);
-    if (index < 0)
-    {
-        return;
-    }
-
-    insert_string_to_line(line, empty_col, index);
+    // Insert new empty colm and check sanity of that line
+    strcat(line->line_string, empty_col);
+    check_line_sanity(line);
 }
 
 int remove_cell(Line *line, int index)
@@ -974,16 +958,16 @@ void get_selector(Selector *selector, int argc, char *argv[])
     // Offset -2 to be sure that there will be another 2 args after the selector flag
     for (int i = 1; i < (argc - 2); i++)
     {
-        for (int j = 0; j < NUMBER_OF_AREA_SELECTOR_COMS; j++)
+        for (int j = 0; j < NUMBER_OF_SELECTOR_COMS; j++)
         {
-            if (strcmp(argv[i], AREA_SELECTOR_COMS[j]) == 0)
+            if (strcmp(argv[i], SELECTOR_COMS[j]) == 0)
             {
                 switch (j)
                 {
                     case 0:
                         // rows selector is valid when both arguments are int > 0 and a1 < a2 or -
-                        if (((argument_to_int(argv, argc, i+1) > 0) || are_strings_same(argv[i+1], "-")) &&
-                            ((argument_to_int(argv, argc, i+2) > 0) || are_strings_same(argv[i+2], "-")))
+                        if (((argument_to_int(argv, argc, i+1) > 0) || strings_equal(argv[i + 1], "-")) &&
+                            ((argument_to_int(argv, argc, i+2) > 0) || strings_equal(argv[i + 2], "-")))
                         {
                             if (is_string_int(argv[i+1]) && is_string_int(argv[i+2]) &&
                                 (argument_to_int(argv, argc, i+1) > argument_to_int(argv, argc, i+2)))
@@ -1002,7 +986,7 @@ void get_selector(Selector *selector, int argc, char *argv[])
 
                     case 1:
                     case 2:
-                        if ((argument_to_int(argv, argc, i+1) > 0) || are_strings_same(argv[i+1], "-"))
+                        if ((argument_to_int(argv, argc, i+1) > 0) || strings_equal(argv[i + 1], "-"))
                         {
                             selector->selector_type = j;
                             selector->a1 = argv[i+1];
@@ -1056,8 +1040,8 @@ void validate_line_processing(Line *line, Selector *selector)
             // If both args are - then allow only last line
             // If arg 1 is larger than 0 and arg 2 is - then check if current line index is larger or equal arg 1
             // If both args are numbers larger than 0 then check if current line index is between or equal
-            if ((are_strings_same(selector->a1, "-") && are_strings_same(selector->a2, "-") && line->last_line_flag) ||
-                (selector->ai1 > 0 && are_strings_same(selector->a2, "-") && line->line_index >= (selector->ai1 - 1)) ||
+            if ((strings_equal(selector->a1, "-") && strings_equal(selector->a2, "-") && line->last_line_flag) ||
+                (selector->ai1 > 0 && strings_equal(selector->a2, "-") && line->line_index >= (selector->ai1 - 1)) ||
                 (selector->ai1 > 0 && selector->ai2 > 0 && line->line_index >= (selector->ai1 - 1) && line->line_index <= (selector->ai2 - 1)))
             {
                 line->process_flag = 1;
@@ -1109,7 +1093,7 @@ void validate_line_processing(Line *line, Selector *selector)
     line->process_flag = 0;
 }
 
-int get_processed_cells_value(Line *line, int start_index, int end_index, double *ret_val, int function_flag)
+int process_row_values(Line *line, int start_index, int end_index, double *ret_val, int function_flag)
 {
     /*
      * Process and return value of operation performed on row
@@ -1278,7 +1262,7 @@ void delete_cells_in_interval(Line *line, int start_index, int end_index)
 int set_value_in_cell(Line *line, int index, char *value)
 {
     /*
-     * Clear content of cell and insert new one
+     * Clear content of cell and insert new value
      *
      * params:
      * @line - structure with line data
@@ -1460,7 +1444,7 @@ void row_values_processing(Line *line, int output_index, int start_index, int en
         char cell_buff[MAX_CELL_LEN + 1];
         int processed_cells;
 
-        if ((processed_cells = get_processed_cells_value(line, start_index, end_index, &setval, function_flag)) == -1)
+        if ((processed_cells = process_row_values(line, start_index, end_index, &setval, function_flag)) == -1)
             return;
 
         if (function_flag == AVG)
@@ -1516,7 +1500,7 @@ void table_edit(Line *line, char *line_buffer, int argc, char *argv[], int com_i
     if (line->error_flag)
         return;
 
-    switch (get_table_edit_com_index(argv[com_index]))
+    switch (get_table_com_index(argv[com_index]))
     {
         // TODO: Make row indexing consistent after removing/adding lines
         case 0:
@@ -1577,7 +1561,7 @@ void data_edit(Line *line, int argc, char *argv[], int com_index)
     // Edit line data only when its flagged as line to edit
     if (line->process_flag)
     {
-        switch (get_data_edit_com_index(argv[com_index]))
+        switch (get_data_com_index(argv[com_index]))
         {
             case 0:
                 // cset C STR
@@ -1728,7 +1712,7 @@ void process_line(Line *line, Selector *selector, int argc, char *argv[], int op
         {
             for (int i = 1; i < argc; i++)
             {
-                if (get_table_edit_com_index(argv[i]) == 1)
+                if (get_table_com_index(argv[i]) == 1)
                 {
                     // arow
                     generate_empty_row(line);
@@ -1742,20 +1726,14 @@ void process_line(Line *line, Selector *selector, int argc, char *argv[], int op
 int main(int argc, char *argv[])
 {
     char delims[MAX_CELL_LEN + 1] = " ";
-    int error_flag = NO_ERROR;
 
     // Check sanity of arguments
-    check_arguments(argc, argv, &error_flag);
-    if (error_flag)
+    int error_flag;
+    if ((error_flag = chck_args(argc, argv)) != NO_ERROR)
         return error_flag;
 
     // Extract delims from args
     get_delims(argv, argc, delims);
-
-    // Check if there are no invalid delim chars
-    check_delim_characters(delims, &error_flag);
-    if (error_flag)
-        return error_flag;
 
     // Create buffer strings for line and cell
     char line[MAX_LINE_LEN + 2];
@@ -1768,7 +1746,7 @@ int main(int argc, char *argv[])
     }
 
     // Check operating mode of program based on inputed arguments
-    int operating_mode = get_operating_mode(argv, argc);
+    int operating_mode = get_op_mode(argv, argc);
 
     // Get selector
     Selector selector;
@@ -1788,9 +1766,9 @@ int main(int argc, char *argv[])
         line_holder.last_line_flag = fgets(buffer_line, (MAX_LINE_LEN + 2), stdin) == NULL;
 
         // Remove new line character from line
-        remove_newline_character(line);
+        rm_newline_chars(line);
         // Go thru line and replace all delims with one
-        replace_unused_delims(line, delims);
+        normalize_delims(line, delims);
         line_holder.line_string = line;
 
         if (line_holder.line_index == 0)
