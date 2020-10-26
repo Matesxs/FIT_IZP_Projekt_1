@@ -210,34 +210,51 @@ void rm_newline_chars(char *s) {
     *s = 0;
 }
 
-void get_delims(char *input_array[], int array_len, char *delim)
+char *get_opt(int argc, char *argv[], char *opt_flag)
 {
     /*
-     * Extract delims string from args
+     * Get optional argument from array of arguments
+     *
+     * params:
+     * @argc - number of arguments
+     * @argv - array of arguments
+     * @opt_flag - flag of optional argument to look for
+     *
+     * @return - NULL if flag is invalid or not found
+     *         - found argument after the flag
+     */
+
+    if (opt_flag == NULL)
+        return NULL;
+
+    for (int i = 0; i < argc; i++)
+    {
+        if (strings_equal(argv[i], opt_flag))
+        {
+            if ((i + 1) < argc)
+            {
+                return argv[i + 1];
+            }
+        }
+    }
+
+    return NULL;
+}
+
+char *get_delims(char *input_array[], int array_len)
+{
+    /*
+     * Get delims for current input data
      *
      * params:
      * @input_array - array of strings (args)
      * @array_len - number of args
-     * @delim - return string
      *
-     * @return - SUCCESS on success parsing
-     *         - ARG_ERROR on failed parsing
+     * @return - Array of delim chars to use
      */
 
-    for (int i = 1; i < array_len; i++)
-    {
-        if (strings_equal(input_array[i], "-d"))
-        {
-            if ((i + 1) >= array_len)
-            {
-                fprintf(stderr, "Found delimiter flag without any value\n");
-                return;
-            }
-
-            strcpy(delim, input_array[i + 1]);
-            return;
-        }
-    }
+    char *arg_delims = get_opt(array_len, input_array, "-d");
+    return arg_delims == NULL ? " " : arg_delims;
 }
 
 void normalize_delims(char *string, const char* delims)
@@ -1754,15 +1771,13 @@ void process_line(Line *line, Selector *selector, int argc, char *argv[], int op
 
 int main(int argc, char *argv[])
 {
-    char delims[MAX_CELL_LEN + 1] = " ";
-
     // Check sanity of arguments
     int error_flag;
     if ((error_flag = chck_args(argc, argv)) != NO_ERROR)
         return error_flag;
 
     // Extract delims from args
-    get_delims(argv, argc, delims);
+    char *delims = get_delims(argv, argc);
 
     // Create buffer strings for line and cell
     char line[MAX_LINE_LEN + 2];
@@ -1813,6 +1828,7 @@ int main(int argc, char *argv[])
 
     printf("Base cols: %d Final cols: %d\n", line_holder.num_of_cols, line_holder.final_cols);
     printf("Selector: type %d, a1: %s, a2: %s, str: %s\n", selector.selector_type, selector.a1, selector.a2, selector.str);
+    printf("Delim: '%c'\n", line_holder.delim);
 
     printf("Args: ");
     for (int i = 1; i < argc; i++)
