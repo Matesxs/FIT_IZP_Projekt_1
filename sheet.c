@@ -429,6 +429,12 @@ int get_value_of_cell(Line *line, int index, char *substring)
         return -1;
     }
 
+    /*
+        for (int i=0; i < (MAX_CELL_LEN + 1) && start_index + i <= end_index; i++)
+            substring[i] = line->line_string[start_index+i];
+        substring[end_index-start_index+1] = '\0';
+     */
+
     // Save wanted substring to substring array
     int length = end_index - start_index + 1;
 
@@ -940,6 +946,7 @@ int clear_cell(Line *line, int index)
     if (start_index < 0 || end_index < 0)
         return -1;
 
+    // Remove subring with value of cell
     return remove_substring(line->line_string, start_index, end_index);
 }
 
@@ -1112,9 +1119,6 @@ int process_row_values(Line *line, int start_index, int end_index, double *ret_v
      *         - -1 on fail
      */
 
-    if (function_flag == AVG)
-        function_flag = SUM;
-
     if (is_cell_index_valid(line, start_index) && end_index > 0 &&
         start_index <= end_index)
     {
@@ -1122,23 +1126,26 @@ int process_row_values(Line *line, int start_index, int end_index, double *ret_v
         double return_value = 0;
         int cell_count = 0;
 
-        if (function_flag == MIN)
-            return_value = DBL_MAX;
-        else if (function_flag == MAX)
-            return_value = DBL_MIN;
+        // Set initial return numbers for min/max functions
+        if (function_flag == MIN || function_flag == MAX)
+            return_value = function_flag == MIN ? DBL_MAX : DBL_MIN;
 
         for (int i = start_index; i <= end_index; i++)
         {
+            // Load value of cell
             if (get_value_of_cell(line, i - 1, cell_buff) == 0)
             {
-                if (cell_buff[0] != 0 && is_string_double(cell_buff))
+                // Check if string is number
+                if (is_string_double(cell_buff))
                 {
                     double buf;
 
+                    // Convert string to double
                     if (string_to_double(cell_buff, &buf) == 0)
                     {
                         switch (function_flag)
                         {
+                            case AVG:
                             case SUM:
                                 return_value += buf;
                                 break;
@@ -1167,6 +1174,10 @@ int process_row_values(Line *line, int start_index, int end_index, double *ret_v
                 return -1;
         }
 
+        // If return value is still at initial values then no valid value was processed
+        if (return_value == DBL_MIN || return_value == DBL_MAX)
+            return -1;
+
         // If mode is count then we want return cell count as output
         if (function_flag == COUNT)
             (*ret_val) = (double)cell_count;
@@ -1192,7 +1203,9 @@ void create_emty_row_at(Line *line, char *line_buffer, int index)
 
     if ((index > 0) && (index == (line->line_index + 1)))
     {
+        // Copy current line to unedited line buffer
         strcpy(line_buffer, line->unedited_line_string);
+        // Create empty line in line object
         generate_empty_row(line);
     }
 }
@@ -1212,6 +1225,7 @@ void delete_rows_in_interval(Line *line, int start_index, int end_index)
     if (start_index > 0 && end_index > 0 &&
         start_index <= end_index)
     {
+        // If line index is in interval delete it
         if (start_index <= (line->line_index + 1) && end_index >= (line->line_index + 1))
         {
             delete_line_content(line);
@@ -1229,6 +1243,7 @@ void insert_empty_cell_at(Line *line, int index)
      * @index - input index of cell
      */
 
+    // If cell index is valid insert empty cell before index
     if (is_cell_index_valid(line, index))
     {
         insert_empty_cell(line, index - 1);
@@ -1249,10 +1264,10 @@ void delete_cells_in_interval(Line *line, int start_index, int end_index)
 
     if (is_cell_index_valid(line, start_index) && end_index > 0 && start_index <= end_index)
     {
-
         // I am lazy to count number of loops
         for (int j = start_index; j <= end_index; j++)
         {
+            // If line is not empty try to remove cell
             if (!is_line_empty(line))
                 remove_cell(line, start_index - 1);
         }
@@ -1275,7 +1290,9 @@ int set_value_in_cell(Line *line, int index, char *value)
 
     if (is_cell_index_valid(line, index))
     {
+        // Clear value from cell
         clear_cell(line, index - 1);
+        // Set new value to cell
         return insert_to_cell(line, index - 1, value);
     }
 
@@ -1301,11 +1318,13 @@ void cell_value_editing(Line *line, int index, int processing_flag)
     {
         char cell_buff[MAX_CELL_LEN + 1];
 
+        // Load value from cell
         if (get_value_of_cell(line, index - 1, cell_buff) == 0)
         {
             // Check if the cell is not number (int should be double too)
             if (!is_string_double(cell_buff))
             {
+                // Upper/lower conversion of string
                 if (processing_flag == UPPER)
                     string_conversion(cell_buff, UPPER);
                 else if (processing_flag == LOWER)
@@ -1315,8 +1334,10 @@ void cell_value_editing(Line *line, int index, int processing_flag)
             {
                 double cell_double;
 
+                // Convert string to double
                 if (string_to_double(cell_buff, &cell_double) == 0)
                 {
+                    // Round/int double processing
                     if (processing_flag == ROUND)
                         snprintf(cell_buff, MAX_CELL_LEN + 1, "%d", round_double(cell_double));
                     else
@@ -1324,6 +1345,7 @@ void cell_value_editing(Line *line, int index, int processing_flag)
                 }
             }
 
+            // Set processed value to cell
             set_value_in_cell(line, index, cell_buff);
         }
     }
@@ -1346,7 +1368,9 @@ void copy_cell_value_to(Line *line, int source_index, int target_index)
     {
         char cell_buff[MAX_CELL_LEN + 1];
 
+        // Load value of source cell
         if (get_value_of_cell(line, source_index - 1, cell_buff) == 0)
+            // Set value to target cell
             set_value_in_cell(line, target_index, cell_buff);
     }
 }
@@ -1369,8 +1393,10 @@ void swap_cell_values(Line *line, int index1, int index2)
         char cell_buff1[MAX_CELL_LEN + 1];
         char cell_buff2[MAX_CELL_LEN + 1];
 
+        // Load both cells
         if ((get_value_of_cell(line, index1 - 1, cell_buff1) == 0) && (get_value_of_cell(line, index2 - 1, cell_buff2) == 0))
         {
+            // Set new values to cells
             set_value_in_cell(line, index1, cell_buff2);
             set_value_in_cell(line, index2, cell_buff1);
         }
@@ -1409,10 +1435,13 @@ void move_cell_to(Line *line, int source_index, int target_index)
             }
             else
             {
+                // Insert empty cell before target cell
                 if (insert_empty_cell(line, target_index - 1) != 0)
                     return;
 
+                // Remove original cell
                 remove_cell(line, source_index);
+                // Insert value to before created empty cell
                 insert_to_cell(line, target_index - 1, cell_buff);
             }
         }
