@@ -25,7 +25,7 @@ const char *DATA_COMS[] = {"cset", "tolower", "toupper", "round", "int", "copy",
 const char *SELECTOR_COMS[] = {"rows", "beginswith", "contains"};
 #define NUMBER_OF_SELECTOR_COMS 3
 
-enum Mode {PASS, TABLE_EDIT, DATA_EDIT};
+enum OperatingMode {PASS, TABLE_EDIT, DATA_EDIT};
 enum ErrorCodes {NO_ERROR, MAX_LINE_LEN_EXCEDED, MAX_CELL_LEN_EXCEDED, INPUT_ERROR};
 enum SingleCellFunction {UPPER, LOWER, ROUND, INT};
 enum MultiCellFunction {SUM, MIN, MAX, AVG, COUNT};
@@ -1711,9 +1711,6 @@ void process_line(Line *line, Selector *selector, int argc, char *argv[], int op
     if (!check_line_sanity(line))
         return;
 
-    // Create copy of line
-    strcpy(line->unedited_line_string, line->line_string);
-
     // Create buffer for cases when we are inserting new line
     char line_buffer[MAX_LINE_LEN + 2];
 
@@ -1814,6 +1811,9 @@ int main(int argc, char *argv[])
         // Go thru line and replace all delims with one
         normalize_delims(line, delims);
         line_holder.line_string = line;
+
+        // Create copy of line
+        strcpy(line_holder.unedited_line_string, line_holder.line_string);
 
         if (line_holder.line_index == 0)
             line_holder.num_of_cols = get_number_of_cells(&line_holder);
