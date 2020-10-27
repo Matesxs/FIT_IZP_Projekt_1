@@ -1,11 +1,9 @@
-/*
-                          Simple table processor
-                              Version: 1
-Program to process tables from standard input and outputs it to standard output
-
-                             Martin Douša
-                             October 2020
-*/
+/**
+ * @file sheet.c
+ * @author Martin Douša
+ * @date October 2020
+ * @brief Program to process tables from standard input and outputs it to standard output
+ */
 
 #define DEBUG
 
@@ -30,24 +28,30 @@ enum ErrorCodes {NO_ERROR, MAX_LINE_LEN_EXCEDED, MAX_CELL_LEN_EXCEDED, INPUT_ERR
 enum SingleCellFunction {UPPER, LOWER, ROUND, INT};
 enum MultiCellFunction {SUM, MIN, MAX, AVG, COUNT};
 
+/**
+ * @brief Store for data of one line
+ */
 typedef struct
 {
-    char *line_string;
-    char unedited_line_string[MAX_LINE_LEN + 2];
-    char delim;
-    int line_index;
+    char *line_string; /**< String that contains one line loaded from stdin */
+    char unedited_line_string[MAX_LINE_LEN + 2]; /**< Backup of line string */
+    char delim; /**< Delim character for current table */
+    int line_index; /**< Index of current line */
 
-    // Reference number of cols
-    int num_of_cols;
-    // Number of cols after editing
-    int final_cols;
+    int num_of_cols; /**< Reference number of cols */
+    int final_cols; /**< Number of cols after editing */
 
-    int last_line_flag;
-    int deleted;
-    int process_flag;
-    int error_flag;
+    int last_line_flag; /**< Flag if current line is last line */
+    int deleted; /**< Flag if current line is deleted */
+    int process_flag; /**< Flag if current line is selected to data process by selector */
+    int error_flag; /**< If error occured when processing line */
 } Line;
 
+/**
+ * @brief Structure to contain information about selector
+ *
+ * Selector is used to select lines to process by data edit commands
+ */
 typedef struct
 {
     int selector_type;
