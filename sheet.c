@@ -358,7 +358,10 @@ int get_number_of_cells(Line *line)
      * @return Number of colms detected in row
      */
 
-    return is_line_empty(line) ? 0 : count_specific_chars(line->line_string, line->delim) + 1;
+    if (line->line_string[0] == 0)
+        return 0;
+
+    return count_specific_chars(line->line_string, line->delim) + 1;
 }
 
 int get_position_of_character(char *string, char ch, int index)
@@ -1848,17 +1851,18 @@ int main(int argc, char *argv[])
         // Load new line to buffer
         line_holder.last_line_flag = fgets(buffer_line, (MAX_LINE_LEN + 2), stdin) == NULL;
 
-        // Remove new line character from line
-        rm_newline_chars(line);
         // Go thru line and replace all delims with one
         normalize_delims(line, delims);
         line_holder.line_string = line;
 
-        // Create copy of line
-        strcpy(line_holder.unedited_line_string, line_holder.line_string);
-
         if (line_holder.line_index == 0)
             line_holder.num_of_cols = get_number_of_cells(&line_holder);
+
+        // Remove new line character from line
+        rm_newline_chars(line_holder.line_string);
+
+        // Create copy of line
+        strcpy(line_holder.unedited_line_string, line_holder.line_string);
 
         process_line(&line_holder, &selector, argc, argv, operating_mode);
         if (line_holder.error_flag)
