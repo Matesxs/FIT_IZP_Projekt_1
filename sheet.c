@@ -5,7 +5,7 @@
  * @brief Program to process tables from standard input and outputs it to standard output
  */
 
-#define DEBUG
+#define DEBUG /**< Debug flag, comment to dont print additional information of each line */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,10 +13,10 @@
 #include <ctype.h>
 #include <float.h>
 
-#define MAX_CELL_LEN 100
-#define MAX_LINE_LEN 10240
+#define MAX_CELL_LEN 100 /**< Maximum number of normal characters of one cell or one argument */
+#define MAX_LINE_LEN 10240 /**< Maximum length of one whole line (row) */
 
-#define DEFAULT_DELIM " "
+#define DEFAULT_DELIM " " /**< Default delim used when no delim is passed as argument */
 
 const char *TABLE_COMS[] = {"irow", "arow", "drow", "drows", "icol", "acol", "dcol", "dcols"};
 #define NUMBER_OF_TABLE_COMS 8
@@ -30,11 +30,12 @@ enum ErrorCodes {NO_ERROR, MAX_LINE_LEN_EXCEDED, MAX_CELL_LEN_EXCEDED, INPUT_ERR
 enum SingleCellFunction {UPPER, LOWER, ROUND, INT};
 enum MultiCellFunction {SUM, MIN, MAX, AVG, COUNT};
 
-/**
- * @brief Store for data of one line
- */
 typedef struct
 {
+    /**
+     * @brief Store for data of one line
+     */
+
     char *line_string; /**< String that contains one line loaded from stdin */
     char line_buffer[MAX_LINE_LEN + 2]; /**< Buffer for current line when adding new line before current */
     char unedited_line_string[MAX_LINE_LEN + 2]; /**< Backup of line string */
@@ -50,13 +51,14 @@ typedef struct
     int error_flag; /**< If error occured when processing line */
 } Line;
 
-/**
- * @brief Structure to contain information about selector
- *
- * Selector is used to select lines to process by data edit commands
- */
 typedef struct
 {
+    /**
+     * @brief Structure to contain information about selector
+     *
+     * Selector is used to select lines to process by data edit commands
+     */
+
     int selector_type;
     char *a1, *a2, *str;
     int ai1, ai2;
@@ -270,7 +272,7 @@ char *get_delims(char *input_array[], int array_len)
     /**
      * @brief Get delims for current input data from argument of program or from DEFAULT_DELIM
      *
-     * @param nput_array Array of strings (args)
+     * @param input_array Array of strings (args)
      * @param array_len Number of args
      *
      * @return Array of delim chars to use
@@ -422,7 +424,7 @@ int get_end_of_substring(Line *line, int index)
      * @brief Get last index of substring (cell) from line string limited by delim
      *
      * @param line Structure with line data
-     * @index Index of substring (cell) in line
+     * @param index Index of substring (cell) in line
      *
      * @return Index of last character of that wanted substring if found, if not -1
      */
@@ -446,7 +448,7 @@ int get_end_of_substring(Line *line, int index)
 int get_value_of_cell(Line *line, int index, char *substring)
 {
     /**
-     * @brif Extract value of cell
+     * @brief Extract value of cell
      *
      * Try to find cell in row and return its value to @p substring
      * @warning
@@ -672,7 +674,7 @@ void string_conversion(char *string, int conversion_flag)
      * If invalid flag is inputed then no processing will happen
      *
      * @param string Input string
-     * @conversion_flag Flag of selected function
+     * @param conversion_flag Flag of selected function
      */
 
     if (conversion_flag != UPPER && conversion_flag != LOWER)

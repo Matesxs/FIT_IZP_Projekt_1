@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['unedited_5fline_5fstring_138',['unedited_line_string',['../struct_line.html#a2206f140bd4ba67241ca0939be754c5c',1,'Line']]]
+  ['selector_5ftype_143',['selector_type',['../struct_selector.html#a1ce2a6eae3738346f7af4e84fbaa84bd',1,'Selector']]]
 ];
