@@ -16,6 +16,8 @@
 #define MAX_CELL_LEN 100
 #define MAX_LINE_LEN 10240
 
+#define DEFAULT_DELIM " "
+
 const char *TABLE_COMS[] = {"irow", "arow", "drow", "drows", "icol", "acol", "dcol", "dcols"};
 #define NUMBER_OF_TABLE_COMS 8
 const char *DATA_COMS[] = {"cset", "tolower", "toupper", "round", "int", "copy", "swap", "move", "csum", "cavg", "cmin", "cmax", "ccount", "cseq"};
@@ -34,6 +36,7 @@ enum MultiCellFunction {SUM, MIN, MAX, AVG, COUNT};
 typedef struct
 {
     char *line_string; /**< String that contains one line loaded from stdin */
+    char line_buffer[MAX_LINE_LEN + 2]; /**< Buffer for current line when adding new line before current */
     char unedited_line_string[MAX_LINE_LEN + 2]; /**< Backup of line string */
     char delim; /**< Delim character for current table */
     int line_index; /**< Index of current line */
@@ -61,13 +64,12 @@ typedef struct
 
 int round_double(double val)
 {
-    /*
-     * Round double value to int
+    /**
+     * @brief Round double value to int
      *
-     * params:
-     * @val - double value to round
+     * @param val Double value to round
      *
-     * @return - rounded value (int)
+     * @return Rounded value (int)
      */
 
     return (int)(val + 0.5);
@@ -75,15 +77,13 @@ int round_double(double val)
 
 int strings_equal(const char *s1, const char *s2)
 {
-    /*
-     * Check if two string are same
+    /**
+     * @brief Check if two string @p s1 and @p s2 are same
      *
-     * params:
-     * @s1 - first string
-     * @s2 - second string
+     * @param s1 First string
+     * @param s2 Second string
      *
-     * @return - 1 if strings are same
-     *         - 0 if strings are different
+     * @return 1 if string are equal, 0 if dont
      */
 
     return strcmp(s1, s2) == 0;
@@ -91,14 +91,15 @@ int strings_equal(const char *s1, const char *s2)
 
 int string_start_with(const char *base_string, const char *start_string)
 {
-    /*
-     * Check if string starts with other string
+    /**
+     * @brief Check if string starts with other string
      *
-     * params:
-     * @base_string - string where to look for substring
-     * @start_string - substring to look for at start of base_string
+     * Check if @p base_string starts with @p start_string
      *
-     * @return - 1 if base_string starts with start_string, 0 if dont
+     * @param base_string String where to look for substring
+     * @param start_string Substring to look for at start of base_string
+     *
+     * @return 1 if @p base_string starts with @p start_string, 0 if dont
      */
 
     if (strlen(start_string) > strlen(base_string))
@@ -109,15 +110,15 @@ int string_start_with(const char *base_string, const char *start_string)
 
 int chck_args(int argc, char **argv)
 {
-    /*
-     * Check if lenght of every single argument is in limit
+    /**
+     * @brief Check if lenght of every single argument is in limit
      *
-     * params:
-     * @argc - length of argument array
-     * @argv - array of arguments
+     * Iterate over all arguments in @p argv and check if leng of every single argument is less or equal than MAX_CELL_LEN
      *
-     * @return - NO_ERROR if all arguments are in length limits
-     *         - MAX_CELL_LEN_EXCEDED if some argument is longer
+     * @param argc Length of argument array
+     * @param argv Array of arguments
+     *
+     * @return Error flag - NO_ERROR if all arguments are not larger than MAX_CELL_LENGTH else MAX_CELL_LEN_EXCEDED
      */
 
     for (int i = 1; i < argc; i++)
@@ -133,18 +134,20 @@ int chck_args(int argc, char **argv)
 }
 
 // command_selectors
-/*
- * Selectors that will return index of command from arrays of commands
- *
- * params:
- * @com - command string
- *
- * @return - index of command in commands array if command is found
- *         - -1 if command not found
- */
-
 int get_table_com_index(char *com)
 {
+    /**
+     * @brief Get index of command from table edit command array
+     *
+     * Iterate over all table edit command and check if inputed command @p com is int that array
+     *
+     * @param com Command string
+     *
+     * @return Index of command in array of table edit command or -1 if command is not in that array
+     *
+     * @see get_data_com_index
+     */
+
     for (int i = 0; i < NUMBER_OF_TABLE_COMS; i++)
     {
         if (strings_equal(com, TABLE_COMS[i]))
@@ -157,6 +160,18 @@ int get_table_com_index(char *com)
 
 int get_data_com_index(char *com)
 {
+    /**
+     * @brief Get index of command from data edit command array
+     *
+     * Iterate over all data edit command and check if inputed command @p com is int that array
+     *
+     * @param com Command string
+     *
+     * @return Index of command in array of data edit command or -1 if command is not in that array
+     *
+     * @see get_table_com_index
+     */
+
     for (int i = 0; i < NUMBER_OF_DATA_COMS; i++)
     {
         if (strings_equal(com, DATA_COMS[i]))
@@ -170,15 +185,17 @@ int get_data_com_index(char *com)
 
 int get_op_mode(char **input_array, int array_len)
 {
-    /*
+    /**
+     * @brief Get operating mode of program
+     *
      * Check arguments to determinate operating mode of program
-     * If first not delim argument is row selector or data editing command then
+     * If first not delim argument is row selector or data editing command then its data editing mode
+     * if its table editing command then its table editing mode and if there is no argument then its pass mode
      *
-     * params:
-     * @input_array - array of arguments
-     * @array_len - length of array with arguments
+     * @param input_array Array of arguments
+     * @param array_len Length of array with arguments
      *
-     * @return - Flag of mode to use
+     * @return Flag of mode to use
      */
 
     for (int i = 1; i < array_len; i++)
@@ -200,12 +217,14 @@ int get_op_mode(char **input_array, int array_len)
 }
 
 void rm_newline_chars(char *s) {
-    /*
-     * Function to remove new line characters
-     * Iterate over string until it new line character then replace it with 0
+    /**
+     * @brief Removing new line character from string
      *
-     * params:
-     * @s - pointer to string (char array)
+     * Iterate over string until it new line character then replace it with 0
+     * @warning
+     * Rest of the string is REMOVED!
+     *
+     * @param s Pointer to string from which is new line character removed
      */
 
     while(*s && *s != '\n' && *s != '\r')
@@ -216,16 +235,17 @@ void rm_newline_chars(char *s) {
 
 char *get_opt(int argc, char *argv[], char *opt_flag)
 {
-    /*
-     * Get optional argument from array of arguments
+    /**
+     * @brief Get optional argument from array of arguments
      *
-     * params:
-     * @argc - number of arguments
-     * @argv - array of arguments
-     * @opt_flag - flag of optional argument to look for
+     * Iterate over array of arguments until flag is found
+     * then check if there is another argument after the flag and return it
      *
-     * @return - NULL if flag is invalid or not found
-     *         - found argument after the flag
+     * @param argc Number of arguments
+     * @param argv Array of arguments
+     * @param opt_flag Flag of optional argument to look for
+     *
+     * @return Argument found after the flag or NULL if @p opt_flag is NULL, flag not found or there is no argument after the flag
      */
 
     if (opt_flag == NULL)
@@ -247,28 +267,28 @@ char *get_opt(int argc, char *argv[], char *opt_flag)
 
 char *get_delims(char *input_array[], int array_len)
 {
-    /*
-     * Get delims for current input data
+    /**
+     * @brief Get delims for current input data from argument of program or from DEFAULT_DELIM
      *
-     * params:
-     * @input_array - array of strings (args)
-     * @array_len - number of args
+     * @param nput_array Array of strings (args)
+     * @param array_len Number of args
      *
-     * @return - Array of delim chars to use
+     * @return Array of delim chars to use
      */
 
     char *arg_delims = get_opt(array_len, input_array, "-d");
-    return arg_delims == NULL ? " " : arg_delims;
+    return arg_delims == NULL ? DEFAULT_DELIM : arg_delims;
 }
 
 void normalize_delims(char *string, const char* delims)
 {
-    /*
+    /**
+     * @brief Replace all delims by first delim
+     *
      * Iterate over string and replace delims that are not on 0 position in delims string with delim on 0 position
      *
-     * params:
-     * @string - string where to replace delims
-     * @delims - string with delims
+     * @param string String where to replace delims
+     * @param delims String with delims
      */
 
     for (size_t i = 0; string[i]; i++)
@@ -289,14 +309,13 @@ void normalize_delims(char *string, const char* delims)
 
 int count_specific_chars(const char *string, char ch)
 {
-    /*
-     * Count number of specific characters in string
+    /**
+     * @brief Count number of specific characters in string
      *
-     * params:
-     * @string - input string where count chars
-     * @ch - char we want to count
+     * @param string Input string where count chars
+     * @param ch Char we want to count
      *
-     * @return - number of chars we found
+     * @return Number of found characters
      */
 
     int delim_counter = 0;
@@ -308,41 +327,62 @@ int count_specific_chars(const char *string, char ch)
     return delim_counter;
 }
 
-int get_number_of_cells(Line *line)
+int is_line_empty(Line *line)
 {
-    /*
-     * Get number of cells in row
-     * Cell is substring separated by deliminator
+    /**
+     * @brief Check if currentl line is empty
      *
-     * params:
-     * @line - structure with line data
+     * Line is empty when line is flagged as deleted or number of colms is 0
+     *
+     * @param line Structure with line data
+     *
+     * @return 1 if line is empty else 0
      */
 
-    return count_specific_chars(line->line_string, line->delim) + 1;
+    return (line->deleted || (line->final_cols == 0));
+}
+
+int get_number_of_cells(Line *line)
+{
+    /**
+     * @brief Get number of cells in row
+     *
+     * If line is empty return 0, if not then count delims and add 1 to it
+     * (Valid cells are on both sides of delim)
+     * Cell is substring separated by deliminator
+     *
+     * @param line Structure with line data
+     *
+     * @return Number of colms detected in row
+     */
+
+    return is_line_empty(line) ? 0 : count_specific_chars(line->line_string, line->delim) + 1;
 }
 
 int get_position_of_character(char *string, char ch, int index)
 {
-    /*
-     * Get position of character of certain index in string
+    /**
+     * @brief Get position of character of certain index in string
      *
-     * params:
-     * @string - string where to find delims
-     * @ch - character we are looking for
-     * @index - index of occurence of character in string
+     * Iterate over each character in string and count character ocurences
+     * If ocurence counter coresponse to @p index then return position of current char in string
      *
-     * @return - 0 if character position found else -1
+     * @param string String where to find char
+     * @param ch Character we are looking for
+     * @param index Index of occurence of character in string we want position for
+     *
+     * @return Position of @p index ocurence of @p ch in string if valid ocurence is found, if not -1
      */
 
     if (index > (count_specific_chars(string, ch) - 1) || index < 0) return -1;
 
-    int delim_counter = 0;
+    int counter = 0;
     for (size_t i = 0; string[i]; i++)
     {
         if (string[i] == ch)
         {
-            delim_counter++;
-            if ((delim_counter - 1) == index)
+            counter++;
+            if ((counter - 1) == index)
                 return i;
         }
     }
@@ -352,15 +392,13 @@ int get_position_of_character(char *string, char ch, int index)
 
 int get_start_of_substring(Line *line, int index)
 {
-    /*
-     * Get start index of substring from line string limited by delim
+    /**
+     * @brief Get start index of substring (cell) from line string limited by delim
      *
-     * params:
-     * @line - structure with line data
-     * @index - index of substring in line
+     * @param line Structure with line data
+     * @param index Index of substring (cell) in line
      *
-     * @return - index of first char of substring if found
-     *         - -1 on error
+     * @return Index of first character of that wanted substring if found, if not -1
      */
 
     if (index < 0 || index > line->final_cols)
@@ -380,15 +418,13 @@ int get_start_of_substring(Line *line, int index)
 
 int get_end_of_substring(Line *line, int index)
 {
-    /*
-     * Get last index of substring from line string limited by delim
+    /**
+     * @brief Get last index of substring (cell) from line string limited by delim
      *
-     * params:
-     * @line - structure with line data
-     * @index - index of substring in line
+     * @param line Structure with line data
+     * @index Index of substring (cell) in line
      *
-     * @return - index of last char of substring if found
-     *         - -1 on error
+     * @return Index of last character of that wanted substring if found, if not -1
      */
 
     if (index > (line->final_cols - 1))
@@ -409,17 +445,18 @@ int get_end_of_substring(Line *line, int index)
 
 int get_value_of_cell(Line *line, int index, char *substring)
 {
-    /*
-     * Extract value of cell
+    /**
+     * @brif Extract value of cell
      *
-     * params:
-     * @line - structure with line data
-     * @index - index of cell
-     * @substring - string for saving result
-     * @max_length - maximal length of one cell
+     * Try to find cell in row and return its value to @p substring
+     * @warning
+     * Empty string is saved to substring if cell is not found
      *
-     * @return - 0 on success
-     *         - -1 on error
+     * @param line Structure with line data
+     * @param index Index of cell
+     * @param substring Pointer to string where to save result
+     *
+     * @return 0 on success, -1 on error
      */
 
     // Check if index of cell is valid
@@ -470,15 +507,15 @@ int get_value_of_cell(Line *line, int index, char *substring)
 
 int check_line_sanity(Line *line)
 {
-    /*
+    /**
+     * @brief Check if line is loaded in correct way and its in limits
+     *
      * Check if line is no longer than maximum allowed length of one line and
      * check if each cell is not larger than maximum allowed length of one cell
      *
-     * params:
-     * @line - structure with line data
+     * @param line Structure with line data
      *
-     * @return - 1 if line is ok
-     *         - 0 on fail
+     * @return 1 if line is loaded correctly, 0 if not
      */
 
     if (line->error_flag)
@@ -506,14 +543,12 @@ int check_line_sanity(Line *line)
 
 int is_string_double(char *string)
 {
-    /*
-     * Check if input string is double
+    /**
+     * @brief Check if input string is double
      *
-     * params:
-     * @string - string to convertion
+     * @param string String to check
      *
-     * @return - 1 if is double
-     *         - 0 if not
+     * @return - 1 if its double (any number because its could be double too), 0 if not
      */
 
     if (string[0] == 0)
@@ -531,15 +566,17 @@ int is_string_double(char *string)
 
 int string_to_double(char *string, double *val)
 {
-    /*
-     * Check if input string could be double and then convert it to double
+    /**
+     * @brief Convert string to double
      *
-     * params:
-     * @string - string to convertion
-     * @val - output double value
+     * Check if input string could be converted to double and then convert it to double
+     * @warning
+     * Empty string is not 0! Its failed conversion.
      *
-     * @return - 0 if conversion is success
-     *         - -1 if whole string is not double
+     * @param string String to convertion
+     * @param val Pointer to double where result will be stored
+     *
+     * @return 0 if conversion is success,-1 if conversion failed
      */
 
     // we dont want to convert empty strings to 0
@@ -559,14 +596,12 @@ int string_to_double(char *string, double *val)
 
 int is_string_int(char *string)
 {
-    /*
-     * Check if input string is intiger
+    /**
+     * @brief Check if input string is intiger
      *
-     * params:
-     * @string - string to convertion
+     * @param string String to check
      *
-     * @return - 1 if is intiger
-     *         - 0 if not
+     * @return 1 if string is intiger, 0 if not
      */
 
     if (string[0] == 0)
@@ -584,15 +619,17 @@ int is_string_int(char *string)
 
 int string_to_int(char *string, int *val)
 {
-    /*
-     * Try to convert string to int
+    /**
+     * @brief Convert string to int
      *
-     * params:
-     * @string - string to convertion
-     * @val - output intiger value
+     * Check if input string could be converted to intiger and then convert it to intiger
+     * @warning
+     * Empty string is not 0! Its failed conversion.
      *
-     * @return - 0 if conversion is success
-     *         - -1 if whole string is not int
+     * @param string String to convertion
+     * @param val Pointer to int where result will be stored
+     *
+     * @return 0 if conversion is success,-1 if conversion failed
      */
 
     // we dont want to convert empty strings to 0
@@ -612,14 +649,12 @@ int string_to_int(char *string, int *val)
 
 int is_double_int(double val)
 {
-    /*
-     * Check if double could be converted to int without loss of precision
+    /**
+     * @brief Check if double could be converted to int without loss of precision
      *
-     * params:
-     * @val - double value to check
+     * @param val Double value to check
      *
-     * @return - 1 if it could be converted without loss of precision
-     *         - 0 if couldnt
+     * @return 1 if it could be converted without loss of precision, 0 if not
      */
 
     if (val == 0) return 1;
@@ -628,15 +663,20 @@ int is_double_int(double val)
 
 void string_conversion(char *string, int conversion_flag)
 {
-    /*
-     * Converts string based on selected functions
+    /**
+     * @brief Converts string based on selected functions
+     *
      * Supported functions: UPPER - string to uppercase
      *                      LOWER - string to lowercase
+     * @warning
+     * If invalid flag is inputed then no processing will happen
      *
-     * params:
-     * @string - input string
-     * @conversion_flag - flag to select function
+     * @param string Input string
+     * @conversion_flag Flag of selected function
      */
+
+    if (conversion_flag != UPPER && conversion_flag != LOWER)
+        return;
 
     for (size_t i = 0; string[i]; i++)
     {
@@ -647,7 +687,7 @@ void string_conversion(char *string, int conversion_flag)
             {
                 if (conversion_flag == UPPER)
                     *string = (char)toupper(*string);
-                else if (conversion_flag == LOWER)
+                else
                     *string = (char)tolower(*string);
             }
 
@@ -658,16 +698,14 @@ void string_conversion(char *string, int conversion_flag)
 
 int argument_to_int(char *input_array[], int array_len, int index)
 {
-    /*
-     * Try to convert argument to int
+    /**
+     * @brief Try to convert argument to int
      *
-     * params:
-     * @input_array - array with all arguments
-     * @array_len - lenght of array with arguments
-     * @index - index of argument we want convert to int
+     * @param input_array Array with arguments
+     * @param array_len Lenght of array with arguments
+     * @param index Index of argument we want convert to int
      *
-     * @return - int value of argument
-     *         - on error 0
+     * @return Int value of argument or 0 on error
      */
 
     int val;
@@ -680,13 +718,14 @@ int argument_to_int(char *input_array[], int array_len, int index)
 
 void generate_empty_row(Line *line)
 {
-    /*
+    /**
+     * @brief Create empty line in @p line based on current number of cols
+     *
      * Create string with empty line format based on wanted line length and delim char
      * Empty line is saved to line structure instead of current line string
      * Line will have same number of cells as saved number of cells from first line
      *
-     * params:
-     * @line - structure with line data
+     * @param line Structure with line data
      */
 
     if (line->final_cols <= 0)
@@ -704,28 +743,15 @@ void generate_empty_row(Line *line)
     line->line_string[i] = 0;
 }
 
-int is_line_empty(Line *line)
-{
-    /*
-     * Check if currentl line is empty
-     * Line is empty when line is flagged as deleted or number of colms is 0
-     *
-     * params:
-     * @line - structure with line data
-     *
-     * @return - 1 if line is empty else 0
-     */
-
-    return (line->deleted || (line->final_cols == 0));
-}
-
 void print_line(Line *line)
 {
-    /*
-     * Print line and clear it from buffer
+    /**
+     * @brief Print line and clear it from buffer
      *
-     * params:
-     * @line - structure with line data
+     * @warning
+     * Line is only printed if its not flagged as deleted or have 0 colms
+     *
+     * @param line Structure with line data
      */
 
     if (!is_line_empty(line))
@@ -743,11 +769,12 @@ void print_line(Line *line)
 
 void delete_line_content(Line *line)
 {
-    /*
+    /**
+     * @brief Delete line
+     *
      * Delete line string and if line wasnt already empty switch delete flag to true
      *
-     * params:
-     * @line - structure with line data
+     * @param line Structure with line data
      */
 
     if (!is_line_empty(line))
@@ -759,16 +786,18 @@ void delete_line_content(Line *line)
 
 int insert_string_to_line(Line *line, char *insert_string, int index)
 {
-    /*
-     * Insert string to line string
+    /**
+     * @brief Insert value to line
      *
-     * params:
-     * @line - structure with line data
-     * @insert_string - string that will be inserted to base_string
-     * @index - index of character from which insert_string will be inserted to base_string
+     * Insert string @p insert_string before character of @p index (Content will be preserved only shifted)
      *
-     * @return - 0 on success
-     *         - -1 on error
+     * @param line Structure with line data
+     * @param insert_string String that will be inserted to base_string
+     * @param index Index of character before which will be @p insert_string inserted
+     *
+     * @return - 0 on success, -1 on error
+     *
+     * @todo Split to working with string and working with line itself
      */
 
     size_t base_string_length = strlen(line->line_string);
@@ -808,16 +837,14 @@ int insert_string_to_line(Line *line, char *insert_string, int index)
 
 int remove_substring(char *base_string, int start_index, int end_index)
 {
-    /*
-     * Remove substring from string base on input indexes
+    /**
+     * @brief Remove substring from string base on input indexes
      *
-     * params:
-     * @base_string - string from what will be substring removed
-     * @start_index - index of first removed char of substring
-     * @end_index - index of last removed char of substring
+     * @param base_string String from what will be substring removed
+     * @param start_index Index of first removed char of substring
+     * @param end_index Index of last removed char of substring
      *
-     * @return - 0 on success
-     *         - -1 on error
+     * @return - 0 on success, -1 on error
      */
 
     if (start_index < 0 || end_index < 0 || start_index > end_index)
@@ -848,16 +875,16 @@ int remove_substring(char *base_string, int start_index, int end_index)
 
 int insert_to_cell(Line *line, int index, char *string)
 {
-    /*
-     * Insert string to column
+    /**
+     * @brief Insert string to cell
      *
-     * params:
-     * @line - structure with line data
-     * @index - index of column to insert string
-     * @string - string that will be inserted to cell
+     * Value of @p string will be injected to cell of @p index
      *
-     * @return - 0 on success
-     *         - -1 on error
+     * @param line Structure with line data
+     * @param index Index of column to insert string
+     * @param string String that will be inserted to cell
+     *
+     * @return - 0 on success, -1 on error
      */
 
     // Get position of first character in cell
@@ -871,15 +898,13 @@ int insert_to_cell(Line *line, int index, char *string)
 
 int insert_empty_cell(Line *line, int index)
 {
-    /*
-     * Insert new cell before the one selected by index
+    /**
+     * @brief Insert new cell before the one selected by index
      *
-     * params:
-     * @line - structure with line data
-     * @index - index of cell before which will be inserted new cell
+     * @param line Structure with line data
+     * @param index Index of cell before which will be inserted new cell
      *
-     * @return - 0 on success
-     *         - -1 on error
+     * @return - 0 on success, -1 on error
      */
 
     // When inserting to existing row of cells there is always delim
@@ -895,11 +920,10 @@ int insert_empty_cell(Line *line, int index)
 
 void append_empty_cell(Line *line)
 {
-    /*
-     * Insert empty cell on the end of the line
+    /**
+     * @brief Insert empty cell on the end of the line
      *
-     * params:
-     * @line - structure with line data
+     * @param line Structure with line data
      */
 
     if (line->final_cols < 1)
@@ -919,15 +943,16 @@ void append_empty_cell(Line *line)
 
 int remove_cell(Line *line, int index)
 {
-    /*
-     * Remove whole cell
+    /**
+     * @brief Remove whole cell
      *
-     * params:
-     * @line - structure with line data
-     * @index - index of cell to remove
+     * @warning
+     * Cell itself will be deleted!
      *
-     * @return - 0 on success
-     *         - -1 on error
+     * @param line Structure with line data
+     * @param index Index of cell to remove
+     *
+     * @return - 0 on success, -1 on error
      */
 
     int start_index = get_start_of_substring(line, index);
@@ -947,15 +972,13 @@ int remove_cell(Line *line, int index)
 
 int clear_cell(Line *line, int index)
 {
-    /*
-     * Clear value from cell
+    /**
+     * @brief Remove current value from cell
      *
-     * param:
-     * @line - structure with line data
-     * @index - index of cell to clear
+     * @param line Structure with line data
+     * @param index Index of cell to clear
      *
-     * @return - 0 on success
-     *         - -1 on error
+     * @return - 0 on success, -1 on error
      */
 
     if (index < 0)
@@ -971,16 +994,32 @@ int clear_cell(Line *line, int index)
     return remove_substring(line->line_string, start_index, end_index);
 }
 
+int is_cell_index_valid(Line *line, int index)
+{
+    /**
+     * @brief Check if index is valid index of cell in current row
+     *
+     * @param line Structure with line data
+     * @param index Index of cell to check
+     *
+     * @return - 0 on success, -1 on error
+     */
+
+    return ((index > 0) && (index <= line->final_cols));
+}
+
 void get_selector(Selector *selector, int argc, char *argv[])
 {
-    /*
+    /**
+     * @brief Extract selector from arguments
+     *
      * Get line selector from arguments
      * Only first valid selector is loaded
+     * Selector could be anywhere
      *
-     * params:
-     * @selector - structor to save params for selector
-     * @argc - length of argument array
-     * @argv - argument array
+     * @param selector Structor to save params for selector
+     * @param argc Length of argument array
+     * @param argv Argument array
      */
 
     // Offset -2 to be sure that there will be another 2 args after the selector flag
@@ -1035,30 +1074,15 @@ void get_selector(Selector *selector, int argc, char *argv[])
     selector->selector_type = -1;
 }
 
-int is_cell_index_valid(Line *line, int index)
-{
-    /*
-     * Check if input index is valid index of cell in row
-     *
-     * params:
-     * @line - structure with line data
-     * @index - index of cell to check
-     *
-     * @return - 1 if is valid
-     *         - 0 if not
-     */
-
-    return ((index > 0) && (index <= line->final_cols));
-}
-
 void validate_line_processing(Line *line, Selector *selector)
 {
-    /*
-     * Check if current line is marked by selector for processing (selected by selector)
+    /**
+     * @brief Check if current line will be processed
      *
-     * params:
-     * @line - structure with line data
-     * @selector - structure with selector params
+     * Check if current line is selected by selector
+     *
+     * @param line Structure with line data
+     * @param selector Structure with selector params
      */
 
     switch (selector->selector_type)
@@ -1123,21 +1147,21 @@ void validate_line_processing(Line *line, Selector *selector)
 
 int process_row_values(Line *line, int start_index, int end_index, double *ret_val, int function_flag)
 {
-    /*
-     * Process and return value of operation performed on row
+    /**
+     * @brief Process and return value of operation performed on row
+     *
      * Supported functions: SUM - sum of selected number cells
      *                      MIN - minimum value of selected number cells
      *                      MAX - maximum value of selected number cells
      *                      COUNT - count number of non empty cells
-     * params:
-     * @line - structure with line data
-     * @start_index - start index of sum interval
-     * @end_index - end index of sum interval
-     * @ret_val - return pointer for value
-     * @function_flag - flag of function used to aquire return value
      *
-     * @return - number cells it run thru
-     *         - -1 on fail
+     * @param line Structure with line data
+     * @param start_index Start of cell index interval
+     * @param end_index End of cell index interval
+     * @param ret_val Return pointer for double value
+     * @param function_flag Flag of function used to aquire return value
+     *
+     * @return - number cells it run thru, -1 on fail
      */
 
     if (is_cell_index_valid(line, start_index) && end_index > 0 &&
@@ -1211,21 +1235,19 @@ int process_row_values(Line *line, int start_index, int end_index, double *ret_v
     return -1;
 }
 
-void create_emty_row_at(Line *line, char *line_buffer, int index)
+void create_emty_row_at(Line *line, int index)
 {
-    /*
-     * Create empty row before index row in line string
+    /**
+     * @brief Create empty row before row of @p index
      *
-     * params:
-     * @line - structure with line data
-     * @line_buffer - output buffer for current content of line
-     * @index - index of row where to create empty line
+     * @param line Structure with line data
+     * @param index Index of row where to create empty line
      */
 
     if ((index > 0) && (index == (line->line_index + 1)))
     {
         // Copy current line to unedited line buffer
-        strcpy(line_buffer, line->unedited_line_string);
+        strcpy(line->line_buffer, line->unedited_line_string);
         // Create empty line in line object
         generate_empty_row(line);
     }
@@ -1233,14 +1255,14 @@ void create_emty_row_at(Line *line, char *line_buffer, int index)
 
 void delete_rows_in_interval(Line *line, int start_index, int end_index)
 {
-    /*
-     * Delete row if index of line is in passed interval
+    /**
+     * @brief Delete row if index of line is in passed interval
+     *
      * Start and end indexes included
      *
-     * params:
-     * @line - structure with line data
-     * @start_index - start index value
-     * @end_index - end index value
+     * @param line Structure with line data
+     * @param start_index Start of row index interval
+     * @param end_index End of row index interval
      */
 
     if (start_index > 0 && end_index > 0 &&
@@ -1256,12 +1278,11 @@ void delete_rows_in_interval(Line *line, int start_index, int end_index)
 
 void insert_empty_cell_at(Line *line, int index)
 {
-    /*
-     * Insert empty cell before cell of passed index if that cell exist
+    /**
+     * @brief Insert empty cell before cell of passed index if that cell exist
      *
-     * params:
-     * @line - structure with line data
-     * @index - input index of cell
+     * @param line Structure with line data
+     * @param index Index of cell
      */
 
     // If cell index is valid insert empty cell before index
@@ -1273,14 +1294,14 @@ void insert_empty_cell_at(Line *line, int index)
 
 void delete_cells_in_interval(Line *line, int start_index, int end_index)
 {
-    /*
-     * Delete cells with indexes in input interval
+    /**
+     * @brief Delete cells with indexes in input interval
+     *
      * In loop delete first cell several times
      *
-     * params:
-     * @line - structure with line data
-     * @start_index - start index value
-     * @end_index - end index value
+     * @param line Structure with line data
+     * @param start_index Start of cell index interval
+     * @param end_index End of cell index interval
      */
 
     if (is_cell_index_valid(line, start_index) && end_index > 0 && start_index <= end_index)
@@ -1297,16 +1318,16 @@ void delete_cells_in_interval(Line *line, int start_index, int end_index)
 
 int set_value_in_cell(Line *line, int index, char *value)
 {
-    /*
+    /**
+     * @brief Set new value to cell
+     *
      * Clear content of cell and insert new value
      *
-     * params:
-     * @line - structure with line data
-     * @index - index of cell set value
-     * @value - string to set
+     * @param line Structure with line data
+     * @param index Index of cell to set value
+     * @param value String to set
      *
-     * @return - 0 on sucess
-     *         - -1 on error
+     * @return - 0 on sucess, -1 on error
      */
 
     if (is_cell_index_valid(line, index))
@@ -1322,17 +1343,17 @@ int set_value_in_cell(Line *line, int index, char *value)
 
 void cell_value_editing(Line *line, int index, int processing_flag)
 {
-    /*
-     * Function to process value of single cell
+    /**
+     * @brief Function to process value of single cell
+     *
      * Supported functions: UPPER - to uppercase
      *                      LOWER - to lowercase
      *                      ROUND - round value if its number
      *                      INT - conver value to int if its number
      *
-     * params:
-     * @line - structure with line data
-     * @index - index of cell
-     * @processing_flag - flag of function
+     * @param line Structure with line data
+     * @param index Index of cell
+     * @param processing_flag Flag of function
      */
 
     if (is_cell_index_valid(line, index))
@@ -1374,14 +1395,15 @@ void cell_value_editing(Line *line, int index, int processing_flag)
 
 void copy_cell_value_to(Line *line, int source_index, int target_index)
 {
-    /*
-     * Copy value from one cell to another
-     * Source and target index cant be same
+    /**
+     * @brief Copy value from one cell to another
      *
-     * params:
-     * @line - structure with line data
-     * @source_index - index of source cell
-     * @target_index - index of destination cell
+     * @warning
+     * @p source_index and @p target_index cant be same
+     *
+     * @param line Structure with line data
+     * @param source_index Index of source cell
+     * @param target_index Index of destination cell
      */
 
     if (is_cell_index_valid(line, source_index) && is_cell_index_valid(line, target_index) &&
@@ -1398,14 +1420,15 @@ void copy_cell_value_to(Line *line, int source_index, int target_index)
 
 void swap_cell_values(Line *line, int index1, int index2)
 {
-    /*
-     * Swap values of cells
-     * Index1 and index2 can be same
+    /**
+     * @brief Swap values of cells
      *
-     * params:
-     * @line - structure with line data
-     * @index1 - index of first cell
-     * @index2 - index of second cell
+     * @warning
+     * @p index1 and @p index2 cant be same
+     *
+     * @param line Structure with line data
+     * @param index1 Index of first cell
+     * @param index2 Index of second cell
      */
 
     if (is_cell_index_valid(line, index1) && is_cell_index_valid(line, index2) &&
@@ -1426,14 +1449,15 @@ void swap_cell_values(Line *line, int index1, int index2)
 
 void move_cell_to(Line *line, int source_index, int target_index)
 {
-    /*
-     * Move cell of source index before cell of target index
-     * Source and target index cant be same
+    /**
+     * @brief Move cell of @p source_index before cell of @p target_index
      *
-     * params:
-     * @line - structure with line data
-     * @source_index - index of cell to move
-     * @target_index - index of cell to move to
+     * @warning
+     * @p source_index and @p target_index cant be same
+     *
+     * @param line Structure with line data
+     * @param source_index Index of cell to move
+     * @param target_index Index of cell to move to
      */
 
     if (is_cell_index_valid(line, source_index) && is_cell_index_valid(line, target_index) &&
@@ -1471,20 +1495,23 @@ void move_cell_to(Line *line, int source_index, int target_index)
 
 void row_values_processing(Line *line, int output_index, int start_index, int end_index, int function_flag)
 {
-    /*
-     * Process cells with index in inputed interval by function selected by flag
+    /**
+     * @brief Process cells with index in inputed interval by function selected by flag
+     *
      * Supported functions: SUM - sum of selected number cells
      *                      AVG - count average value of selected number cells
      *                      MIN - minimum value of selected number cells
      *                      MAX - maximum value of selected number cells
      *                      COUNT - count number of non empty cells
      *
-     * params:
-     * @line - structure with line data
-     * @output_index - index of cell where to output processed value
-     * @start_index - start index of processing interval
-     * @end_index - end index of processing interval
-     * @function_flag - flag of function to use
+     * @warning
+     * @p output_index cant be in processing interval
+     *
+     * @param line Structure with line data
+     * @param output_index Index of cell where to output processed value
+     * @param start_index Start index of processing interval
+     * @param end_index End index of processing interval
+     * @param function_flag Flag of function to use
      */
 
     if (is_cell_index_valid(line, output_index) &&
@@ -1512,14 +1539,15 @@ void row_values_processing(Line *line, int output_index, int start_index, int en
 
 void row_sequence_gen(Line *line, int start_index, int end_index, int start_value)
 {
-    /*
-     * Create sequence of number starting from start value in cells with index from inputed interval
+    /**
+     * @brief Create sequence of numbers in cells from inputed interval
      *
-     * params:
-     * @line - structure with line data
-     * @start_index - start index of processing interval
-     * @end_index - end index of processing interval
-     * @start_value - start value of number sequence
+     * Create sequence of number starting from @p start_value in cells with index from @p start_index to @p end_index
+     *
+     * @param line Structure with line data
+     * @param start_index Start index of processing interval
+     * @param end_index End index of processing interval
+     * @param start_value Start value of number sequence
      */
 
     if (is_cell_index_valid(line, start_index) && end_index > 0)
@@ -1535,16 +1563,18 @@ void row_sequence_gen(Line *line, int start_index, int end_index, int start_valu
     }
 }
 
-void table_edit(Line *line, char *line_buffer, int argc, char *argv[], int com_index)
+void table_edit(Line *line, int argc, char *argv[], int com_index)
 {
-    /*
-     * Function to apply table edit command to line
+    /**
+     * @brief Function to apply table edit command to line
      *
-     * params:
-     * @line - structure with line data
-     * @argc - lenght of argument array
-     * @argv - argument array
-     * @com_index - index of command to use
+     *
+     * @param line Structure with line data
+     * @param argc Lenght of argument array
+     * @param argv Argument array
+     * @param com_index Index of current processing argument
+     *
+     * @todo Make row indexing consistent after removing/adding lines
      */
 
     if (line->error_flag)
@@ -1552,10 +1582,9 @@ void table_edit(Line *line, char *line_buffer, int argc, char *argv[], int com_i
 
     switch (get_table_com_index(argv[com_index]))
     {
-        // TODO: Make row indexing consistent after removing/adding lines
         case 0:
             // irow R
-            create_emty_row_at(line, line_buffer, argument_to_int(argv, argc, com_index + 1));
+            create_emty_row_at(line, argument_to_int(argv, argc, com_index + 1));
             break;
 
         case 2:
@@ -1595,14 +1624,13 @@ void table_edit(Line *line, char *line_buffer, int argc, char *argv[], int com_i
 
 void data_edit(Line *line, int argc, char *argv[], int com_index)
 {
-    /*
-     * Function to apply data edit command to line
+    /**
+     * @brief Function to apply data edit command to line
      *
-     * params:
-     * @line - structure with line data
-     * @argc - lenght of argument array
-     * @argv - argument array
-     * @com_index - index of command to use
+     * @param line Structure with line data
+     * @param argc Lenght of argument array
+     * @param argv Argument array
+     * @param com_index Index of current processing argument
      */
 
     if (line->error_flag)
@@ -1690,19 +1718,17 @@ void data_edit(Line *line, int argc, char *argv[], int com_index)
     }
 }
 
-void process_line(Line *line, Selector *selector, int argc, char *argv[], int operating_mode, int last_line_executed)
+void process_line(Line *line, Selector *selector, int argc, char *argv[], int operating_mode)
 {
-    /*
-    Process loaded line data
-
-    params:
-    @line - structure with line data
-    @selector - structure with selector params
-    @argc - length of argument array
-    @argv - argument array
-    @operating_mode - operating mode of program
-    @last_line_executed - flag to indicate that last line is executed
-    */
+    /**
+     * @brief Process loaded line data
+     *
+     * @param line Structure with line data
+     * @param selector Structure with selector params
+     * @param argc Length of argument array
+     * @param argv Argument array
+     * @param operating_mode Operating mode of program
+     */
 
     // Initialize/clear line states
     line->deleted = 0;
@@ -1715,16 +1741,13 @@ void process_line(Line *line, Selector *selector, int argc, char *argv[], int op
     if (!check_line_sanity(line))
         return;
 
-    // Create buffer for cases when we are inserting new line
-    char line_buffer[MAX_LINE_LEN + 2];
-
     for (int i = 1; i < argc; i++)
     {
         // Perform actions based on operating mode (command from other operating modes will be ignored)
         switch (operating_mode)
         {
             case TABLE_EDIT:
-                table_edit(line, line_buffer, argc, argv, i);
+                table_edit(line, argc, argv, i);
                 break;
 
             case DATA_EDIT:
@@ -1744,16 +1767,16 @@ void process_line(Line *line, Selector *selector, int argc, char *argv[], int op
     print_line(line);
 
     // Check if there is any line in buffer
-    if (line_buffer[0] != 0)
+    if (line->line_buffer[0] != 0)
     {
         // If there is line in buffer copy it to line structure, clear buffer and recursively call this function to process that line
-        strcpy(line->line_string, line_buffer);
-        line_buffer[0] = 0;
-        process_line(line, selector, argc, argv, operating_mode, 0);
+        strcpy(line->line_string, line->line_buffer);
+        line->line_buffer[0] = 0;
+        process_line(line, selector, argc, argv, operating_mode);
     }
 
     // There will be processed appending of new rows
-    if (line->last_line_flag && !last_line_executed)
+    if (line->last_line_flag)
     {
         if (operating_mode == TABLE_EDIT)
         {
@@ -1772,6 +1795,20 @@ void process_line(Line *line, Selector *selector, int argc, char *argv[], int op
 
 int main(int argc, char *argv[])
 {
+    /**
+     * @brief Main function of program
+     *
+     * Base checking of args
+     * Initialization of program
+     * Loading lines (Rows of table)
+     * Error handling
+     *
+     * @param argc Number of arguments passed to program
+     * @param argv Array of arguments passed to program
+     *
+     * @return return code of program, 0 on success, anything else if error
+     */
+
     // Check sanity of arguments
     int error_flag;
     if ((error_flag = chck_args(argc, argv)) != NO_ERROR)
@@ -1798,9 +1835,8 @@ int main(int argc, char *argv[])
     get_selector(&selector, argc, argv);
 
     // Init line hodler
-    Line line_holder;
-    line_holder.delim = delims[0];
-    line_holder.error_flag = NO_ERROR;
+    Line line_holder = { .delim = delims[0],
+                         .error_flag = NO_ERROR };
 
     // Iterate over lines
     while (!line_holder.last_line_flag)
@@ -1822,7 +1858,7 @@ int main(int argc, char *argv[])
         if (line_holder.line_index == 0)
             line_holder.num_of_cols = get_number_of_cells(&line_holder);
 
-        process_line(&line_holder, &selector, argc, argv, operating_mode, 0);
+        process_line(&line_holder, &selector, argc, argv, operating_mode);
         if (line_holder.error_flag)
             return line_holder.error_flag;
     }

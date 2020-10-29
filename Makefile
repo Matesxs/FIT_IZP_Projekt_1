@@ -1,5 +1,4 @@
-all: sheet.c
-	gcc -g -std=c99 -Wall -Wextra -Werror sheet.c -o sheet
+all: code
 
-clean:
-	rm sheet
+code: sheet.c
+	gcc -g -std=c99 -Wall -Wextra -Werror sheet.c -o sheet

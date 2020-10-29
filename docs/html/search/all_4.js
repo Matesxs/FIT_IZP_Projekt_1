@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['num_5fof_5fcols_8',['num_of_cols',['../struct_line.html#a8e221e15b35aeb7339a68b05f29ca7a4',1,'Line']]]
+  ['final_5fcols_16',['final_cols',['../struct_line.html#aa8ed5786e4d566de328610f730438603',1,'Line']]]
 ];

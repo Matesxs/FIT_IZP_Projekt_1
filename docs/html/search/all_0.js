@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['deleted_0',['deleted',['../struct_line.html#a3cb0d95aa820737d010fdfaccac92ec3',1,'Line']]],
-  ['delim_1',['delim',['../struct_line.html#ab56c67e0ed9605b4078e2135f791c4ed',1,'Line']]]
+  ['append_5fempty_5fcell_0',['append_empty_cell',['../sheet_8c.html#a12dddc016dfb7bab94190877836b4da8',1,'sheet.c']]],
+  ['argument_5fto_5fint_1',['argument_to_int',['../sheet_8c.html#abf44a4aeabe8fa9735aeabdd99cbff70',1,'sheet.c']]]
 ];
