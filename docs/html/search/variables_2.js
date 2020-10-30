@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['final_5fcols_136',['final_cols',['../struct_line.html#aa8ed5786e4d566de328610f730438603',1,'Line']]]
+  ['error_5fflag_169',['error_flag',['../struct_line.html#abc22a72d751fd7b9edfd17ce47da5651',1,'Line']]]
 ];

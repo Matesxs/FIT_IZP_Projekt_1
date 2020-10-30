@@ -1,9 +1,8 @@
 var searchData=
 [
-  ['remove_5fcell_55',['remove_cell',['../sheet_8c.html#afb8e301f09ca3e3649006404767a8900',1,'sheet.c']]],
-  ['remove_5fsubstring_56',['remove_substring',['../sheet_8c.html#aa266498a5516e986422a2a213d46acf9',1,'sheet.c']]],
-  ['rm_5fnewline_5fchars_57',['rm_newline_chars',['../sheet_8c.html#a82bf3c8a53884d9aa6bdaa102ce6aff9',1,'sheet.c']]],
-  ['round_5fdouble_58',['round_double',['../sheet_8c.html#af4c8a57de74d0106b6eb7af97fa1d2ff',1,'sheet.c']]],
-  ['row_5fsequence_5fgen_59',['row_sequence_gen',['../sheet_8c.html#a4f2b4052ff6ccaa98f9dc69ca934290f',1,'sheet.c']]],
-  ['row_5fvalues_5fprocessing_60',['row_values_processing',['../sheet_8c.html#abb83f2fe0ee623830639de8ce065b501',1,'sheet.c']]]
+  ['pass_72',['PASS',['../sheet_8c.html#ae306b3353ed3d62bb2e6de130b3c9eaaa0afa825567e442a46d131be6c71cb40f',1,'sheet.c']]],
+  ['print_5fline_73',['print_line',['../sheet_8c.html#af07382ab9780963994a54ccf24a48024',1,'sheet.c']]],
+  ['process_5fflag_74',['process_flag',['../struct_line.html#a45a098ebf145ae40551c338c19fdb525',1,'Line']]],
+  ['process_5fline_75',['process_line',['../sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558',1,'sheet.c']]],
+  ['process_5frow_5fvalues_76',['process_row_values',['../sheet_8c.html#a780a65564a03a94864883fc7735076c1',1,'sheet.c']]]
 ];

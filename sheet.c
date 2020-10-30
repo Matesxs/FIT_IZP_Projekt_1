@@ -1,4 +1,5 @@
 /**
+ * @version V2
  * @file sheet.c
  * @author Martin Douša
  * @date October 2020
@@ -18,50 +19,94 @@
 
 #define DEFAULT_DELIM " " /**< Default delim used when no delim is passed as argument */
 
-const char *TABLE_COMS[] = {"irow", "arow", "drow", "drows", "icol", "acol", "dcol", "dcols"};
-#define NUMBER_OF_TABLE_COMS 8
-const char *DATA_COMS[] = {"cset", "tolower", "toupper", "round", "int", "copy", "swap", "move", "csum", "cavg", "cmin", "cmax", "ccount", "cseq"};
-#define NUMBER_OF_DATA_COMS 14
-const char *SELECTOR_COMS[] = {"rows", "beginswith", "contains"};
-#define NUMBER_OF_SELECTOR_COMS 3
+const char *TABLE_COMS[] = {"irow", "arow", "drow", "drows", "icol", "acol", "dcol", "dcols"}; /**< Reference array of implemented table editing commands */
+#define NUMBER_OF_TABLE_COMS 8 /**< Number of implemented table editing commands */
+const char *DATA_COMS[] = {"cset", "tolower", "toupper", "round", "int", "copy", "swap", "move", "csum", "cavg", "cmin", "cmax", "ccount", "cseq"}; /**< Reference array of implemented data editing commands */
+#define NUMBER_OF_DATA_COMS 14 /**< Number of implemented data editing commands */
+const char *SELECTOR_COMS[] = {"rows", "beginswith", "contains"}; /**< Referencce array of implemented row selector commands */
+#define NUMBER_OF_SELECTOR_COMS 3 /**< Number of implemented row selector commands */
 
-enum OperatingMode {PASS, TABLE_EDIT, DATA_EDIT};
-enum ErrorCodes {NO_ERROR, MAX_LINE_LEN_EXCEDED, MAX_CELL_LEN_EXCEDED, INPUT_ERROR};
-enum SingleCellFunction {UPPER, LOWER, ROUND, INT};
-enum MultiCellFunction {SUM, MIN, MAX, AVG, COUNT};
+/**
+ * @enum OperatingMode
+ * @brief Flags for operating mode
+ */
+enum OperatingMode {
+    PASS,                         /**< Pass thru mode of program - data or table will not be edited */
+    TABLE_EDIT,                   /**< Only table edit commands will be processed */
+    DATA_EDIT                     /**< Only data edit commands will be processed */
+};
 
+/**
+ * @enum ErrorCodes
+ * @brief Error flags
+ *
+ * Error flags for situations when program must be ended before finishing
+ */
+enum ErrorCodes {
+    NO_ERROR,                     /**< No error detected (default flag) */
+    MAX_LINE_LEN_EXCEDED,         /**< Max length of line is exceded */
+    MAX_CELL_LEN_EXCEDED,         /**< Max length of single cell/argument is exceded */
+    INPUT_ERROR                   /**< No input data fed to program */
+};
+
+/**
+ * @enum SingleCellFunction
+ * @brief Flags for functions to edit single cell
+ */
+enum SingleCellFunction {
+    UPPER,                        /**< To upper case */
+    LOWER,                        /**< To lower case */
+    ROUND,                        /**< Round double */
+    INT                           /**< Remove decimal places from number */
+};
+
+/**
+ * @enum MultiCellFunction
+ * @brief Flags for functions to edit multiple cells in row
+ */
+enum MultiCellFunction {
+    SUM,                          /**< Sum number values of cells */
+    MIN,                          /**< Get minimum number value */
+    MAX,                          /**< Get maximum number value */
+    AVG,                          /**< Get average of number values */
+    COUNT                         /**< Count not empty cells */
+};
+
+/**
+ * @struct Line
+ * @brief Store for data of one line
+ */
 typedef struct
 {
-    /**
-     * @brief Store for data of one line
-     */
+    char *line_string;                                 /**< String that contains one line loaded from stdin */
+    char line_buffer[MAX_LINE_LEN + 2];                /**< Buffer for current line when adding new line before current */
+    char unedited_line_string[MAX_LINE_LEN + 2];       /**< Backup of line string */
+    char delim;                                        /**< Delim character for current table */
+    int line_index;                                    /**< Index of current line */
 
-    char *line_string; /**< String that contains one line loaded from stdin */
-    char line_buffer[MAX_LINE_LEN + 2]; /**< Buffer for current line when adding new line before current */
-    char unedited_line_string[MAX_LINE_LEN + 2]; /**< Backup of line string */
-    char delim; /**< Delim character for current table */
-    int line_index; /**< Index of current line */
+    int num_of_cols;                                   /**< Reference number of cols */
+    int final_cols;                                    /**< Number of cols after editing */
 
-    int num_of_cols; /**< Reference number of cols */
-    int final_cols; /**< Number of cols after editing */
-
-    int last_line_flag; /**< Flag if current line is last line */
-    int deleted; /**< Flag if current line is deleted */
-    int process_flag; /**< Flag if current line is selected to data process by selector */
-    int error_flag; /**< If error occured when processing line */
+    int last_line_flag;                                /**< Flag if current line is last line */
+    int deleted;                                       /**< Flag if current line is deleted */
+    int process_flag;                                  /**< Flag if current line is selected to data process by selector */
+    int error_flag;                                    /**< If error occured when processing line */
 } Line;
 
+/**
+ * @struct Selector
+ * @brief Structure to contain information about selector
+ *
+ * Selector is used to select lines to process by data edit commands
+ */
 typedef struct
 {
-    /**
-     * @brief Structure to contain information about selector
-     *
-     * Selector is used to select lines to process by data edit commands
-     */
-
-    int selector_type;
-    char *a1, *a2, *str;
-    int ai1, ai2;
+    int selector_type;                    /**< Index of used selector */
+    char *a1,                             /**< First string argument */
+         *a2,                             /**< Second string argument */
+         *str;                            /**< Third string argument */
+    int ai1,                              /**< Int version of first argument (string converted to int) */
+        ai2;                              /**< Int version of second argument (string converted to int) */
 } Selector;
 
 int round_double(double val)

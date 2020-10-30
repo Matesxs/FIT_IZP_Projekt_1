@@ -1,4 +1,10 @@
 <map id="append_empty_cell" name="append_empty_cell">
-<area shape="rect" id="node1" title=" " alt="" coords="5,5,140,32"/>
-<area shape="rect" id="node2" href="$sheet_8c.html#af0bc4aec4706cb472d6be59053a23da9" title=" " alt="" coords="188,5,315,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,31,140,57"/>
+<area shape="rect" id="node2" href="$sheet_8c.html#af0bc4aec4706cb472d6be59053a23da9" title=" " alt="" coords="188,31,315,57"/>
+<area shape="rect" id="node3" href="$sheet_8c.html#a2589649a1badfea4b1ab63d0f46aaa28" title=" " alt="" coords="744,5,885,32"/>
+<area shape="rect" id="node5" href="$sheet_8c.html#a020097e6a7804697ff1dc1ba4e45c796" title=" " alt="" coords="363,56,483,83"/>
+<area shape="rect" id="node4" href="$sheet_8c.html#af4954f21a78bfbe9775a84daae02fcf5" title=" " alt="" coords="948,31,1092,57"/>
+<area shape="rect" id="node6" href="$sheet_8c.html#a6998df58b5c488429d8cd3f9632ba8e4" title=" " alt="" coords="533,56,679,83"/>
+<area shape="rect" id="node8" href="$sheet_8c.html#adcf92595fc841e78047b612ce64e3c4f" title=" " alt="" coords="531,107,681,133"/>
+<area shape="rect" id="node7" href="$sheet_8c.html#a08f36508bd6b5fe1b068501e86c0808d" title=" " alt="" coords="729,56,900,83"/>
 </map>
