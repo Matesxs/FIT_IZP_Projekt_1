@@ -377,6 +377,8 @@ int get_position_of_character(char *string, char ch, int index)
      * @param index Index of occurence of character in string we want position for
      *
      * @return Position of @p index ocurence of @p ch in string if valid ocurence is found, if not -1
+     *
+     * @todo Rework to strchr
      */
 
     if (index > (count_specific_chars(string, ch) - 1) || index < 0) return -1;
