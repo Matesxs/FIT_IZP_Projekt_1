@@ -876,21 +876,18 @@ int insert_string_to_line(Line *line, char *insert_string, int index)
         return -1;
     }
 
-    // If index is larger than basestring lenght then insert position is lenght of base string
-    size_t pos = ((size_t)index < base_string_length) ? (size_t)index : base_string_length;
-
     char final_string[MAX_LINE_LEN + 1];
 
     // Add first part of base string (exclude character on pos index)
-    for (size_t i = 0; i < pos; ++i)
+    for (size_t i = 0; i < (size_t)index; ++i)
         final_string[i] = line->line_string[i];
 
     // Add insert string
     for (size_t i = 0; i < insert_string_length; ++i)
-        final_string[pos+i] = insert_string[i];
+        final_string[(size_t)index+i] = insert_string[i];
 
     // Add rest of base string
-    for (size_t i = pos; i < base_string_length; ++i)
+    for (size_t i = (size_t)index; i < base_string_length; ++i)
         final_string[i + insert_string_length] = line->line_string[i];
 
     // Add terminate character to the end
@@ -955,8 +952,6 @@ int insert_to_cell(Line *line, int index, char *string)
 
     // Get position of first character in cell
     index = get_start_of_substring(line, index);
-    if (index < 0)
-        return -1;
 
     // This will insert string BEFORE the index
     return insert_string_to_line(line, string, index);
