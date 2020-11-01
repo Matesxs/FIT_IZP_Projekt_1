@@ -46,8 +46,7 @@ enum ErrorCodes {
     NO_ERROR,                     /**< No error detected (default flag) */
     MAX_LINE_LEN_EXCEDED,         /**< Max length of line is exceded */
     MAX_CELL_LEN_EXCEDED,         /**< Max length of single cell/argument is exceded */
-    INPUT_ERROR,                  /**< No input data fed to program */
-    ARG_ERROR                     /**< Unexpected or bad argument */
+    INPUT_ERROR                   /**< No input data fed to program */
 };
 
 /**
@@ -321,24 +320,11 @@ char *get_delims(char *input_array[], int array_len)
      * @param input_array Array of strings (args)
      * @param array_len Number of args
      *
-     * @return Array of delim chars to use or NULL when -d flag is found but not value after it (argument error)
+     * @return Array of delim chars to use
      */
 
-    char *arg_delims;
-
-    for (int i = 1; i < array_len; i++)
-    {
-        if (strings_equal(input_array[i], "-d"))
-        {
-            arg_delims = get_opt(array_len, input_array, "-d");
-            if (arg_delims == NULL)
-                return NULL;
-
-            return arg_delims;
-        }
-    }
-
-    return DEFAULT_DELIM;
+    char *arg_delims = get_opt(array_len, input_array, "-d");
+    return arg_delims == NULL ? DEFAULT_DELIM : arg_delims;
 }
 
 void normalize_delims(char *string, const char* delims)
@@ -876,18 +862,21 @@ int insert_string_to_line(Line *line, char *insert_string, int index)
         return -1;
     }
 
+    // If index is larger than basestring lenght then insert position is lenght of base string
+    size_t pos = ((size_t)index < base_string_length) ? (size_t)index : base_string_length;
+
     char final_string[MAX_LINE_LEN + 1];
 
     // Add first part of base string (exclude character on pos index)
-    for (size_t i = 0; i < (size_t)index; ++i)
+    for (size_t i = 0; i < pos; ++i)
         final_string[i] = line->line_string[i];
 
     // Add insert string
     for (size_t i = 0; i < insert_string_length; ++i)
-        final_string[(size_t)index+i] = insert_string[i];
+        final_string[pos+i] = insert_string[i];
 
     // Add rest of base string
-    for (size_t i = (size_t)index; i < base_string_length; ++i)
+    for (size_t i = pos; i < base_string_length; ++i)
         final_string[i + insert_string_length] = line->line_string[i];
 
     // Add terminate character to the end
@@ -952,6 +941,8 @@ int insert_to_cell(Line *line, int index, char *string)
 
     // Get position of first character in cell
     index = get_start_of_substring(line, index);
+    if (index < 0)
+        return -1;
 
     // This will insert string BEFORE the index
     return insert_string_to_line(line, string, index);
@@ -1069,7 +1060,7 @@ int is_cell_index_valid(Line *line, int index)
     return ((index > 0) && (index <= line->final_cols));
 }
 
-int get_selector(Selector *selector, int argc, char *argv[])
+void get_selector(Selector *selector, int argc, char *argv[])
 {
     /**
      * @brief Extract selector from arguments
@@ -1081,8 +1072,6 @@ int get_selector(Selector *selector, int argc, char *argv[])
      * @param selector Structor to save params for selector
      * @param argc Length of argument array
      * @param argv Argument array
-     *
-     * @return 0 on success, -1 on argument error
      */
 
     // Offset -2 to be sure that there will be another 2 args after the selector flag
@@ -1102,7 +1091,7 @@ int get_selector(Selector *selector, int argc, char *argv[])
                             if (is_string_int(argv[i+1]) && is_string_int(argv[i+2]) &&
                                 (argument_to_int(argv, argc, i+1) > argument_to_int(argv, argc, i+2)))
                             {
-                                return -1;
+                                break;
                             }
 
                             selector->selector_type = j;
@@ -1110,10 +1099,9 @@ int get_selector(Selector *selector, int argc, char *argv[])
                             selector->a2 = argv[i+2];
                             selector->ai1 = argument_to_int(argv, argc, i+1);
                             selector->ai2 = argument_to_int(argv, argc, i+2);
-                            return 0;
+                            return;
                         }
-
-                        return -1;
+                        break;
 
                     case 1:
                     case 2:
@@ -1123,10 +1111,9 @@ int get_selector(Selector *selector, int argc, char *argv[])
                             selector->a1 = argv[i+1];
                             selector->ai1 = argument_to_int(argv, argc, i+1);
                             selector->str = argv[i+2];
-                            return 0;
+                            return;
                         }
-
-                        return -1;
+                        break;
 
                     default:
                         break;
@@ -1137,7 +1124,6 @@ int get_selector(Selector *selector, int argc, char *argv[])
 
     // If valid selector not found set selector type to -1
     selector->selector_type = -1;
-    return 0;
 }
 
 void validate_line_processing(Line *line, Selector *selector)
@@ -1882,11 +1868,6 @@ int main(int argc, char *argv[])
 
     // Extract delims from args
     char *delims = get_delims(argv, argc);
-    if (delims == NULL)
-    {
-        fprintf(stderr, "Value after -d flag cant be empty!\n");
-        return ARG_ERROR;
-    }
 
     // Create buffer strings for line and cell
     char line[MAX_LINE_LEN + 2];
@@ -1894,7 +1875,7 @@ int main(int argc, char *argv[])
 
     if (fgets(buffer_line, (MAX_LINE_LEN + 2), stdin) == NULL)
     {
-        fprintf(stderr, "Input cant be empty\n");
+        fprintf(stderr, "Input cant be empty");
         return INPUT_ERROR;
     }
 
@@ -1902,19 +1883,12 @@ int main(int argc, char *argv[])
     int operating_mode = get_op_mode(argv, argc);
 
     // Get selector
-    Selector selector = { .selector_type = -1 };
-    if (operating_mode == DATA_EDIT)
-    {
-        if (get_selector(&selector, argc, argv) != 0)
-        {
-            fprintf(stderr, "Invalid line selector entered!\n");
-            return ARG_ERROR;
-        }
-    }
+    Selector selector;
+    get_selector(&selector, argc, argv);
 
     // Init line hodler
     Line line_holder = { .delim = delims[0],
-                         .error_flag = NO_ERROR };
+            .error_flag = NO_ERROR };
 
     // Iterate over lines
     while (!line_holder.last_line_flag)
