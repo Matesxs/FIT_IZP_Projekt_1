@@ -18,6 +18,7 @@
 #define MAX_LINE_LEN 10240 /**< Maximum length of one whole line (row) */
 
 #define DEFAULT_DELIM " " /**< Default delim used when no delim is passed as argument */
+#define BLACKLISTED_DELIMS "\r\n"
 
 const char *TABLE_COMS[] = {"irow", "arow", "drow", "drows", "icol", "acol", "dcol", "dcols"}; /**< Reference array of implemented table editing commands */
 #define NUMBER_OF_TABLE_COMS 8 /**< Number of implemented table editing commands */
@@ -46,7 +47,8 @@ enum ErrorCodes {
     NO_ERROR,                     /**< No error detected (default flag) */
     MAX_LINE_LEN_EXCEDED,         /**< Max length of line is exceded */
     MAX_CELL_LEN_EXCEDED,         /**< Max length of single cell/argument is exceded */
-    INPUT_ERROR                   /**< No input data fed to program */
+    INPUT_ERROR,                  /**< No input data fed to program */
+    ARG_ERROR                     /**< Invalid or unexpected argument */
 };
 
 /**
@@ -1868,6 +1870,21 @@ int main(int argc, char *argv[])
 
     // Extract delims from args
     char *delims = get_delims(argv, argc);
+
+    size_t number_of_delims = strlen(delims);
+    size_t number_of_blacklisted_delims = strlen(BLACKLISTED_DELIMS);
+
+    for (size_t i = 0; i < number_of_delims; i++)
+    {
+        for (size_t j = 0; j < number_of_blacklisted_delims; j++)
+        {
+            if (delims[i] == BLACKLISTED_DELIMS[j])
+            {
+                fprintf(stderr, "\nFound invalid delimiter!\n");
+                return ARG_ERROR;
+            }
+        }
+    }
 
     // Create buffer strings for line and cell
     char line[MAX_LINE_LEN + 2];
