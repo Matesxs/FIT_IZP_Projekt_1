@@ -80,7 +80,7 @@ enum MultiCellFunction {
  */
 typedef struct
 {
-    char *line_string;                                 /**< String that contains one line loaded from stdin */
+    char line_string[MAX_LINE_LEN + 2];                /**< String that contains one line loaded from stdin */
     char line_buffer[MAX_LINE_LEN + 2];                /**< Buffer for current line when adding new line before current */
     char unedited_line_string[MAX_LINE_LEN + 2];       /**< Backup of line string */
     char delim;                                        /**< Delim character for current table */
@@ -1847,6 +1847,23 @@ void process_line(Line *line, Selector *selector, int argc, char *argv[], int op
     }
 }
 
+int is_last_row()
+{
+    /**
+     * @brief Check if current line is the last line of input
+     * Check if next char of stdin (standart input) is EOF (end of file) and if not return the loaded character back to stream
+     *
+     * @return 1 if program is on last line, 0 if not
+     */
+
+    int c = fgetc(stdin);
+    if (c == EOF)
+        return 1;
+
+    ungetc(c, stdin);
+    return 0;
+}
+
 int main(int argc, char *argv[])
 {
     /**
@@ -1886,16 +1903,6 @@ int main(int argc, char *argv[])
         }
     }
 
-    // Create buffer strings for line and cell
-    char line[MAX_LINE_LEN + 2];
-    char buffer_line[MAX_LINE_LEN + 2];
-
-    if (fgets(buffer_line, (MAX_LINE_LEN + 2), stdin) == NULL)
-    {
-        fprintf(stderr, "Input cant be empty");
-        return INPUT_ERROR;
-    }
-
     // Check operating mode of program based on inputed arguments
     int operating_mode = get_op_mode(argv, argc);
 
@@ -1908,16 +1915,13 @@ int main(int argc, char *argv[])
             .error_flag = NO_ERROR };
 
     // Iterate over lines
-    while (!line_holder.last_line_flag)
+    while (fgets(line_holder.line_string, (MAX_LINE_LEN + 2), stdin) != NULL)
     {
-        // Copy line from buffer to line holder
-        strcpy(line, buffer_line);
-        // Load new line to buffer
-        line_holder.last_line_flag = fgets(buffer_line, (MAX_LINE_LEN + 2), stdin) == NULL;
+        // Check if we are at last row
+        line_holder.last_line_flag = is_last_row();
 
         // Go thru line and replace all delims with one
-        normalize_delims(line, delims);
-        line_holder.line_string = line;
+        normalize_delims(line_holder.line_string, delims);
 
         if (line_holder.line_index == 0)
             line_holder.num_of_cols = get_number_of_cells(&line_holder);
@@ -1925,7 +1929,7 @@ int main(int argc, char *argv[])
         // Remove new line character from line
         rm_newline_chars(line_holder.line_string);
 
-        // Create copy of line
+        // Create backup of line
         strcpy(line_holder.unedited_line_string, line_holder.line_string);
 
         process_line(&line_holder, &selector, argc, argv, operating_mode);
