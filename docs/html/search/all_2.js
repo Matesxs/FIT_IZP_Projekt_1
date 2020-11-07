@@ -1,12 +1,11 @@
 var searchData=
 [
-  ['data_5fcoms_16',['DATA_COMS',['../sheet_8c.html#a26c0706c5ee7fd9d3f1a45cb39d5a18a',1,'sheet.c']]],
-  ['data_5fedit_17',['data_edit',['../sheet_8c.html#a0ceaca96fe8567999bd020d95d52dc3e',1,'data_edit(Line *line, int argc, char *argv[], int com_index):&#160;sheet.c'],['../sheet_8c.html#ae306b3353ed3d62bb2e6de130b3c9eaaae143169407608efdef47cf7b4305cc2c',1,'DATA_EDIT():&#160;sheet.c']]],
-  ['debug_18',['DEBUG',['../sheet_8c.html#ad72dbcf6d0153db1b8d8a58001feed83',1,'sheet.c']]],
-  ['default_5fdelim_19',['DEFAULT_DELIM',['../sheet_8c.html#a955fa651f2dda3a118e30fd09817e6fd',1,'sheet.c']]],
-  ['delete_5fcells_5fin_5finterval_20',['delete_cells_in_interval',['../sheet_8c.html#af367ca46185ef96d3bba2a7a2de30e42',1,'sheet.c']]],
-  ['delete_5fline_5fcontent_21',['delete_line_content',['../sheet_8c.html#a7758424074e3a28c8c32dca241dca81d',1,'sheet.c']]],
-  ['delete_5frows_5fin_5finterval_22',['delete_rows_in_interval',['../sheet_8c.html#a6fabb1f4cfaa8596c39cd4b883123cf2',1,'sheet.c']]],
-  ['deleted_23',['deleted',['../struct_line.html#a3cb0d95aa820737d010fdfaccac92ec3',1,'Line']]],
-  ['delim_24',['delim',['../struct_line.html#ab56c67e0ed9605b4078e2135f791c4ed',1,'Line']]]
+  ['cell_5fvalue_5fediting_9',['cell_value_editing',['../sheet_8c.html#a1b464b12708c45a8e52811496a946a5c',1,'sheet.c']]],
+  ['chck_5fargs_10',['chck_args',['../sheet_8c.html#a0b3ede433ec6c8f24b24b0c02bf2177f',1,'sheet.c']]],
+  ['check_5fline_5fsanity_11',['check_line_sanity',['../sheet_8c.html#af0bc4aec4706cb472d6be59053a23da9',1,'sheet.c']]],
+  ['clear_5fcell_12',['clear_cell',['../sheet_8c.html#afeeef5904f5eea75df453e0fde5be447',1,'sheet.c']]],
+  ['copy_5fcell_5fvalue_5fto_13',['copy_cell_value_to',['../sheet_8c.html#aef5fa0c336d48eb38803d9b031a23ed0',1,'sheet.c']]],
+  ['count_14',['COUNT',['../sheet_8c.html#a71aace6c507a4576b730283055d5bcc1a2addb49878f50c95dc669e5fdbd130a2',1,'sheet.c']]],
+  ['count_5fspecific_5fchars_15',['count_specific_chars',['../sheet_8c.html#af4954f21a78bfbe9775a84daae02fcf5',1,'sheet.c']]],
+  ['create_5femty_5frow_5fat_16',['create_emty_row_at',['../sheet_8c.html#a505d79001464fee9104986a9e42bb23b',1,'sheet.c']]]
 ];

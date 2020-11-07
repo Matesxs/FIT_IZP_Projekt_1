@@ -100,6 +100,8 @@ Macros</h2></td></tr>
 <tr class="separator:a09a3b394b8602092d58347b791158062"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a955fa651f2dda3a118e30fd09817e6fd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sheet_8c.html#a955fa651f2dda3a118e30fd09817e6fd">DEFAULT_DELIM</a>&#160;&#160;&#160;&quot; &quot;</td></tr>
 <tr class="separator:a955fa651f2dda3a118e30fd09817e6fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9ba06e03cbb689b78305ba102f2bba4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sheet_8c.html#ab9ba06e03cbb689b78305ba102f2bba4">BLACKLISTED_DELIMS</a>&#160;&#160;&#160;&quot;\r\n&quot;</td></tr>
+<tr class="separator:ab9ba06e03cbb689b78305ba102f2bba4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f1c68ad012e7a49adb800fbcbe8aed5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sheet_8c.html#a5f1c68ad012e7a49adb800fbcbe8aed5">NUMBER_OF_TABLE_COMS</a>&#160;&#160;&#160;8</td></tr>
 <tr class="separator:a5f1c68ad012e7a49adb800fbcbe8aed5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a6a3a7e1a63ed7dd561a237bc3c5ea8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sheet_8c.html#a6a6a3a7e1a63ed7dd561a237bc3c5ea8">NUMBER_OF_DATA_COMS</a>&#160;&#160;&#160;14</td></tr>
@@ -221,8 +223,8 @@ Functions</h2></td></tr>
 <tr class="separator:afeeef5904f5eea75df453e0fde5be447"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf5a095def1cdb863545429e49d0916d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sheet_8c.html#abf5a095def1cdb863545429e49d0916d">is_cell_index_valid</a> (<a class="el" href="struct_line.html">Line</a> *line, int index)</td></tr>
 <tr class="separator:abf5a095def1cdb863545429e49d0916d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0cd8ff7e50ae66004551b9f9d54b4483"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sheet_8c.html#a0cd8ff7e50ae66004551b9f9d54b4483">get_selector</a> (<a class="el" href="struct_selector.html">Selector</a> *selector, int argc, char *argv[])</td></tr>
-<tr class="separator:a0cd8ff7e50ae66004551b9f9d54b4483"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e9e037c07846d365953598a77560d01"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sheet_8c.html#a2e9e037c07846d365953598a77560d01">get_selector</a> (<a class="el" href="struct_selector.html">Selector</a> *selector, int argc, char *argv[])</td></tr>
+<tr class="separator:a2e9e037c07846d365953598a77560d01"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2842d01895ed1d7224990c49a0debdaf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sheet_8c.html#a2842d01895ed1d7224990c49a0debdaf">validate_line_processing</a> (<a class="el" href="struct_line.html">Line</a> *line, <a class="el" href="struct_selector.html">Selector</a> *selector)</td></tr>
 <tr class="separator:a2842d01895ed1d7224990c49a0debdaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a780a65564a03a94864883fc7735076c1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sheet_8c.html#a780a65564a03a94864883fc7735076c1">process_row_values</a> (<a class="el" href="struct_line.html">Line</a> *line, int start_index, int end_index, double *ret_val, int function_flag)</td></tr>
@@ -255,6 +257,8 @@ Functions</h2></td></tr>
 <tr class="separator:a0ceaca96fe8567999bd020d95d52dc3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ae19d2928ca0c20c1483e0fec848558"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558">process_line</a> (<a class="el" href="struct_line.html">Line</a> *line, <a class="el" href="struct_selector.html">Selector</a> *selector, int argc, char *argv[], int operating_mode)</td></tr>
 <tr class="separator:a8ae19d2928ca0c20c1483e0fec848558"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4dec4e5d215155820750a43c62b7ad3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sheet_8c.html#ad4dec4e5d215155820750a43c62b7ad3">is_last_row</a> ()</td></tr>
+<tr class="separator:ad4dec4e5d215155820750a43c62b7ad3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ddf1224851353fc92bfbff6f499fa97"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sheet_8c.html#a0ddf1224851353fc92bfbff6f499fa97">main</a> (int argc, char *argv[])</td></tr>
 <tr class="separator:a0ddf1224851353fc92bfbff6f499fa97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -273,6 +277,21 @@ Variables</h2></td></tr>
 <dl class="section author"><dt>Author</dt><dd>Martin Douša </dd></dl>
 <dl class="section date"><dt>Date</dt><dd>October 2020 </dd></dl>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="ab9ba06e03cbb689b78305ba102f2bba4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9ba06e03cbb689b78305ba102f2bba4">&#9670;&nbsp;</a></span>BLACKLISTED_DELIMS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BLACKLISTED_DELIMS&#160;&#160;&#160;&quot;\r\n&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Character that are not allowed to use as delim character </p>
+
+</div>
+</div>
 <a id="ad72dbcf6d0153db1b8d8a58001feed83"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad72dbcf6d0153db1b8d8a58001feed83">&#9670;&nbsp;</a></span>DEBUG</h2>
 
@@ -402,7 +421,7 @@ Variables</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="a3878e89dc5c88d823f4f923ef90dbcb3aec1024879d398de584d1722ebbe0a5c9"></a>INPUT_ERROR&#160;</td><td class="fielddoc"><p>No input data fed to program </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a3878e89dc5c88d823f4f923ef90dbcb3a017f029e48bf0045faef93f0d703abfc"></a>ARG_ERROR&#160;</td><td class="fielddoc"><p>Unexpected or bad argument </p>
+<tr><td class="fieldname"><a id="a3878e89dc5c88d823f4f923ef90dbcb3a017f029e48bf0045faef93f0d703abfc"></a>ARG_ERROR&#160;</td><td class="fielddoc"><p>Invalid or unexpected argument </p>
 </td></tr>
 </table>
 
@@ -528,7 +547,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_a12dddc016dfb7bab94190877836b4da8_icgraph.png" border="0" usemap="#asheet_8c_a12dddc016dfb7bab94190877836b4da8_icgraph" alt=""/></div>
-<map name="sheet_8c_a12dddc016dfb7bab94190877836b4da8_icgraph" id="sheet_8c_a12dddc016dfb7bab94190877836b4da8_icgraph">
+<map name="sheet_8c_a12dddc016dfb7bab94190877836b4da8_icgraph" id="asheet_8c_a12dddc016dfb7bab94190877836b4da8_icgraph">
 <area shape="rect" title=" " alt="" coords="373,5,508,32"/>
 <area shape="rect" href="sheet_8c.html#ae9f66aa4498eeda20fb2ec497307d501" title=" " alt="" coords="247,5,325,32"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="104,5,199,32"/>
@@ -595,7 +614,7 @@ Here is the caller graph for this function:</div>
 <map name="sheet_8c_abf44a4aeabe8fa9735aeabdd99cbff70_icgraph" id="asheet_8c_abf44a4aeabe8fa9735aeabdd99cbff70_icgraph">
 <area shape="rect" title=" " alt="" coords="373,56,488,83"/>
 <area shape="rect" href="sheet_8c.html#a0ceaca96fe8567999bd020d95d52dc3e" title=" " alt="" coords="249,5,323,32"/>
-<area shape="rect" href="sheet_8c.html#a0cd8ff7e50ae66004551b9f9d54b4483" title=" " alt="" coords="105,107,198,133"/>
+<area shape="rect" href="sheet_8c.html#a2e9e037c07846d365953598a77560d01" title=" " alt="" coords="105,107,198,133"/>
 <area shape="rect" href="sheet_8c.html#ae9f66aa4498eeda20fb2ec497307d501" title=" " alt="" coords="247,56,325,83"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="104,56,199,83"/>
 <area shape="rect" href="sheet_8c.html#a0ddf1224851353fc92bfbff6f499fa97" title=" " alt="" coords="5,81,56,108"/>
@@ -672,7 +691,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_a1b464b12708c45a8e52811496a946a5c_icgraph.png" border="0" usemap="#asheet_8c_a1b464b12708c45a8e52811496a946a5c_icgraph" alt=""/></div>
-<map name="sheet_8c_a1b464b12708c45a8e52811496a946a5c_icgraph" id="sheet_8c_a1b464b12708c45a8e52811496a946a5c_icgraph">
+<map name="sheet_8c_a1b464b12708c45a8e52811496a946a5c_icgraph" id="asheet_8c_a1b464b12708c45a8e52811496a946a5c_icgraph">
 <area shape="rect" title=" " alt="" coords="369,5,492,32"/>
 <area shape="rect" href="sheet_8c.html#a0ceaca96fe8567999bd020d95d52dc3e" title=" " alt="" coords="247,5,321,32"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="104,5,199,32"/>
@@ -771,7 +790,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_af0bc4aec4706cb472d6be59053a23da9_icgraph.png" border="0" usemap="#asheet_8c_af0bc4aec4706cb472d6be59053a23da9_icgraph" alt=""/></div>
-<map name="sheet_8c_af0bc4aec4706cb472d6be59053a23da9_icgraph" id="sheet_8c_af0bc4aec4706cb472d6be59053a23da9_icgraph">
+<map name="sheet_8c_af0bc4aec4706cb472d6be59053a23da9_icgraph" id="asheet_8c_af0bc4aec4706cb472d6be59053a23da9_icgraph">
 <area shape="rect" title=" " alt="" coords="556,31,683,57"/>
 <area shape="rect" href="sheet_8c.html#a12dddc016dfb7bab94190877836b4da8" title=" " alt="" coords="373,5,508,32"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="104,31,199,57"/>
@@ -833,7 +852,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_afeeef5904f5eea75df453e0fde5be447_icgraph.png" border="0" usemap="#asheet_8c_afeeef5904f5eea75df453e0fde5be447_icgraph" alt=""/></div>
-<map name="sheet_8c_afeeef5904f5eea75df453e0fde5be447_icgraph" id="sheet_8c_afeeef5904f5eea75df453e0fde5be447_icgraph">
+<map name="sheet_8c_afeeef5904f5eea75df453e0fde5be447_icgraph" id="asheet_8c_afeeef5904f5eea75df453e0fde5be447_icgraph">
 <area shape="rect" title=" " alt="" coords="740,132,817,159"/>
 <area shape="rect" href="sheet_8c.html#ae0b2a63d2423834f59e3c0c568fd4ad4" title=" " alt="" coords="572,132,692,159"/>
 <area shape="rect" href="sheet_8c.html#a1b464b12708c45a8e52811496a946a5c" title=" " alt="" coords="385,5,508,32"/>
@@ -913,7 +932,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_aef5fa0c336d48eb38803d9b031a23ed0_icgraph.png" border="0" usemap="#asheet_8c_aef5fa0c336d48eb38803d9b031a23ed0_icgraph" alt=""/></div>
-<map name="sheet_8c_aef5fa0c336d48eb38803d9b031a23ed0_icgraph" id="sheet_8c_aef5fa0c336d48eb38803d9b031a23ed0_icgraph">
+<map name="sheet_8c_aef5fa0c336d48eb38803d9b031a23ed0_icgraph" id="asheet_8c_aef5fa0c336d48eb38803d9b031a23ed0_icgraph">
 <area shape="rect" title=" " alt="" coords="369,5,500,32"/>
 <area shape="rect" href="sheet_8c.html#a0ceaca96fe8567999bd020d95d52dc3e" title=" " alt="" coords="247,5,321,32"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="104,5,199,32"/>
@@ -961,7 +980,7 @@ Here is the caller graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_af4954f21a78bfbe9775a84daae02fcf5_icgraph.png" border="0" usemap="#asheet_8c_af4954f21a78bfbe9775a84daae02fcf5_icgraph" alt=""/></div>
-<map name="sheet_8c_af4954f21a78bfbe9775a84daae02fcf5_icgraph" id="sheet_8c_af4954f21a78bfbe9775a84daae02fcf5_icgraph">
+<map name="sheet_8c_af4954f21a78bfbe9775a84daae02fcf5_icgraph" id="asheet_8c_af4954f21a78bfbe9775a84daae02fcf5_icgraph">
 <area shape="rect" title=" " alt="" coords="1469,183,1613,209"/>
 <area shape="rect" href="sheet_8c.html#a2589649a1badfea4b1ab63d0f46aaa28" title=" " alt="" coords="863,43,1004,69"/>
 <area shape="rect" href="sheet_8c.html#a08f36508bd6b5fe1b068501e86c0808d" title=" " alt="" coords="1251,245,1421,272"/>
@@ -1040,7 +1059,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_a505d79001464fee9104986a9e42bb23b_icgraph.png" border="0" usemap="#asheet_8c_a505d79001464fee9104986a9e42bb23b_icgraph" alt=""/></div>
-<map name="sheet_8c_a505d79001464fee9104986a9e42bb23b_icgraph" id="sheet_8c_a505d79001464fee9104986a9e42bb23b_icgraph">
+<map name="sheet_8c_a505d79001464fee9104986a9e42bb23b_icgraph" id="asheet_8c_a505d79001464fee9104986a9e42bb23b_icgraph">
 <area shape="rect" title=" " alt="" coords="373,5,512,32"/>
 <area shape="rect" href="sheet_8c.html#ae9f66aa4498eeda20fb2ec497307d501" title=" " alt="" coords="247,5,325,32"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="104,5,199,32"/>
@@ -1138,7 +1157,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_a0ceaca96fe8567999bd020d95d52dc3e_icgraph.png" border="0" usemap="#asheet_8c_a0ceaca96fe8567999bd020d95d52dc3e_icgraph" alt=""/></div>
-<map name="sheet_8c_a0ceaca96fe8567999bd020d95d52dc3e_icgraph" id="sheet_8c_a0ceaca96fe8567999bd020d95d52dc3e_icgraph">
+<map name="sheet_8c_a0ceaca96fe8567999bd020d95d52dc3e_icgraph" id="asheet_8c_a0ceaca96fe8567999bd020d95d52dc3e_icgraph">
 <area shape="rect" title=" " alt="" coords="247,5,321,32"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="104,5,199,32"/>
 <area shape="rect" href="sheet_8c.html#a0ddf1224851353fc92bfbff6f499fa97" title=" " alt="" coords="5,5,56,32"/>
@@ -1208,7 +1227,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_af367ca46185ef96d3bba2a7a2de30e42_icgraph.png" border="0" usemap="#asheet_8c_af367ca46185ef96d3bba2a7a2de30e42_icgraph" alt=""/></div>
-<map name="sheet_8c_af367ca46185ef96d3bba2a7a2de30e42_icgraph" id="sheet_8c_af367ca46185ef96d3bba2a7a2de30e42_icgraph">
+<map name="sheet_8c_af367ca46185ef96d3bba2a7a2de30e42_icgraph" id="asheet_8c_af367ca46185ef96d3bba2a7a2de30e42_icgraph">
 <area shape="rect" title=" " alt="" coords="373,5,528,32"/>
 <area shape="rect" href="sheet_8c.html#ae9f66aa4498eeda20fb2ec497307d501" title=" " alt="" coords="247,5,325,32"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="104,5,199,32"/>
@@ -1254,7 +1273,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_a7758424074e3a28c8c32dca241dca81d_icgraph.png" border="0" usemap="#asheet_8c_a7758424074e3a28c8c32dca241dca81d_icgraph" alt=""/></div>
-<map name="sheet_8c_a7758424074e3a28c8c32dca241dca81d_icgraph" id="sheet_8c_a7758424074e3a28c8c32dca241dca81d_icgraph">
+<map name="sheet_8c_a7758424074e3a28c8c32dca241dca81d_icgraph" id="asheet_8c_a7758424074e3a28c8c32dca241dca81d_icgraph">
 <area shape="rect" title=" " alt="" coords="576,5,711,32"/>
 <area shape="rect" href="sheet_8c.html#a6fabb1f4cfaa8596c39cd4b883123cf2" title=" " alt="" coords="373,5,528,32"/>
 <area shape="rect" href="sheet_8c.html#ae9f66aa4498eeda20fb2ec497307d501" title=" " alt="" coords="247,5,325,32"/>
@@ -1320,7 +1339,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_a6fabb1f4cfaa8596c39cd4b883123cf2_icgraph.png" border="0" usemap="#asheet_8c_a6fabb1f4cfaa8596c39cd4b883123cf2_icgraph" alt=""/></div>
-<map name="sheet_8c_a6fabb1f4cfaa8596c39cd4b883123cf2_icgraph" id="sheet_8c_a6fabb1f4cfaa8596c39cd4b883123cf2_icgraph">
+<map name="sheet_8c_a6fabb1f4cfaa8596c39cd4b883123cf2_icgraph" id="asheet_8c_a6fabb1f4cfaa8596c39cd4b883123cf2_icgraph">
 <area shape="rect" title=" " alt="" coords="373,5,528,32"/>
 <area shape="rect" href="sheet_8c.html#ae9f66aa4498eeda20fb2ec497307d501" title=" " alt="" coords="247,5,325,32"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="104,5,199,32"/>
@@ -1357,7 +1376,7 @@ Here is the caller graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_ab092c211262e7e820682abb6f10a3562_icgraph.png" border="0" usemap="#asheet_8c_ab092c211262e7e820682abb6f10a3562_icgraph" alt=""/></div>
-<map name="sheet_8c_ab092c211262e7e820682abb6f10a3562_icgraph" id="sheet_8c_ab092c211262e7e820682abb6f10a3562_icgraph">
+<map name="sheet_8c_ab092c211262e7e820682abb6f10a3562_icgraph" id="asheet_8c_ab092c211262e7e820682abb6f10a3562_icgraph">
 <area shape="rect" title=" " alt="" coords="560,31,703,57"/>
 <area shape="rect" href="sheet_8c.html#a505d79001464fee9104986a9e42bb23b" title=" " alt="" coords="373,5,512,32"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="104,31,199,57"/>
@@ -1406,7 +1425,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_aa07ea2f97f9f1649fe0151ffbfff5bbc_icgraph.png" border="0" usemap="#asheet_8c_aa07ea2f97f9f1649fe0151ffbfff5bbc_icgraph" alt=""/></div>
-<map name="sheet_8c_aa07ea2f97f9f1649fe0151ffbfff5bbc_icgraph" id="sheet_8c_aa07ea2f97f9f1649fe0151ffbfff5bbc_icgraph">
+<map name="sheet_8c_aa07ea2f97f9f1649fe0151ffbfff5bbc_icgraph" id="asheet_8c_aa07ea2f97f9f1649fe0151ffbfff5bbc_icgraph">
 <area shape="rect" title=" " alt="" coords="375,31,517,57"/>
 <area shape="rect" href="sheet_8c.html#a0ceaca96fe8567999bd020d95d52dc3e" title=" " alt="" coords="252,5,327,32"/>
 <area shape="rect" href="sheet_8c.html#ac34c0bdc69d9a0935feceff6194011c5" title=" " alt="" coords="104,56,204,83"/>
@@ -1450,15 +1469,15 @@ Here is the caller graph for this function:</div>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Array of delim chars to use or NULL when -d flag is found but not value after it</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Array of delim chars to use</dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_a0de9cb3cabbcf448f8ab8a2c93a0fb4e_cgraph.png" border="0" usemap="#asheet_8c_a0de9cb3cabbcf448f8ab8a2c93a0fb4e_cgraph" alt=""/></div>
 <map name="sheet_8c_a0de9cb3cabbcf448f8ab8a2c93a0fb4e_cgraph" id="sheet_8c_a0de9cb3cabbcf448f8ab8a2c93a0fb4e_cgraph">
-<area shape="rect" title=" " alt="" coords="5,31,91,57"/>
+<area shape="rect" title=" " alt="" coords="5,5,91,32"/>
 <area shape="rect" href="sheet_8c.html#aad4a7feab0ee38f3f6021fa3cfd9eed5" title=" " alt="" coords="139,5,204,32"/>
-<area shape="rect" href="sheet_8c.html#a96b028118ce1383a5fbbdf7c07e0acc8" title=" " alt="" coords="252,31,351,57"/>
+<area shape="rect" href="sheet_8c.html#a96b028118ce1383a5fbbdf7c07e0acc8" title=" " alt="" coords="252,5,351,32"/>
 </map>
 </div>
 <div class="dynheader">
@@ -1521,7 +1540,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_a6998df58b5c488429d8cd3f9632ba8e4_icgraph.png" border="0" usemap="#asheet_8c_a6998df58b5c488429d8cd3f9632ba8e4_icgraph" alt=""/></div>
-<map name="sheet_8c_a6998df58b5c488429d8cd3f9632ba8e4_icgraph" id="sheet_8c_a6998df58b5c488429d8cd3f9632ba8e4_icgraph">
+<map name="sheet_8c_a6998df58b5c488429d8cd3f9632ba8e4_icgraph" id="asheet_8c_a6998df58b5c488429d8cd3f9632ba8e4_icgraph">
 <area shape="rect" title=" " alt="" coords="1031,259,1176,285"/>
 <area shape="rect" href="sheet_8c.html#afeeef5904f5eea75df453e0fde5be447" title=" " alt="" coords="884,157,961,184"/>
 <area shape="rect" href="sheet_8c.html#a020097e6a7804697ff1dc1ba4e45c796" title=" " alt="" coords="863,259,983,285"/>
@@ -1584,7 +1603,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_a2589649a1badfea4b1ab63d0f46aaa28_icgraph.png" border="0" usemap="#asheet_8c_a2589649a1badfea4b1ab63d0f46aaa28_icgraph" alt=""/></div>
-<map name="sheet_8c_a2589649a1badfea4b1ab63d0f46aaa28_icgraph" id="sheet_8c_a2589649a1badfea4b1ab63d0f46aaa28_icgraph">
+<map name="sheet_8c_a2589649a1badfea4b1ab63d0f46aaa28_icgraph" id="asheet_8c_a2589649a1badfea4b1ab63d0f46aaa28_icgraph">
 <area shape="rect" title=" " alt="" coords="731,81,872,108"/>
 <area shape="rect" href="sheet_8c.html#af0bc4aec4706cb472d6be59053a23da9" title=" " alt="" coords="556,56,683,83"/>
 <area shape="rect" href="sheet_8c.html#a0ddf1224851353fc92bfbff6f499fa97" title=" " alt="" coords="5,81,56,108"/>
@@ -1774,7 +1793,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_a08f36508bd6b5fe1b068501e86c0808d_icgraph.png" border="0" usemap="#asheet_8c_a08f36508bd6b5fe1b068501e86c0808d_icgraph" alt=""/></div>
-<map name="sheet_8c_a08f36508bd6b5fe1b068501e86c0808d_icgraph" id="sheet_8c_a08f36508bd6b5fe1b068501e86c0808d_icgraph">
+<map name="sheet_8c_a08f36508bd6b5fe1b068501e86c0808d_icgraph" id="asheet_8c_a08f36508bd6b5fe1b068501e86c0808d_icgraph">
 <area shape="rect" title=" " alt="" coords="1229,288,1400,314"/>
 <area shape="rect" href="sheet_8c.html#a6998df58b5c488429d8cd3f9632ba8e4" title=" " alt="" coords="1033,262,1179,289"/>
 <area shape="rect" href="sheet_8c.html#adcf92595fc841e78047b612ce64e3c4f" title=" " alt="" coords="1031,313,1181,340"/>
@@ -1805,14 +1824,14 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a0cd8ff7e50ae66004551b9f9d54b4483"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0cd8ff7e50ae66004551b9f9d54b4483">&#9670;&nbsp;</a></span>get_selector()</h2>
+<a id="a2e9e037c07846d365953598a77560d01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e9e037c07846d365953598a77560d01">&#9670;&nbsp;</a></span>get_selector()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int get_selector </td>
+          <td class="memname">void get_selector </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="struct_selector.html">Selector</a> *&#160;</td>
           <td class="paramname"><em>selector</em>, </td>
@@ -1846,12 +1865,11 @@ Here is the caller graph for this function:</div>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>0 on success, -1 on argument error</dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="sheet_8c_a0cd8ff7e50ae66004551b9f9d54b4483_cgraph.png" border="0" usemap="#asheet_8c_a0cd8ff7e50ae66004551b9f9d54b4483_cgraph" alt=""/></div>
-<map name="sheet_8c_a0cd8ff7e50ae66004551b9f9d54b4483_cgraph" id="asheet_8c_a0cd8ff7e50ae66004551b9f9d54b4483_cgraph">
+<div class="center"><img src="sheet_8c_a2e9e037c07846d365953598a77560d01_cgraph.png" border="0" usemap="#asheet_8c_a2e9e037c07846d365953598a77560d01_cgraph" alt=""/></div>
+<map name="sheet_8c_a2e9e037c07846d365953598a77560d01_cgraph" id="sheet_8c_a2e9e037c07846d365953598a77560d01_cgraph">
 <area shape="rect" title=" " alt="" coords="5,56,99,83"/>
 <area shape="rect" href="sheet_8c.html#abf44a4aeabe8fa9735aeabdd99cbff70" title=" " alt="" coords="147,5,261,32"/>
 <area shape="rect" href="sheet_8c.html#aac2c29a3140c52c285ac7c7bc827fe63" title=" " alt="" coords="158,56,250,83"/>
@@ -1862,8 +1880,8 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="sheet_8c_a0cd8ff7e50ae66004551b9f9d54b4483_icgraph.png" border="0" usemap="#asheet_8c_a0cd8ff7e50ae66004551b9f9d54b4483_icgraph" alt=""/></div>
-<map name="sheet_8c_a0cd8ff7e50ae66004551b9f9d54b4483_icgraph" id="asheet_8c_a0cd8ff7e50ae66004551b9f9d54b4483_icgraph">
+<div class="center"><img src="sheet_8c_a2e9e037c07846d365953598a77560d01_icgraph.png" border="0" usemap="#asheet_8c_a2e9e037c07846d365953598a77560d01_icgraph" alt=""/></div>
+<map name="sheet_8c_a2e9e037c07846d365953598a77560d01_icgraph" id="sheet_8c_a2e9e037c07846d365953598a77560d01_icgraph">
 <area shape="rect" title=" " alt="" coords="104,5,197,32"/>
 <area shape="rect" href="sheet_8c.html#a0ddf1224851353fc92bfbff6f499fa97" title=" " alt="" coords="5,5,56,32"/>
 </map>
@@ -1919,7 +1937,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_adcf92595fc841e78047b612ce64e3c4f_icgraph.png" border="0" usemap="#asheet_8c_adcf92595fc841e78047b612ce64e3c4f_icgraph" alt=""/></div>
-<map name="sheet_8c_adcf92595fc841e78047b612ce64e3c4f_icgraph" id="sheet_8c_adcf92595fc841e78047b612ce64e3c4f_icgraph">
+<map name="sheet_8c_adcf92595fc841e78047b612ce64e3c4f_icgraph" id="asheet_8c_adcf92595fc841e78047b612ce64e3c4f_icgraph">
 <area shape="rect" title=" " alt="" coords="1015,326,1165,353"/>
 <area shape="rect" href="sheet_8c.html#afeeef5904f5eea75df453e0fde5be447" title=" " alt="" coords="868,167,945,194"/>
 <area shape="rect" href="sheet_8c.html#a020097e6a7804697ff1dc1ba4e45c796" title=" " alt="" coords="847,269,967,295"/>
@@ -1986,7 +2004,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_ad60d134cb87a1cd6e34e48ae30d73632_icgraph.png" border="0" usemap="#asheet_8c_ad60d134cb87a1cd6e34e48ae30d73632_icgraph" alt=""/></div>
-<map name="sheet_8c_ad60d134cb87a1cd6e34e48ae30d73632_icgraph" id="sheet_8c_ad60d134cb87a1cd6e34e48ae30d73632_icgraph">
+<map name="sheet_8c_ad60d134cb87a1cd6e34e48ae30d73632_icgraph" id="asheet_8c_ad60d134cb87a1cd6e34e48ae30d73632_icgraph">
 <area shape="rect" title=" " alt="" coords="379,56,524,83"/>
 <area shape="rect" href="sheet_8c.html#ac34c0bdc69d9a0935feceff6194011c5" title=" " alt="" coords="104,5,204,32"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="107,56,201,83"/>
@@ -2055,7 +2073,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_a020097e6a7804697ff1dc1ba4e45c796_icgraph.png" border="0" usemap="#asheet_8c_a020097e6a7804697ff1dc1ba4e45c796_icgraph" alt=""/></div>
-<map name="sheet_8c_a020097e6a7804697ff1dc1ba4e45c796_icgraph" id="sheet_8c_a020097e6a7804697ff1dc1ba4e45c796_icgraph">
+<map name="sheet_8c_a020097e6a7804697ff1dc1ba4e45c796_icgraph" id="asheet_8c_a020097e6a7804697ff1dc1ba4e45c796_icgraph">
 <area shape="rect" title=" " alt="" coords="847,179,967,206"/>
 <area shape="rect" href="sheet_8c.html#a1b464b12708c45a8e52811496a946a5c" title=" " alt="" coords="473,129,596,155"/>
 <area shape="rect" href="sheet_8c.html#af0bc4aec4706cb472d6be59053a23da9" title=" " alt="" coords="666,27,793,54"/>
@@ -2126,7 +2144,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_ace5bc271847ba57d7872f5b7f7129cce_icgraph.png" border="0" usemap="#asheet_8c_ace5bc271847ba57d7872f5b7f7129cce_icgraph" alt=""/></div>
-<map name="sheet_8c_ace5bc271847ba57d7872f5b7f7129cce_icgraph" id="sheet_8c_ace5bc271847ba57d7872f5b7f7129cce_icgraph">
+<map name="sheet_8c_ace5bc271847ba57d7872f5b7f7129cce_icgraph" id="asheet_8c_ace5bc271847ba57d7872f5b7f7129cce_icgraph">
 <area shape="rect" title=" " alt="" coords="564,31,688,57"/>
 <area shape="rect" href="sheet_8c.html#a124b0e4c07e2ed4651d62734e70b4bc0" title=" " alt="" coords="373,5,516,32"/>
 <area shape="rect" href="sheet_8c.html#a52a0721a487ee826d1b54932aa4529d7" title=" " alt="" coords="396,56,493,83"/>
@@ -2191,7 +2209,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_a124b0e4c07e2ed4651d62734e70b4bc0_icgraph.png" border="0" usemap="#asheet_8c_a124b0e4c07e2ed4651d62734e70b4bc0_icgraph" alt=""/></div>
-<map name="sheet_8c_a124b0e4c07e2ed4651d62734e70b4bc0_icgraph" id="sheet_8c_a124b0e4c07e2ed4651d62734e70b4bc0_icgraph">
+<map name="sheet_8c_a124b0e4c07e2ed4651d62734e70b4bc0_icgraph" id="asheet_8c_a124b0e4c07e2ed4651d62734e70b4bc0_icgraph">
 <area shape="rect" title=" " alt="" coords="373,5,516,32"/>
 <area shape="rect" href="sheet_8c.html#ae9f66aa4498eeda20fb2ec497307d501" title=" " alt="" coords="247,5,325,32"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="104,5,199,32"/>
@@ -2248,7 +2266,7 @@ Here is the caller graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_af9009abc8afad5df16c8d176ec17ad4f_icgraph.png" border="0" usemap="#asheet_8c_af9009abc8afad5df16c8d176ec17ad4f_icgraph" alt=""/></div>
-<map name="sheet_8c_af9009abc8afad5df16c8d176ec17ad4f_icgraph" id="sheet_8c_af9009abc8afad5df16c8d176ec17ad4f_icgraph">
+<map name="sheet_8c_af9009abc8afad5df16c8d176ec17ad4f_icgraph" id="asheet_8c_af9009abc8afad5df16c8d176ec17ad4f_icgraph">
 <area shape="rect" title=" " alt="" coords="895,81,1033,108"/>
 <area shape="rect" href="sheet_8c.html#ac343905c8f1b216084684be243c96bff" title=" " alt="" coords="748,81,847,108"/>
 <area shape="rect" href="sheet_8c.html#ace5bc271847ba57d7872f5b7f7129cce" title=" " alt="" coords="576,31,700,57"/>
@@ -2327,7 +2345,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_ac343905c8f1b216084684be243c96bff_icgraph.png" border="0" usemap="#asheet_8c_ac343905c8f1b216084684be243c96bff_icgraph" alt=""/></div>
-<map name="sheet_8c_ac343905c8f1b216084684be243c96bff_icgraph" id="sheet_8c_ac343905c8f1b216084684be243c96bff_icgraph">
+<map name="sheet_8c_ac343905c8f1b216084684be243c96bff_icgraph" id="asheet_8c_ac343905c8f1b216084684be243c96bff_icgraph">
 <area shape="rect" title=" " alt="" coords="748,81,847,108"/>
 <area shape="rect" href="sheet_8c.html#ace5bc271847ba57d7872f5b7f7129cce" title=" " alt="" coords="576,31,700,57"/>
 <area shape="rect" href="sheet_8c.html#a52a0721a487ee826d1b54932aa4529d7" title=" " alt="" coords="402,56,499,83"/>
@@ -2385,7 +2403,7 @@ Here is the caller graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_abf5a095def1cdb863545429e49d0916d_icgraph.png" border="0" usemap="#asheet_8c_abf5a095def1cdb863545429e49d0916d_icgraph" alt=""/></div>
-<map name="sheet_8c_abf5a095def1cdb863545429e49d0916d_icgraph" id="sheet_8c_abf5a095def1cdb863545429e49d0916d_icgraph">
+<map name="sheet_8c_abf5a095def1cdb863545429e49d0916d_icgraph" id="asheet_8c_abf5a095def1cdb863545429e49d0916d_icgraph">
 <area shape="rect" title=" " alt="" coords="863,259,992,285"/>
 <area shape="rect" href="sheet_8c.html#a1b464b12708c45a8e52811496a946a5c" title=" " alt="" coords="473,309,596,336"/>
 <area shape="rect" href="sheet_8c.html#aef5fa0c336d48eb38803d9b031a23ed0" title=" " alt="" coords="469,360,600,387"/>
@@ -2434,11 +2452,39 @@ Here is the caller graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_adf1d66ba3e5fd35b66ac2c307f8c43c8_icgraph.png" border="0" usemap="#asheet_8c_adf1d66ba3e5fd35b66ac2c307f8c43c8_icgraph" alt=""/></div>
-<map name="sheet_8c_adf1d66ba3e5fd35b66ac2c307f8c43c8_icgraph" id="sheet_8c_adf1d66ba3e5fd35b66ac2c307f8c43c8_icgraph">
+<map name="sheet_8c_adf1d66ba3e5fd35b66ac2c307f8c43c8_icgraph" id="asheet_8c_adf1d66ba3e5fd35b66ac2c307f8c43c8_icgraph">
 <area shape="rect" title=" " alt="" coords="572,5,671,32"/>
 <area shape="rect" href="sheet_8c.html#abb83f2fe0ee623830639de8ce065b501" title=" " alt="" coords="369,5,524,32"/>
 <area shape="rect" href="sheet_8c.html#a0ceaca96fe8567999bd020d95d52dc3e" title=" " alt="" coords="247,5,321,32"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="104,5,199,32"/>
+<area shape="rect" href="sheet_8c.html#a0ddf1224851353fc92bfbff6f499fa97" title=" " alt="" coords="5,5,56,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ad4dec4e5d215155820750a43c62b7ad3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4dec4e5d215155820750a43c62b7ad3">&#9670;&nbsp;</a></span>is_last_row()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int is_last_row </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Check if current line is the last line of input Check if next char of stdin (standart input) is EOF (end of file) and if not return the loaded character back to stream</p>
+<dl class="section return"><dt>Returns</dt><dd>1 if program is on last line, 0 if not</dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="sheet_8c_ad4dec4e5d215155820750a43c62b7ad3_icgraph.png" border="0" usemap="#asheet_8c_ad4dec4e5d215155820750a43c62b7ad3_icgraph" alt=""/></div>
+<map name="sheet_8c_ad4dec4e5d215155820750a43c62b7ad3_icgraph" id="asheet_8c_ad4dec4e5d215155820750a43c62b7ad3_icgraph">
+<area shape="rect" title=" " alt="" coords="104,5,191,32"/>
 <area shape="rect" href="sheet_8c.html#a0ddf1224851353fc92bfbff6f499fa97" title=" " alt="" coords="5,5,56,32"/>
 </map>
 </div>
@@ -2473,7 +2519,7 @@ Here is the caller graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_aa54ab37a5fe79da240bbfb0a9530b8bc_icgraph.png" border="0" usemap="#asheet_8c_aa54ab37a5fe79da240bbfb0a9530b8bc_icgraph" alt=""/></div>
-<map name="sheet_8c_aa54ab37a5fe79da240bbfb0a9530b8bc_icgraph" id="sheet_8c_aa54ab37a5fe79da240bbfb0a9530b8bc_icgraph">
+<map name="sheet_8c_aa54ab37a5fe79da240bbfb0a9530b8bc_icgraph" id="asheet_8c_aa54ab37a5fe79da240bbfb0a9530b8bc_icgraph">
 <area shape="rect" title=" " alt="" coords="759,56,861,83"/>
 <area shape="rect" href="sheet_8c.html#af367ca46185ef96d3bba2a7a2de30e42" title=" " alt="" coords="373,5,528,32"/>
 <area shape="rect" href="sheet_8c.html#a7758424074e3a28c8c32dca241dca81d" title=" " alt="" coords="576,56,711,83"/>
@@ -2514,7 +2560,7 @@ Here is the caller graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_a91860656a5d2d09a65c22e0beab0759f_icgraph.png" border="0" usemap="#asheet_8c_a91860656a5d2d09a65c22e0beab0759f_icgraph" alt=""/></div>
-<map name="sheet_8c_a91860656a5d2d09a65c22e0beab0759f_icgraph" id="sheet_8c_a91860656a5d2d09a65c22e0beab0759f_icgraph">
+<map name="sheet_8c_a91860656a5d2d09a65c22e0beab0759f_icgraph" id="asheet_8c_a91860656a5d2d09a65c22e0beab0759f_icgraph">
 <area shape="rect" title=" " alt="" coords="759,31,875,57"/>
 <area shape="rect" href="sheet_8c.html#a1b464b12708c45a8e52811496a946a5c" title=" " alt="" coords="385,5,508,32"/>
 <area shape="rect" href="sheet_8c.html#a780a65564a03a94864883fc7735076c1" title=" " alt="" coords="572,56,711,83"/>
@@ -2556,7 +2602,7 @@ Here is the caller graph for this function:</div>
 <div class="center"><img src="sheet_8c_aac2c29a3140c52c285ac7c7bc827fe63_icgraph.png" border="0" usemap="#asheet_8c_aac2c29a3140c52c285ac7c7bc827fe63_icgraph" alt=""/></div>
 <map name="sheet_8c_aac2c29a3140c52c285ac7c7bc827fe63_icgraph" id="asheet_8c_aac2c29a3140c52c285ac7c7bc827fe63_icgraph">
 <area shape="rect" title=" " alt="" coords="245,5,337,32"/>
-<area shape="rect" href="sheet_8c.html#a0cd8ff7e50ae66004551b9f9d54b4483" title=" " alt="" coords="104,5,197,32"/>
+<area shape="rect" href="sheet_8c.html#a2e9e037c07846d365953598a77560d01" title=" " alt="" coords="104,5,197,32"/>
 <area shape="rect" href="sheet_8c.html#a0ddf1224851353fc92bfbff6f499fa97" title=" " alt="" coords="5,5,56,32"/>
 </map>
 </div>
@@ -2603,56 +2649,56 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_a0ddf1224851353fc92bfbff6f499fa97_cgraph.png" border="0" usemap="#asheet_8c_a0ddf1224851353fc92bfbff6f499fa97_cgraph" alt=""/></div>
 <map name="sheet_8c_a0ddf1224851353fc92bfbff6f499fa97_cgraph" id="asheet_8c_a0ddf1224851353fc92bfbff6f499fa97_cgraph">
-<area shape="rect" title=" " alt="" coords="5,284,56,311"/>
-<area shape="rect" href="sheet_8c.html#a0b3ede433ec6c8f24b24b0c02bf2177f" title=" " alt="" coords="126,5,209,32"/>
-<area shape="rect" href="sheet_8c.html#a0de9cb3cabbcf448f8ab8a2c93a0fb4e" title=" " alt="" coords="286,157,371,184"/>
-<area shape="rect" href="sheet_8c.html#a2589649a1badfea4b1ab63d0f46aaa28" title=" " alt="" coords="828,196,969,223"/>
-<area shape="rect" href="sheet_8c.html#ac34c0bdc69d9a0935feceff6194011c5" title=" " alt="" coords="279,335,379,361"/>
-<area shape="rect" href="sheet_8c.html#a0cd8ff7e50ae66004551b9f9d54b4483" title=" " alt="" coords="282,259,375,285"/>
-<area shape="rect" href="sheet_8c.html#ae3e368928d0328684619c9d3439b8481" title=" " alt="" coords="106,360,229,387"/>
-<area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="120,512,215,539"/>
-<area shape="rect" href="sheet_8c.html#a82bf3c8a53884d9aa6bdaa102ce6aff9" title=" " alt="" coords="104,563,231,589"/>
-<area shape="rect" href="sheet_8c.html#aad4a7feab0ee38f3f6021fa3cfd9eed5" title=" " alt="" coords="475,107,541,133"/>
-<area shape="rect" href="sheet_8c.html#a96b028118ce1383a5fbbdf7c07e0acc8" title=" " alt="" coords="659,183,758,209"/>
-<area shape="rect" href="sheet_8c.html#af4954f21a78bfbe9775a84daae02fcf5" title=" " alt="" coords="1021,196,1165,223"/>
-<area shape="rect" href="sheet_8c.html#aa07ea2f97f9f1649fe0151ffbfff5bbc" title=" " alt="" coords="437,360,579,387"/>
-<area shape="rect" href="sheet_8c.html#ad60d134cb87a1cd6e34e48ae30d73632" title=" " alt="" coords="435,411,581,437"/>
-<area shape="rect" href="sheet_8c.html#abf44a4aeabe8fa9735aeabdd99cbff70" title=" " alt="" coords="451,1345,565,1372"/>
-<area shape="rect" href="sheet_8c.html#aac2c29a3140c52c285ac7c7bc827fe63" title=" " alt="" coords="462,208,554,235"/>
-<area shape="rect" href="sheet_8c.html#a3c599f3f858d466601d20436a4774111" title=" " alt="" coords="662,1399,755,1425"/>
-<area shape="rect" href="sheet_8c.html#af0bc4aec4706cb472d6be59053a23da9" title=" " alt="" coords="645,335,772,361"/>
-<area shape="rect" href="sheet_8c.html#a0ceaca96fe8567999bd020d95d52dc3e" title=" " alt="" coords="291,917,366,944"/>
-<area shape="rect" href="sheet_8c.html#ab092c211262e7e820682abb6f10a3562" title=" " alt="" coords="637,1703,780,1729"/>
-<area shape="rect" href="sheet_8c.html#af07382ab9780963994a54ccf24a48024" title=" " alt="" coords="291,1585,366,1612"/>
-<area shape="rect" href="sheet_8c.html#ae9f66aa4498eeda20fb2ec497307d501" title=" " alt="" coords="289,1408,368,1435"/>
-<area shape="rect" href="sheet_8c.html#a2842d01895ed1d7224990c49a0debdaf" title=" " alt="" coords="427,461,589,488"/>
-<area shape="rect" href="sheet_8c.html#a020097e6a7804697ff1dc1ba4e45c796" title=" " alt="" coords="839,943,959,969"/>
-<area shape="rect" href="sheet_8c.html#a6998df58b5c488429d8cd3f9632ba8e4" title=" " alt="" coords="1020,1095,1165,1121"/>
-<area shape="rect" href="sheet_8c.html#adcf92595fc841e78047b612ce64e3c4f" title=" " alt="" coords="1017,1297,1168,1324"/>
-<area shape="rect" href="sheet_8c.html#a1b464b12708c45a8e52811496a946a5c" title=" " alt="" coords="447,765,569,792"/>
-<area shape="rect" href="sheet_8c.html#ae0b2a63d2423834f59e3c0c568fd4ad4" title=" " alt="" coords="649,943,769,969"/>
-<area shape="rect" href="sheet_8c.html#aef5fa0c336d48eb38803d9b031a23ed0" title=" " alt="" coords="443,1044,573,1071"/>
-<area shape="rect" href="sheet_8c.html#a52a0721a487ee826d1b54932aa4529d7" title=" " alt="" coords="459,1263,557,1289"/>
-<area shape="rect" href="sheet_8c.html#a4f2b4052ff6ccaa98f9dc69ca934290f" title=" " alt="" coords="441,892,575,919"/>
-<area shape="rect" href="sheet_8c.html#abb83f2fe0ee623830639de8ce065b501" title=" " alt="" coords="431,613,585,640"/>
-<area shape="rect" href="sheet_8c.html#a3b4fb6abdb21969590515a3545bb1edc" title=" " alt="" coords="447,993,569,1020"/>
-<area shape="rect" href="sheet_8c.html#abf5a095def1cdb863545429e49d0916d" title=" " alt="" coords="834,993,963,1020"/>
-<area shape="rect" href="sheet_8c.html#a91860656a5d2d09a65c22e0beab0759f" title=" " alt="" coords="841,512,957,539"/>
-<area shape="rect" href="sheet_8c.html#af4c8a57de74d0106b6eb7af97fa1d2ff" title=" " alt="" coords="659,689,758,716"/>
-<area shape="rect" href="sheet_8c.html#a4ffee82f2e083a29bf0e4cdda584661e" title=" " alt="" coords="647,740,770,767"/>
-<area shape="rect" href="sheet_8c.html#a88b41b214f5e2c42d6ac59d97027e3fd" title=" " alt="" coords="840,601,957,628"/>
-<area shape="rect" href="sheet_8c.html#ac343905c8f1b216084684be243c96bff" title=" " alt="" coords="849,1297,948,1324"/>
-<area shape="rect" href="sheet_8c.html#ace5bc271847ba57d7872f5b7f7129cce" title=" " alt="" coords="647,1500,771,1527"/>
-<area shape="rect" href="sheet_8c.html#afb8e301f09ca3e3649006404767a8900" title=" " alt="" coords="853,1348,944,1375"/>
-<area shape="rect" href="sheet_8c.html#adf1d66ba3e5fd35b66ac2c307f8c43c8" title=" " alt="" coords="659,436,758,463"/>
-<area shape="rect" href="sheet_8c.html#a780a65564a03a94864883fc7735076c1" title=" " alt="" coords="639,537,778,564"/>
-<area shape="rect" href="sheet_8c.html#aa54ab37a5fe79da240bbfb0a9530b8bc" title=" " alt="" coords="657,1652,760,1679"/>
-<area shape="rect" href="sheet_8c.html#a12dddc016dfb7bab94190877836b4da8" title=" " alt="" coords="441,563,575,589"/>
-<area shape="rect" href="sheet_8c.html#a505d79001464fee9104986a9e42bb23b" title=" " alt="" coords="439,1652,577,1679"/>
-<area shape="rect" href="sheet_8c.html#af367ca46185ef96d3bba2a7a2de30e42" title=" " alt="" coords="431,1500,585,1527"/>
-<area shape="rect" href="sheet_8c.html#a6fabb1f4cfaa8596c39cd4b883123cf2" title=" " alt="" coords="431,1551,585,1577"/>
-<area shape="rect" href="sheet_8c.html#a124b0e4c07e2ed4651d62734e70b4bc0" title=" " alt="" coords="437,1449,579,1476"/>
-<area shape="rect" href="sheet_8c.html#acc49ae10bcdb95413360b50582b00943" title=" " alt="" coords="650,233,767,260"/>
+<area shape="rect" title=" " alt="" coords="5,265,56,291"/>
+<area shape="rect" href="sheet_8c.html#a0b3ede433ec6c8f24b24b0c02bf2177f" title=" " alt="" coords="126,62,209,89"/>
+<area shape="rect" href="sheet_8c.html#a0de9cb3cabbcf448f8ab8a2c93a0fb4e" title=" " alt="" coords="125,113,210,139"/>
+<area shape="rect" href="sheet_8c.html#a2589649a1badfea4b1ab63d0f46aaa28" title=" " alt="" coords="828,239,969,266"/>
+<area shape="rect" href="sheet_8c.html#ac34c0bdc69d9a0935feceff6194011c5" title=" " alt="" coords="279,113,379,139"/>
+<area shape="rect" href="sheet_8c.html#a2e9e037c07846d365953598a77560d01" title=" " alt="" coords="282,163,375,190"/>
+<area shape="rect" href="sheet_8c.html#ad4dec4e5d215155820750a43c62b7ad3" title=" " alt="" coords="124,366,211,393"/>
+<area shape="rect" href="sheet_8c.html#ae3e368928d0328684619c9d3439b8481" title=" " alt="" coords="106,417,229,443"/>
+<area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="120,315,215,342"/>
+<area shape="rect" href="sheet_8c.html#a82bf3c8a53884d9aa6bdaa102ce6aff9" title=" " alt="" coords="104,467,231,494"/>
+<area shape="rect" href="sheet_8c.html#aad4a7feab0ee38f3f6021fa3cfd9eed5" title=" " alt="" coords="296,11,361,38"/>
+<area shape="rect" href="sheet_8c.html#a96b028118ce1383a5fbbdf7c07e0acc8" title=" " alt="" coords="659,113,758,139"/>
+<area shape="rect" href="sheet_8c.html#af4954f21a78bfbe9775a84daae02fcf5" title=" " alt="" coords="1021,239,1165,266"/>
+<area shape="rect" href="sheet_8c.html#aa07ea2f97f9f1649fe0151ffbfff5bbc" title=" " alt="" coords="437,113,579,139"/>
+<area shape="rect" href="sheet_8c.html#ad60d134cb87a1cd6e34e48ae30d73632" title=" " alt="" coords="435,214,581,241"/>
+<area shape="rect" href="sheet_8c.html#abf44a4aeabe8fa9735aeabdd99cbff70" title=" " alt="" coords="451,1278,565,1305"/>
+<area shape="rect" href="sheet_8c.html#aac2c29a3140c52c285ac7c7bc827fe63" title=" " alt="" coords="462,62,554,89"/>
+<area shape="rect" href="sheet_8c.html#a3c599f3f858d466601d20436a4774111" title=" " alt="" coords="662,1430,755,1457"/>
+<area shape="rect" href="sheet_8c.html#af0bc4aec4706cb472d6be59053a23da9" title=" " alt="" coords="645,315,772,342"/>
+<area shape="rect" href="sheet_8c.html#a0ceaca96fe8567999bd020d95d52dc3e" title=" " alt="" coords="291,847,366,874"/>
+<area shape="rect" href="sheet_8c.html#ab092c211262e7e820682abb6f10a3562" title=" " alt="" coords="637,1633,780,1659"/>
+<area shape="rect" href="sheet_8c.html#af07382ab9780963994a54ccf24a48024" title=" " alt="" coords="291,1455,366,1482"/>
+<area shape="rect" href="sheet_8c.html#ae9f66aa4498eeda20fb2ec497307d501" title=" " alt="" coords="289,1253,368,1279"/>
+<area shape="rect" href="sheet_8c.html#a2842d01895ed1d7224990c49a0debdaf" title=" " alt="" coords="427,315,589,342"/>
+<area shape="rect" href="sheet_8c.html#a020097e6a7804697ff1dc1ba4e45c796" title=" " alt="" coords="839,949,959,975"/>
+<area shape="rect" href="sheet_8c.html#a6998df58b5c488429d8cd3f9632ba8e4" title=" " alt="" coords="1020,1087,1165,1114"/>
+<area shape="rect" href="sheet_8c.html#adcf92595fc841e78047b612ce64e3c4f" title=" " alt="" coords="1017,1278,1168,1305"/>
+<area shape="rect" href="sheet_8c.html#a1b464b12708c45a8e52811496a946a5c" title=" " alt="" coords="447,594,569,621"/>
+<area shape="rect" href="sheet_8c.html#ae0b2a63d2423834f59e3c0c568fd4ad4" title=" " alt="" coords="649,873,769,899"/>
+<area shape="rect" href="sheet_8c.html#aef5fa0c336d48eb38803d9b031a23ed0" title=" " alt="" coords="443,974,573,1001"/>
+<area shape="rect" href="sheet_8c.html#a52a0721a487ee826d1b54932aa4529d7" title=" " alt="" coords="459,1177,557,1203"/>
+<area shape="rect" href="sheet_8c.html#a4f2b4052ff6ccaa98f9dc69ca934290f" title=" " alt="" coords="441,822,575,849"/>
+<area shape="rect" href="sheet_8c.html#abb83f2fe0ee623830639de8ce065b501" title=" " alt="" coords="431,771,585,798"/>
+<area shape="rect" href="sheet_8c.html#a3b4fb6abdb21969590515a3545bb1edc" title=" " alt="" coords="447,923,569,950"/>
+<area shape="rect" href="sheet_8c.html#abf5a095def1cdb863545429e49d0916d" title=" " alt="" coords="834,1038,963,1065"/>
+<area shape="rect" href="sheet_8c.html#a91860656a5d2d09a65c22e0beab0759f" title=" " alt="" coords="651,569,767,595"/>
+<area shape="rect" href="sheet_8c.html#af4c8a57de74d0106b6eb7af97fa1d2ff" title=" " alt="" coords="659,417,758,443"/>
+<area shape="rect" href="sheet_8c.html#a4ffee82f2e083a29bf0e4cdda584661e" title=" " alt="" coords="647,467,770,494"/>
+<area shape="rect" href="sheet_8c.html#a88b41b214f5e2c42d6ac59d97027e3fd" title=" " alt="" coords="650,518,767,545"/>
+<area shape="rect" href="sheet_8c.html#ac343905c8f1b216084684be243c96bff" title=" " alt="" coords="849,1278,948,1305"/>
+<area shape="rect" href="sheet_8c.html#ace5bc271847ba57d7872f5b7f7129cce" title=" " alt="" coords="647,1329,771,1355"/>
+<area shape="rect" href="sheet_8c.html#afb8e301f09ca3e3649006404767a8900" title=" " alt="" coords="853,1354,944,1381"/>
+<area shape="rect" href="sheet_8c.html#adf1d66ba3e5fd35b66ac2c307f8c43c8" title=" " alt="" coords="659,771,758,798"/>
+<area shape="rect" href="sheet_8c.html#aa54ab37a5fe79da240bbfb0a9530b8bc" title=" " alt="" coords="657,1582,760,1609"/>
+<area shape="rect" href="sheet_8c.html#a12dddc016dfb7bab94190877836b4da8" title=" " alt="" coords="441,493,575,519"/>
+<area shape="rect" href="sheet_8c.html#a505d79001464fee9104986a9e42bb23b" title=" " alt="" coords="439,1531,577,1558"/>
+<area shape="rect" href="sheet_8c.html#af367ca46185ef96d3bba2a7a2de30e42" title=" " alt="" coords="431,1481,585,1507"/>
+<area shape="rect" href="sheet_8c.html#a6fabb1f4cfaa8596c39cd4b883123cf2" title=" " alt="" coords="431,1329,585,1355"/>
+<area shape="rect" href="sheet_8c.html#a124b0e4c07e2ed4651d62734e70b4bc0" title=" " alt="" coords="437,1227,579,1254"/>
+<area shape="rect" href="sheet_8c.html#acc49ae10bcdb95413360b50582b00943" title=" " alt="" coords="650,214,767,241"/>
 </map>
 </div>
 
@@ -2722,7 +2768,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_a52a0721a487ee826d1b54932aa4529d7_icgraph.png" border="0" usemap="#asheet_8c_a52a0721a487ee826d1b54932aa4529d7_icgraph" alt=""/></div>
-<map name="sheet_8c_a52a0721a487ee826d1b54932aa4529d7_icgraph" id="sheet_8c_a52a0721a487ee826d1b54932aa4529d7_icgraph">
+<map name="sheet_8c_a52a0721a487ee826d1b54932aa4529d7_icgraph" id="asheet_8c_a52a0721a487ee826d1b54932aa4529d7_icgraph">
 <area shape="rect" title=" " alt="" coords="369,5,467,32"/>
 <area shape="rect" href="sheet_8c.html#a0ceaca96fe8567999bd020d95d52dc3e" title=" " alt="" coords="247,5,321,32"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="104,5,199,32"/>
@@ -2814,7 +2860,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_af07382ab9780963994a54ccf24a48024_icgraph.png" border="0" usemap="#asheet_8c_af07382ab9780963994a54ccf24a48024_icgraph" alt=""/></div>
-<map name="sheet_8c_af07382ab9780963994a54ccf24a48024_icgraph" id="sheet_8c_af07382ab9780963994a54ccf24a48024_icgraph">
+<map name="sheet_8c_af07382ab9780963994a54ccf24a48024_icgraph" id="asheet_8c_af07382ab9780963994a54ccf24a48024_icgraph">
 <area shape="rect" title=" " alt="" coords="247,5,321,32"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="104,5,199,32"/>
 <area shape="rect" href="sheet_8c.html#a0ddf1224851353fc92bfbff6f499fa97" title=" " alt="" coords="5,5,56,32"/>
@@ -3018,7 +3064,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_a780a65564a03a94864883fc7735076c1_icgraph.png" border="0" usemap="#asheet_8c_a780a65564a03a94864883fc7735076c1_icgraph" alt=""/></div>
-<map name="sheet_8c_a780a65564a03a94864883fc7735076c1_icgraph" id="sheet_8c_a780a65564a03a94864883fc7735076c1_icgraph">
+<map name="sheet_8c_a780a65564a03a94864883fc7735076c1_icgraph" id="asheet_8c_a780a65564a03a94864883fc7735076c1_icgraph">
 <area shape="rect" title=" " alt="" coords="572,5,711,32"/>
 <area shape="rect" href="sheet_8c.html#abb83f2fe0ee623830639de8ce065b501" title=" " alt="" coords="369,5,524,32"/>
 <area shape="rect" href="sheet_8c.html#a0ceaca96fe8567999bd020d95d52dc3e" title=" " alt="" coords="247,5,321,32"/>
@@ -3081,7 +3127,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_afb8e301f09ca3e3649006404767a8900_icgraph.png" border="0" usemap="#asheet_8c_afb8e301f09ca3e3649006404767a8900_icgraph" alt=""/></div>
-<map name="sheet_8c_afb8e301f09ca3e3649006404767a8900_icgraph" id="sheet_8c_afb8e301f09ca3e3649006404767a8900_icgraph">
+<map name="sheet_8c_afb8e301f09ca3e3649006404767a8900_icgraph" id="asheet_8c_afb8e301f09ca3e3649006404767a8900_icgraph">
 <area shape="rect" title=" " alt="" coords="576,31,667,57"/>
 <area shape="rect" href="sheet_8c.html#af367ca46185ef96d3bba2a7a2de30e42" title=" " alt="" coords="373,5,528,32"/>
 <area shape="rect" href="sheet_8c.html#a52a0721a487ee826d1b54932aa4529d7" title=" " alt="" coords="402,56,499,83"/>
@@ -3139,7 +3185,7 @@ Here is the caller graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_aa266498a5516e986422a2a213d46acf9_icgraph.png" border="0" usemap="#asheet_8c_aa266498a5516e986422a2a213d46acf9_icgraph" alt=""/></div>
-<map name="sheet_8c_aa266498a5516e986422a2a213d46acf9_icgraph" id="sheet_8c_aa266498a5516e986422a2a213d46acf9_icgraph">
+<map name="sheet_8c_aa266498a5516e986422a2a213d46acf9_icgraph" id="asheet_8c_aa266498a5516e986422a2a213d46acf9_icgraph">
 <area shape="rect" title=" " alt="" coords="869,233,992,260"/>
 <area shape="rect" href="sheet_8c.html#afeeef5904f5eea75df453e0fde5be447" title=" " alt="" coords="744,183,821,209"/>
 <area shape="rect" href="sheet_8c.html#afb8e301f09ca3e3649006404767a8900" title=" " alt="" coords="591,309,681,336"/>
@@ -3222,7 +3268,7 @@ Here is the caller graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_af4c8a57de74d0106b6eb7af97fa1d2ff_icgraph.png" border="0" usemap="#asheet_8c_af4c8a57de74d0106b6eb7af97fa1d2ff_icgraph" alt=""/></div>
-<map name="sheet_8c_af4c8a57de74d0106b6eb7af97fa1d2ff_icgraph" id="sheet_8c_af4c8a57de74d0106b6eb7af97fa1d2ff_icgraph">
+<map name="sheet_8c_af4c8a57de74d0106b6eb7af97fa1d2ff_icgraph" id="asheet_8c_af4c8a57de74d0106b6eb7af97fa1d2ff_icgraph">
 <area shape="rect" title=" " alt="" coords="540,5,639,32"/>
 <area shape="rect" href="sheet_8c.html#a1b464b12708c45a8e52811496a946a5c" title=" " alt="" coords="369,5,492,32"/>
 <area shape="rect" href="sheet_8c.html#a0ceaca96fe8567999bd020d95d52dc3e" title=" " alt="" coords="247,5,321,32"/>
@@ -3303,7 +3349,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_a4f2b4052ff6ccaa98f9dc69ca934290f_icgraph.png" border="0" usemap="#asheet_8c_a4f2b4052ff6ccaa98f9dc69ca934290f_icgraph" alt=""/></div>
-<map name="sheet_8c_a4f2b4052ff6ccaa98f9dc69ca934290f_icgraph" id="sheet_8c_a4f2b4052ff6ccaa98f9dc69ca934290f_icgraph">
+<map name="sheet_8c_a4f2b4052ff6ccaa98f9dc69ca934290f_icgraph" id="asheet_8c_a4f2b4052ff6ccaa98f9dc69ca934290f_icgraph">
 <area shape="rect" title=" " alt="" coords="369,5,503,32"/>
 <area shape="rect" href="sheet_8c.html#a0ceaca96fe8567999bd020d95d52dc3e" title=" " alt="" coords="247,5,321,32"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="104,5,199,32"/>
@@ -3396,7 +3442,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_abb83f2fe0ee623830639de8ce065b501_icgraph.png" border="0" usemap="#asheet_8c_abb83f2fe0ee623830639de8ce065b501_icgraph" alt=""/></div>
-<map name="sheet_8c_abb83f2fe0ee623830639de8ce065b501_icgraph" id="sheet_8c_abb83f2fe0ee623830639de8ce065b501_icgraph">
+<map name="sheet_8c_abb83f2fe0ee623830639de8ce065b501_icgraph" id="asheet_8c_abb83f2fe0ee623830639de8ce065b501_icgraph">
 <area shape="rect" title=" " alt="" coords="369,5,524,32"/>
 <area shape="rect" href="sheet_8c.html#a0ceaca96fe8567999bd020d95d52dc3e" title=" " alt="" coords="247,5,321,32"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="104,5,199,32"/>
@@ -3469,7 +3515,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_ae0b2a63d2423834f59e3c0c568fd4ad4_icgraph.png" border="0" usemap="#asheet_8c_ae0b2a63d2423834f59e3c0c568fd4ad4_icgraph" alt=""/></div>
-<map name="sheet_8c_ae0b2a63d2423834f59e3c0c568fd4ad4_icgraph" id="sheet_8c_ae0b2a63d2423834f59e3c0c568fd4ad4_icgraph">
+<map name="sheet_8c_ae0b2a63d2423834f59e3c0c568fd4ad4_icgraph" id="asheet_8c_ae0b2a63d2423834f59e3c0c568fd4ad4_icgraph">
 <area shape="rect" title=" " alt="" coords="572,132,692,159"/>
 <area shape="rect" href="sheet_8c.html#a1b464b12708c45a8e52811496a946a5c" title=" " alt="" coords="385,5,508,32"/>
 <area shape="rect" href="sheet_8c.html#a0ceaca96fe8567999bd020d95d52dc3e" title=" " alt="" coords="247,132,321,159"/>
@@ -3522,7 +3568,7 @@ Here is the caller graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_a4ffee82f2e083a29bf0e4cdda584661e_icgraph.png" border="0" usemap="#asheet_8c_a4ffee82f2e083a29bf0e4cdda584661e_icgraph" alt=""/></div>
-<map name="sheet_8c_a4ffee82f2e083a29bf0e4cdda584661e_icgraph" id="sheet_8c_a4ffee82f2e083a29bf0e4cdda584661e_icgraph">
+<map name="sheet_8c_a4ffee82f2e083a29bf0e4cdda584661e_icgraph" id="asheet_8c_a4ffee82f2e083a29bf0e4cdda584661e_icgraph">
 <area shape="rect" title=" " alt="" coords="540,5,663,32"/>
 <area shape="rect" href="sheet_8c.html#a1b464b12708c45a8e52811496a946a5c" title=" " alt="" coords="369,5,492,32"/>
 <area shape="rect" href="sheet_8c.html#a0ceaca96fe8567999bd020d95d52dc3e" title=" " alt="" coords="247,5,321,32"/>
@@ -3572,7 +3618,7 @@ Here is the caller graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_acc49ae10bcdb95413360b50582b00943_icgraph.png" border="0" usemap="#asheet_8c_acc49ae10bcdb95413360b50582b00943_icgraph" alt=""/></div>
-<map name="sheet_8c_acc49ae10bcdb95413360b50582b00943_icgraph" id="sheet_8c_acc49ae10bcdb95413360b50582b00943_icgraph">
+<map name="sheet_8c_acc49ae10bcdb95413360b50582b00943_icgraph" id="asheet_8c_acc49ae10bcdb95413360b50582b00943_icgraph">
 <area shape="rect" title=" " alt="" coords="457,5,575,32"/>
 <area shape="rect" href="sheet_8c.html#a2842d01895ed1d7224990c49a0debdaf" title=" " alt="" coords="247,5,409,32"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="104,5,199,32"/>
@@ -3621,7 +3667,7 @@ Here is the caller graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_a88b41b214f5e2c42d6ac59d97027e3fd_icgraph.png" border="0" usemap="#asheet_8c_a88b41b214f5e2c42d6ac59d97027e3fd_icgraph" alt=""/></div>
-<map name="sheet_8c_a88b41b214f5e2c42d6ac59d97027e3fd_icgraph" id="sheet_8c_a88b41b214f5e2c42d6ac59d97027e3fd_icgraph">
+<map name="sheet_8c_a88b41b214f5e2c42d6ac59d97027e3fd_icgraph" id="asheet_8c_a88b41b214f5e2c42d6ac59d97027e3fd_icgraph">
 <area shape="rect" title=" " alt="" coords="759,31,876,57"/>
 <area shape="rect" href="sheet_8c.html#a1b464b12708c45a8e52811496a946a5c" title=" " alt="" coords="385,5,508,32"/>
 <area shape="rect" href="sheet_8c.html#a780a65564a03a94864883fc7735076c1" title=" " alt="" coords="572,56,711,83"/>
@@ -3677,7 +3723,7 @@ Here is the caller graph for this function:</div>
 <area shape="rect" title=" " alt="" coords="536,56,629,83"/>
 <area shape="rect" href="sheet_8c.html#abf44a4aeabe8fa9735aeabdd99cbff70" title=" " alt="" coords="373,56,488,83"/>
 <area shape="rect" href="sheet_8c.html#a0ceaca96fe8567999bd020d95d52dc3e" title=" " alt="" coords="249,5,323,32"/>
-<area shape="rect" href="sheet_8c.html#a0cd8ff7e50ae66004551b9f9d54b4483" title=" " alt="" coords="105,107,198,133"/>
+<area shape="rect" href="sheet_8c.html#a2e9e037c07846d365953598a77560d01" title=" " alt="" coords="105,107,198,133"/>
 <area shape="rect" href="sheet_8c.html#ae9f66aa4498eeda20fb2ec497307d501" title=" " alt="" coords="247,56,325,83"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="104,56,199,83"/>
 <area shape="rect" href="sheet_8c.html#a0ddf1224851353fc92bfbff6f499fa97" title=" " alt="" coords="5,81,56,108"/>
@@ -3728,14 +3774,14 @@ Here is the caller graph for this function:</div>
 <area shape="rect" title=" " alt="" coords="605,157,704,184"/>
 <area shape="rect" href="sheet_8c.html#aa07ea2f97f9f1649fe0151ffbfff5bbc" title=" " alt="" coords="405,56,547,83"/>
 <area shape="rect" href="sheet_8c.html#ac34c0bdc69d9a0935feceff6194011c5" title=" " alt="" coords="247,5,347,32"/>
-<area shape="rect" href="sheet_8c.html#a0de9cb3cabbcf448f8ab8a2c93a0fb4e" title=" " alt="" coords="254,259,339,285"/>
-<area shape="rect" href="sheet_8c.html#aad4a7feab0ee38f3f6021fa3cfd9eed5" title=" " alt="" coords="443,259,509,285"/>
-<area shape="rect" href="sheet_8c.html#a0cd8ff7e50ae66004551b9f9d54b4483" title=" " alt="" coords="105,297,198,324"/>
-<area shape="rect" href="sheet_8c.html#ad60d134cb87a1cd6e34e48ae30d73632" title=" " alt="" coords="403,107,549,133"/>
-<area shape="rect" href="sheet_8c.html#a2842d01895ed1d7224990c49a0debdaf" title=" " alt="" coords="395,157,557,184"/>
+<area shape="rect" href="sheet_8c.html#aad4a7feab0ee38f3f6021fa3cfd9eed5" title=" " alt="" coords="264,259,329,285"/>
+<area shape="rect" href="sheet_8c.html#a2e9e037c07846d365953598a77560d01" title=" " alt="" coords="105,284,198,311"/>
+<area shape="rect" href="sheet_8c.html#ad60d134cb87a1cd6e34e48ae30d73632" title=" " alt="" coords="403,119,549,145"/>
+<area shape="rect" href="sheet_8c.html#a2842d01895ed1d7224990c49a0debdaf" title=" " alt="" coords="395,195,557,221"/>
 <area shape="rect" href="sheet_8c.html#a0ceaca96fe8567999bd020d95d52dc3e" title=" " alt="" coords="259,56,334,83"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="104,157,199,184"/>
-<area shape="rect" href="sheet_8c.html#a0ddf1224851353fc92bfbff6f499fa97" title=" " alt="" coords="5,184,56,211"/>
+<area shape="rect" href="sheet_8c.html#a0ddf1224851353fc92bfbff6f499fa97" title=" " alt="" coords="5,196,56,223"/>
+<area shape="rect" href="sheet_8c.html#a0de9cb3cabbcf448f8ab8a2c93a0fb4e" title=" " alt="" coords="109,233,194,260"/>
 <area shape="rect" href="sheet_8c.html#ae9f66aa4498eeda20fb2ec497307d501" title=" " alt="" coords="257,107,336,133"/>
 </map>
 </div>
@@ -3806,7 +3852,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_a3b4fb6abdb21969590515a3545bb1edc_icgraph.png" border="0" usemap="#asheet_8c_a3b4fb6abdb21969590515a3545bb1edc_icgraph" alt=""/></div>
-<map name="sheet_8c_a3b4fb6abdb21969590515a3545bb1edc_icgraph" id="sheet_8c_a3b4fb6abdb21969590515a3545bb1edc_icgraph">
+<map name="sheet_8c_a3b4fb6abdb21969590515a3545bb1edc_icgraph" id="asheet_8c_a3b4fb6abdb21969590515a3545bb1edc_icgraph">
 <area shape="rect" title=" " alt="" coords="369,5,492,32"/>
 <area shape="rect" href="sheet_8c.html#a0ceaca96fe8567999bd020d95d52dc3e" title=" " alt="" coords="247,5,321,32"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="104,5,199,32"/>
@@ -3901,7 +3947,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_ae9f66aa4498eeda20fb2ec497307d501_icgraph.png" border="0" usemap="#asheet_8c_ae9f66aa4498eeda20fb2ec497307d501_icgraph" alt=""/></div>
-<map name="sheet_8c_ae9f66aa4498eeda20fb2ec497307d501_icgraph" id="sheet_8c_ae9f66aa4498eeda20fb2ec497307d501_icgraph">
+<map name="sheet_8c_ae9f66aa4498eeda20fb2ec497307d501_icgraph" id="asheet_8c_ae9f66aa4498eeda20fb2ec497307d501_icgraph">
 <area shape="rect" title=" " alt="" coords="247,5,325,32"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="104,5,199,32"/>
 <area shape="rect" href="sheet_8c.html#a0ddf1224851353fc92bfbff6f499fa97" title=" " alt="" coords="5,5,56,32"/>
@@ -3964,7 +4010,7 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="sheet_8c_a2842d01895ed1d7224990c49a0debdaf_icgraph.png" border="0" usemap="#asheet_8c_a2842d01895ed1d7224990c49a0debdaf_icgraph" alt=""/></div>
-<map name="sheet_8c_a2842d01895ed1d7224990c49a0debdaf_icgraph" id="sheet_8c_a2842d01895ed1d7224990c49a0debdaf_icgraph">
+<map name="sheet_8c_a2842d01895ed1d7224990c49a0debdaf_icgraph" id="asheet_8c_a2842d01895ed1d7224990c49a0debdaf_icgraph">
 <area shape="rect" title=" " alt="" coords="247,5,409,32"/>
 <area shape="rect" href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558" title=" " alt="" coords="104,5,199,32"/>
 <area shape="rect" href="sheet_8c.html#a0ddf1224851353fc92bfbff6f499fa97" title=" " alt="" coords="5,5,56,32"/>
@@ -4020,109 +4066,111 @@ Here is the caller graph for this function:</div>
 </div>
 </div>
 </div><!-- contents -->
-<div class="ttc" id="asheet_8c_html_a505d79001464fee9104986a9e42bb23b"><div class="ttname"><a href="sheet_8c.html#a505d79001464fee9104986a9e42bb23b">create_emty_row_at</a></div><div class="ttdeci">void create_emty_row_at(Line *line, int index)</div><div class="ttdef"><b>Definition:</b> sheet.c:1309</div></div>
-<div class="ttc" id="asheet_8c_html_a0b3ede433ec6c8f24b24b0c02bf2177f"><div class="ttname"><a href="sheet_8c.html#a0b3ede433ec6c8f24b24b0c02bf2177f">chck_args</a></div><div class="ttdeci">int chck_args(int argc, char **argv)</div><div class="ttdef"><b>Definition:</b> sheet.c:159</div></div>
-<div class="ttc" id="asheet_8c_html_aa266498a5516e986422a2a213d46acf9"><div class="ttname"><a href="sheet_8c.html#aa266498a5516e986422a2a213d46acf9">remove_substring</a></div><div class="ttdeci">int remove_substring(char *base_string, int start_index, int end_index)</div><div class="ttdef"><b>Definition:</b> sheet.c:904</div></div>
-<div class="ttc" id="asheet_8c_html_a5f1c68ad012e7a49adb800fbcbe8aed5"><div class="ttname"><a href="sheet_8c.html#a5f1c68ad012e7a49adb800fbcbe8aed5">NUMBER_OF_TABLE_COMS</a></div><div class="ttdeci">#define NUMBER_OF_TABLE_COMS</div><div class="ttdef"><b>Definition:</b> sheet.c:23</div></div>
-<div class="ttc" id="astruct_selector_html"><div class="ttname"><a href="struct_selector.html">Selector</a></div><div class="ttdoc">Structure to contain information about selector.</div><div class="ttdef"><b>Definition:</b> sheet.c:104</div></div>
-<div class="ttc" id="astruct_line_html_aa8ed5786e4d566de328610f730438603"><div class="ttname"><a href="struct_line.html#aa8ed5786e4d566de328610f730438603">Line::final_cols</a></div><div class="ttdeci">int final_cols</div><div class="ttdef"><b>Definition:</b> sheet.c:89</div></div>
-<div class="ttc" id="asheet_8c_html_adf1d66ba3e5fd35b66ac2c307f8c43c8"><div class="ttname"><a href="sheet_8c.html#adf1d66ba3e5fd35b66ac2c307f8c43c8">is_double_int</a></div><div class="ttdeci">int is_double_int(double val)</div><div class="ttdef"><b>Definition:</b> sheet.c:716</div></div>
-<div class="ttc" id="asheet_8c_html_a12dddc016dfb7bab94190877836b4da8"><div class="ttname"><a href="sheet_8c.html#a12dddc016dfb7bab94190877836b4da8">append_empty_cell</a></div><div class="ttdeci">void append_empty_cell(Line *line)</div><div class="ttdef"><b>Definition:</b> sheet.c:987</div></div>
-<div class="ttc" id="asheet_8c_html_aef5fa0c336d48eb38803d9b031a23ed0"><div class="ttname"><a href="sheet_8c.html#aef5fa0c336d48eb38803d9b031a23ed0">copy_cell_value_to</a></div><div class="ttdeci">void copy_cell_value_to(Line *line, int source_index, int target_index)</div><div class="ttdef"><b>Definition:</b> sheet.c:1467</div></div>
-<div class="ttc" id="asheet_8c_html_aac2c29a3140c52c285ac7c7bc827fe63"><div class="ttname"><a href="sheet_8c.html#aac2c29a3140c52c285ac7c7bc827fe63">is_string_int</a></div><div class="ttdeci">int is_string_int(char *string)</div><div class="ttdef"><b>Definition:</b> sheet.c:663</div></div>
-<div class="ttc" id="astruct_line_html_ab56c67e0ed9605b4078e2135f791c4ed"><div class="ttname"><a href="struct_line.html#ab56c67e0ed9605b4078e2135f791c4ed">Line::delim</a></div><div class="ttdeci">char delim</div><div class="ttdef"><b>Definition:</b> sheet.c:85</div></div>
-<div class="ttc" id="asheet_8c_html_a1b464b12708c45a8e52811496a946a5c"><div class="ttname"><a href="sheet_8c.html#a1b464b12708c45a8e52811496a946a5c">cell_value_editing</a></div><div class="ttdeci">void cell_value_editing(Line *line, int index, int processing_flag)</div><div class="ttdef"><b>Definition:</b> sheet.c:1415</div></div>
-<div class="ttc" id="asheet_8c_html_a020097e6a7804697ff1dc1ba4e45c796"><div class="ttname"><a href="sheet_8c.html#a020097e6a7804697ff1dc1ba4e45c796">get_value_of_cell</a></div><div class="ttdeci">int get_value_of_cell(Line *line, int index, char *substring)</div><div class="ttdef"><b>Definition:</b> sheet.c:512</div></div>
-<div class="ttc" id="astruct_line_html_a2206f140bd4ba67241ca0939be754c5c"><div class="ttname"><a href="struct_line.html#a2206f140bd4ba67241ca0939be754c5c">Line::unedited_line_string</a></div><div class="ttdeci">char unedited_line_string[MAX_LINE_LEN+2]</div><div class="ttdef"><b>Definition:</b> sheet.c:84</div></div>
-<div class="ttc" id="asheet_8c_html_aa497039a173a79107b2c39b40f514843aa1017e9b343135a54a98b6f479354d16"><div class="ttname"><a href="sheet_8c.html#aa497039a173a79107b2c39b40f514843aa1017e9b343135a54a98b6f479354d16">LOWER</a></div><div class="ttdeci">@ LOWER</div><div class="ttdef"><b>Definition:</b> sheet.c:59</div></div>
-<div class="ttc" id="asheet_8c_html_a96b028118ce1383a5fbbdf7c07e0acc8"><div class="ttname"><a href="sheet_8c.html#a96b028118ce1383a5fbbdf7c07e0acc8">strings_equal</a></div><div class="ttdeci">int strings_equal(const char *s1, const char *s2)</div><div class="ttdef"><b>Definition:</b> sheet.c:126</div></div>
-<div class="ttc" id="astruct_line_html_a45a098ebf145ae40551c338c19fdb525"><div class="ttname"><a href="struct_line.html#a45a098ebf145ae40551c338c19fdb525">Line::process_flag</a></div><div class="ttdeci">int process_flag</div><div class="ttdef"><b>Definition:</b> sheet.c:93</div></div>
-<div class="ttc" id="astruct_line_html_a8e221e15b35aeb7339a68b05f29ca7a4"><div class="ttname"><a href="struct_line.html#a8e221e15b35aeb7339a68b05f29ca7a4">Line::num_of_cols</a></div><div class="ttdeci">int num_of_cols</div><div class="ttdef"><b>Definition:</b> sheet.c:88</div></div>
-<div class="ttc" id="asheet_8c_html_aad4a7feab0ee38f3f6021fa3cfd9eed5"><div class="ttname"><a href="sheet_8c.html#aad4a7feab0ee38f3f6021fa3cfd9eed5">get_opt</a></div><div class="ttdeci">char * get_opt(int argc, char *argv[], char *opt_flag)</div><div class="ttdef"><b>Definition:</b> sheet.c:284</div></div>
-<div class="ttc" id="asheet_8c_html_afb8e301f09ca3e3649006404767a8900"><div class="ttname"><a href="sheet_8c.html#afb8e301f09ca3e3649006404767a8900">remove_cell</a></div><div class="ttdeci">int remove_cell(Line *line, int index)</div><div class="ttdef"><b>Definition:</b> sheet.c:1010</div></div>
-<div class="ttc" id="asheet_8c_html_a0cd8ff7e50ae66004551b9f9d54b4483"><div class="ttname"><a href="sheet_8c.html#a0cd8ff7e50ae66004551b9f9d54b4483">get_selector</a></div><div class="ttdeci">int get_selector(Selector *selector, int argc, char *argv[])</div><div class="ttdef"><b>Definition:</b> sheet.c:1077</div></div>
-<div class="ttc" id="asheet_8c_html_aa497039a173a79107b2c39b40f514843ae704d5d328a8522a6193aa3efb28c724"><div class="ttname"><a href="sheet_8c.html#aa497039a173a79107b2c39b40f514843ae704d5d328a8522a6193aa3efb28c724">UPPER</a></div><div class="ttdeci">@ UPPER</div><div class="ttdef"><b>Definition:</b> sheet.c:58</div></div>
-<div class="ttc" id="asheet_8c_html_acc49ae10bcdb95413360b50582b00943"><div class="ttname"><a href="sheet_8c.html#acc49ae10bcdb95413360b50582b00943">string_start_with</a></div><div class="ttdeci">int string_start_with(const char *base_string, const char *start_string)</div><div class="ttdef"><b>Definition:</b> sheet.c:140</div></div>
-<div class="ttc" id="astruct_selector_html_aca806b4fe19711158b4646410eebab78"><div class="ttname"><a href="struct_selector.html#aca806b4fe19711158b4646410eebab78">Selector::a1</a></div><div class="ttdeci">char * a1</div><div class="ttdef"><b>Definition:</b> sheet.c:106</div></div>
-<div class="ttc" id="asheet_8c_html_af4954f21a78bfbe9775a84daae02fcf5"><div class="ttname"><a href="sheet_8c.html#af4954f21a78bfbe9775a84daae02fcf5">count_specific_chars</a></div><div class="ttdeci">int count_specific_chars(const char *string, char ch)</div><div class="ttdef"><b>Definition:</b> sheet.c:371</div></div>
-<div class="ttc" id="astruct_line_html"><div class="ttname"><a href="struct_line.html">Line</a></div><div class="ttdoc">Store for data of one line.</div><div class="ttdef"><b>Definition:</b> sheet.c:81</div></div>
-<div class="ttc" id="asheet_8c_html_aa54ab37a5fe79da240bbfb0a9530b8bc"><div class="ttname"><a href="sheet_8c.html#aa54ab37a5fe79da240bbfb0a9530b8bc">is_line_empty</a></div><div class="ttdeci">int is_line_empty(Line *line)</div><div class="ttdef"><b>Definition:</b> sheet.c:391</div></div>
-<div class="ttc" id="asheet_8c_html_a3878e89dc5c88d823f4f923ef90dbcb3a20111fb9b4307642b6fe7eb381cf5ff1"><div class="ttname"><a href="sheet_8c.html#a3878e89dc5c88d823f4f923ef90dbcb3a20111fb9b4307642b6fe7eb381cf5ff1">MAX_LINE_LEN_EXCEDED</a></div><div class="ttdeci">@ MAX_LINE_LEN_EXCEDED</div><div class="ttdef"><b>Definition:</b> sheet.c:47</div></div>
-<div class="ttc" id="asheet_8c_html_aa497039a173a79107b2c39b40f514843afd5a5f51ce25953f3db2c7e93eb7864a"><div class="ttname"><a href="sheet_8c.html#aa497039a173a79107b2c39b40f514843afd5a5f51ce25953f3db2c7e93eb7864a">INT</a></div><div class="ttdeci">@ INT</div><div class="ttdef"><b>Definition:</b> sheet.c:61</div></div>
-<div class="ttc" id="asheet_8c_html_a82bf3c8a53884d9aa6bdaa102ce6aff9"><div class="ttname"><a href="sheet_8c.html#a82bf3c8a53884d9aa6bdaa102ce6aff9">rm_newline_chars</a></div><div class="ttdeci">void rm_newline_chars(char *s)</div><div class="ttdef"><b>Definition:</b> sheet.c:267</div></div>
-<div class="ttc" id="asheet_8c_html_a91860656a5d2d09a65c22e0beab0759f"><div class="ttname"><a href="sheet_8c.html#a91860656a5d2d09a65c22e0beab0759f">is_string_double</a></div><div class="ttdeci">int is_string_double(char *string)</div><div class="ttdef"><b>Definition:</b> sheet.c:610</div></div>
-<div class="ttc" id="asheet_8c_html_a2842d01895ed1d7224990c49a0debdaf"><div class="ttname"><a href="sheet_8c.html#a2842d01895ed1d7224990c49a0debdaf">validate_line_processing</a></div><div class="ttdeci">void validate_line_processing(Line *line, Selector *selector)</div><div class="ttdef"><b>Definition:</b> sheet.c:1148</div></div>
-<div class="ttc" id="asheet_8c_html_a88b41b214f5e2c42d6ac59d97027e3fd"><div class="ttname"><a href="sheet_8c.html#a88b41b214f5e2c42d6ac59d97027e3fd">string_to_double</a></div><div class="ttdeci">int string_to_double(char *string, double *val)</div><div class="ttdef"><b>Definition:</b> sheet.c:633</div></div>
-<div class="ttc" id="asheet_8c_html_ad60d134cb87a1cd6e34e48ae30d73632"><div class="ttname"><a href="sheet_8c.html#ad60d134cb87a1cd6e34e48ae30d73632">get_table_com_index</a></div><div class="ttdeci">int get_table_com_index(char *com)</div><div class="ttdef"><b>Definition:</b> sheet.c:185</div></div>
-<div class="ttc" id="asheet_8c_html_af07382ab9780963994a54ccf24a48024"><div class="ttname"><a href="sheet_8c.html#af07382ab9780963994a54ccf24a48024">print_line</a></div><div class="ttdeci">void print_line(Line *line)</div><div class="ttdef"><b>Definition:</b> sheet.c:812</div></div>
-<div class="ttc" id="astruct_selector_html_af7e027134357e2807f6244a1c79459ff"><div class="ttname"><a href="struct_selector.html#af7e027134357e2807f6244a1c79459ff">Selector::a2</a></div><div class="ttdeci">char * a2</div><div class="ttdef"><b>Definition:</b> sheet.c:107</div></div>
-<div class="ttc" id="asheet_8c_html_a3878e89dc5c88d823f4f923ef90dbcb3aec1024879d398de584d1722ebbe0a5c9"><div class="ttname"><a href="sheet_8c.html#a3878e89dc5c88d823f4f923ef90dbcb3aec1024879d398de584d1722ebbe0a5c9">INPUT_ERROR</a></div><div class="ttdeci">@ INPUT_ERROR</div><div class="ttdef"><b>Definition:</b> sheet.c:49</div></div>
+<div class="ttc" id="asheet_8c_html_a505d79001464fee9104986a9e42bb23b"><div class="ttname"><a href="sheet_8c.html#a505d79001464fee9104986a9e42bb23b">create_emty_row_at</a></div><div class="ttdeci">void create_emty_row_at(Line *line, int index)</div><div class="ttdef"><b>Definition:</b> sheet.c:1292</div></div>
+<div class="ttc" id="asheet_8c_html_a0b3ede433ec6c8f24b24b0c02bf2177f"><div class="ttname"><a href="sheet_8c.html#a0b3ede433ec6c8f24b24b0c02bf2177f">chck_args</a></div><div class="ttdeci">int chck_args(int argc, char **argv)</div><div class="ttdef"><b>Definition:</b> sheet.c:160</div></div>
+<div class="ttc" id="asheet_8c_html_aa266498a5516e986422a2a213d46acf9"><div class="ttname"><a href="sheet_8c.html#aa266498a5516e986422a2a213d46acf9">remove_substring</a></div><div class="ttdeci">int remove_substring(char *base_string, int start_index, int end_index)</div><div class="ttdef"><b>Definition:</b> sheet.c:892</div></div>
+<div class="ttc" id="asheet_8c_html_a5f1c68ad012e7a49adb800fbcbe8aed5"><div class="ttname"><a href="sheet_8c.html#a5f1c68ad012e7a49adb800fbcbe8aed5">NUMBER_OF_TABLE_COMS</a></div><div class="ttdeci">#define NUMBER_OF_TABLE_COMS</div><div class="ttdef"><b>Definition:</b> sheet.c:24</div></div>
+<div class="ttc" id="astruct_selector_html"><div class="ttname"><a href="struct_selector.html">Selector</a></div><div class="ttdoc">Structure to contain information about selector.</div><div class="ttdef"><b>Definition:</b> sheet.c:105</div></div>
+<div class="ttc" id="astruct_line_html_aa8ed5786e4d566de328610f730438603"><div class="ttname"><a href="struct_line.html#aa8ed5786e4d566de328610f730438603">Line::final_cols</a></div><div class="ttdeci">int final_cols</div><div class="ttdef"><b>Definition:</b> sheet.c:90</div></div>
+<div class="ttc" id="asheet_8c_html_adf1d66ba3e5fd35b66ac2c307f8c43c8"><div class="ttname"><a href="sheet_8c.html#adf1d66ba3e5fd35b66ac2c307f8c43c8">is_double_int</a></div><div class="ttdeci">int is_double_int(double val)</div><div class="ttdef"><b>Definition:</b> sheet.c:704</div></div>
+<div class="ttc" id="asheet_8c_html_a12dddc016dfb7bab94190877836b4da8"><div class="ttname"><a href="sheet_8c.html#a12dddc016dfb7bab94190877836b4da8">append_empty_cell</a></div><div class="ttdeci">void append_empty_cell(Line *line)</div><div class="ttdef"><b>Definition:</b> sheet.c:975</div></div>
+<div class="ttc" id="astruct_line_html_a9a5ec95bec808d49b696a2c4e8120fb9"><div class="ttname"><a href="struct_line.html#a9a5ec95bec808d49b696a2c4e8120fb9">Line::line_string</a></div><div class="ttdeci">char line_string[MAX_LINE_LEN+2]</div><div class="ttdef"><b>Definition:</b> sheet.c:83</div></div>
+<div class="ttc" id="asheet_8c_html_ab9ba06e03cbb689b78305ba102f2bba4"><div class="ttname"><a href="sheet_8c.html#ab9ba06e03cbb689b78305ba102f2bba4">BLACKLISTED_DELIMS</a></div><div class="ttdeci">#define BLACKLISTED_DELIMS</div><div class="ttdef"><b>Definition:</b> sheet.c:21</div></div>
+<div class="ttc" id="asheet_8c_html_aef5fa0c336d48eb38803d9b031a23ed0"><div class="ttname"><a href="sheet_8c.html#aef5fa0c336d48eb38803d9b031a23ed0">copy_cell_value_to</a></div><div class="ttdeci">void copy_cell_value_to(Line *line, int source_index, int target_index)</div><div class="ttdef"><b>Definition:</b> sheet.c:1450</div></div>
+<div class="ttc" id="asheet_8c_html_aac2c29a3140c52c285ac7c7bc827fe63"><div class="ttname"><a href="sheet_8c.html#aac2c29a3140c52c285ac7c7bc827fe63">is_string_int</a></div><div class="ttdeci">int is_string_int(char *string)</div><div class="ttdef"><b>Definition:</b> sheet.c:651</div></div>
+<div class="ttc" id="astruct_line_html_ab56c67e0ed9605b4078e2135f791c4ed"><div class="ttname"><a href="struct_line.html#ab56c67e0ed9605b4078e2135f791c4ed">Line::delim</a></div><div class="ttdeci">char delim</div><div class="ttdef"><b>Definition:</b> sheet.c:86</div></div>
+<div class="ttc" id="asheet_8c_html_a1b464b12708c45a8e52811496a946a5c"><div class="ttname"><a href="sheet_8c.html#a1b464b12708c45a8e52811496a946a5c">cell_value_editing</a></div><div class="ttdeci">void cell_value_editing(Line *line, int index, int processing_flag)</div><div class="ttdef"><b>Definition:</b> sheet.c:1398</div></div>
+<div class="ttc" id="asheet_8c_html_a020097e6a7804697ff1dc1ba4e45c796"><div class="ttname"><a href="sheet_8c.html#a020097e6a7804697ff1dc1ba4e45c796">get_value_of_cell</a></div><div class="ttdeci">int get_value_of_cell(Line *line, int index, char *substring)</div><div class="ttdef"><b>Definition:</b> sheet.c:500</div></div>
+<div class="ttc" id="astruct_line_html_a2206f140bd4ba67241ca0939be754c5c"><div class="ttname"><a href="struct_line.html#a2206f140bd4ba67241ca0939be754c5c">Line::unedited_line_string</a></div><div class="ttdeci">char unedited_line_string[MAX_LINE_LEN+2]</div><div class="ttdef"><b>Definition:</b> sheet.c:85</div></div>
+<div class="ttc" id="asheet_8c_html_aa497039a173a79107b2c39b40f514843aa1017e9b343135a54a98b6f479354d16"><div class="ttname"><a href="sheet_8c.html#aa497039a173a79107b2c39b40f514843aa1017e9b343135a54a98b6f479354d16">LOWER</a></div><div class="ttdeci">@ LOWER</div><div class="ttdef"><b>Definition:</b> sheet.c:60</div></div>
+<div class="ttc" id="asheet_8c_html_a96b028118ce1383a5fbbdf7c07e0acc8"><div class="ttname"><a href="sheet_8c.html#a96b028118ce1383a5fbbdf7c07e0acc8">strings_equal</a></div><div class="ttdeci">int strings_equal(const char *s1, const char *s2)</div><div class="ttdef"><b>Definition:</b> sheet.c:127</div></div>
+<div class="ttc" id="astruct_line_html_a45a098ebf145ae40551c338c19fdb525"><div class="ttname"><a href="struct_line.html#a45a098ebf145ae40551c338c19fdb525">Line::process_flag</a></div><div class="ttdeci">int process_flag</div><div class="ttdef"><b>Definition:</b> sheet.c:94</div></div>
+<div class="ttc" id="astruct_line_html_a8e221e15b35aeb7339a68b05f29ca7a4"><div class="ttname"><a href="struct_line.html#a8e221e15b35aeb7339a68b05f29ca7a4">Line::num_of_cols</a></div><div class="ttdeci">int num_of_cols</div><div class="ttdef"><b>Definition:</b> sheet.c:89</div></div>
+<div class="ttc" id="asheet_8c_html_aad4a7feab0ee38f3f6021fa3cfd9eed5"><div class="ttname"><a href="sheet_8c.html#aad4a7feab0ee38f3f6021fa3cfd9eed5">get_opt</a></div><div class="ttdeci">char * get_opt(int argc, char *argv[], char *opt_flag)</div><div class="ttdef"><b>Definition:</b> sheet.c:285</div></div>
+<div class="ttc" id="asheet_8c_html_afb8e301f09ca3e3649006404767a8900"><div class="ttname"><a href="sheet_8c.html#afb8e301f09ca3e3649006404767a8900">remove_cell</a></div><div class="ttdeci">int remove_cell(Line *line, int index)</div><div class="ttdef"><b>Definition:</b> sheet.c:998</div></div>
+<div class="ttc" id="asheet_8c_html_aa497039a173a79107b2c39b40f514843ae704d5d328a8522a6193aa3efb28c724"><div class="ttname"><a href="sheet_8c.html#aa497039a173a79107b2c39b40f514843ae704d5d328a8522a6193aa3efb28c724">UPPER</a></div><div class="ttdeci">@ UPPER</div><div class="ttdef"><b>Definition:</b> sheet.c:59</div></div>
+<div class="ttc" id="asheet_8c_html_acc49ae10bcdb95413360b50582b00943"><div class="ttname"><a href="sheet_8c.html#acc49ae10bcdb95413360b50582b00943">string_start_with</a></div><div class="ttdeci">int string_start_with(const char *base_string, const char *start_string)</div><div class="ttdef"><b>Definition:</b> sheet.c:141</div></div>
+<div class="ttc" id="astruct_selector_html_aca806b4fe19711158b4646410eebab78"><div class="ttname"><a href="struct_selector.html#aca806b4fe19711158b4646410eebab78">Selector::a1</a></div><div class="ttdeci">char * a1</div><div class="ttdef"><b>Definition:</b> sheet.c:107</div></div>
+<div class="ttc" id="asheet_8c_html_af4954f21a78bfbe9775a84daae02fcf5"><div class="ttname"><a href="sheet_8c.html#af4954f21a78bfbe9775a84daae02fcf5">count_specific_chars</a></div><div class="ttdeci">int count_specific_chars(const char *string, char ch)</div><div class="ttdef"><b>Definition:</b> sheet.c:359</div></div>
+<div class="ttc" id="astruct_line_html"><div class="ttname"><a href="struct_line.html">Line</a></div><div class="ttdoc">Store for data of one line.</div><div class="ttdef"><b>Definition:</b> sheet.c:82</div></div>
+<div class="ttc" id="asheet_8c_html_aa54ab37a5fe79da240bbfb0a9530b8bc"><div class="ttname"><a href="sheet_8c.html#aa54ab37a5fe79da240bbfb0a9530b8bc">is_line_empty</a></div><div class="ttdeci">int is_line_empty(Line *line)</div><div class="ttdef"><b>Definition:</b> sheet.c:379</div></div>
+<div class="ttc" id="asheet_8c_html_a3878e89dc5c88d823f4f923ef90dbcb3a20111fb9b4307642b6fe7eb381cf5ff1"><div class="ttname"><a href="sheet_8c.html#a3878e89dc5c88d823f4f923ef90dbcb3a20111fb9b4307642b6fe7eb381cf5ff1">MAX_LINE_LEN_EXCEDED</a></div><div class="ttdeci">@ MAX_LINE_LEN_EXCEDED</div><div class="ttdef"><b>Definition:</b> sheet.c:48</div></div>
+<div class="ttc" id="asheet_8c_html_aa497039a173a79107b2c39b40f514843afd5a5f51ce25953f3db2c7e93eb7864a"><div class="ttname"><a href="sheet_8c.html#aa497039a173a79107b2c39b40f514843afd5a5f51ce25953f3db2c7e93eb7864a">INT</a></div><div class="ttdeci">@ INT</div><div class="ttdef"><b>Definition:</b> sheet.c:62</div></div>
+<div class="ttc" id="asheet_8c_html_a82bf3c8a53884d9aa6bdaa102ce6aff9"><div class="ttname"><a href="sheet_8c.html#a82bf3c8a53884d9aa6bdaa102ce6aff9">rm_newline_chars</a></div><div class="ttdeci">void rm_newline_chars(char *s)</div><div class="ttdef"><b>Definition:</b> sheet.c:268</div></div>
+<div class="ttc" id="asheet_8c_html_a91860656a5d2d09a65c22e0beab0759f"><div class="ttname"><a href="sheet_8c.html#a91860656a5d2d09a65c22e0beab0759f">is_string_double</a></div><div class="ttdeci">int is_string_double(char *string)</div><div class="ttdef"><b>Definition:</b> sheet.c:598</div></div>
+<div class="ttc" id="asheet_8c_html_a2842d01895ed1d7224990c49a0debdaf"><div class="ttname"><a href="sheet_8c.html#a2842d01895ed1d7224990c49a0debdaf">validate_line_processing</a></div><div class="ttdeci">void validate_line_processing(Line *line, Selector *selector)</div><div class="ttdef"><b>Definition:</b> sheet.c:1131</div></div>
+<div class="ttc" id="asheet_8c_html_a88b41b214f5e2c42d6ac59d97027e3fd"><div class="ttname"><a href="sheet_8c.html#a88b41b214f5e2c42d6ac59d97027e3fd">string_to_double</a></div><div class="ttdeci">int string_to_double(char *string, double *val)</div><div class="ttdef"><b>Definition:</b> sheet.c:621</div></div>
+<div class="ttc" id="asheet_8c_html_ad60d134cb87a1cd6e34e48ae30d73632"><div class="ttname"><a href="sheet_8c.html#ad60d134cb87a1cd6e34e48ae30d73632">get_table_com_index</a></div><div class="ttdeci">int get_table_com_index(char *com)</div><div class="ttdef"><b>Definition:</b> sheet.c:186</div></div>
+<div class="ttc" id="asheet_8c_html_af07382ab9780963994a54ccf24a48024"><div class="ttname"><a href="sheet_8c.html#af07382ab9780963994a54ccf24a48024">print_line</a></div><div class="ttdeci">void print_line(Line *line)</div><div class="ttdef"><b>Definition:</b> sheet.c:800</div></div>
+<div class="ttc" id="astruct_selector_html_af7e027134357e2807f6244a1c79459ff"><div class="ttname"><a href="struct_selector.html#af7e027134357e2807f6244a1c79459ff">Selector::a2</a></div><div class="ttdeci">char * a2</div><div class="ttdef"><b>Definition:</b> sheet.c:108</div></div>
+<div class="ttc" id="asheet_8c_html_a3878e89dc5c88d823f4f923ef90dbcb3aec1024879d398de584d1722ebbe0a5c9"><div class="ttname"><a href="sheet_8c.html#a3878e89dc5c88d823f4f923ef90dbcb3aec1024879d398de584d1722ebbe0a5c9">INPUT_ERROR</a></div><div class="ttdeci">@ INPUT_ERROR</div><div class="ttdef"><b>Definition:</b> sheet.c:50</div></div>
 <div class="ttc" id="asheet_8c_html_a955fa651f2dda3a118e30fd09817e6fd"><div class="ttname"><a href="sheet_8c.html#a955fa651f2dda3a118e30fd09817e6fd">DEFAULT_DELIM</a></div><div class="ttdeci">#define DEFAULT_DELIM</div><div class="ttdef"><b>Definition:</b> sheet.c:20</div></div>
-<div class="ttc" id="asheet_8c_html_af9009abc8afad5df16c8d176ec17ad4f"><div class="ttname"><a href="sheet_8c.html#af9009abc8afad5df16c8d176ec17ad4f">insert_string_to_line</a></div><div class="ttdeci">int insert_string_to_line(Line *line, char *insert_string, int index)</div><div class="ttdef"><b>Definition:</b> sheet.c:853</div></div>
-<div class="ttc" id="astruct_line_html_af049cdc3dae10c78f1ffb2c0b861bd83"><div class="ttname"><a href="struct_line.html#af049cdc3dae10c78f1ffb2c0b861bd83">Line::line_string</a></div><div class="ttdeci">char * line_string</div><div class="ttdef"><b>Definition:</b> sheet.c:82</div></div>
-<div class="ttc" id="asheet_8c_html_abf44a4aeabe8fa9735aeabdd99cbff70"><div class="ttname"><a href="sheet_8c.html#abf44a4aeabe8fa9735aeabdd99cbff70">argument_to_int</a></div><div class="ttdeci">int argument_to_int(char *input_array[], int array_len, int index)</div><div class="ttdef"><b>Definition:</b> sheet.c:765</div></div>
-<div class="ttc" id="asheet_8c_html_ac34c0bdc69d9a0935feceff6194011c5"><div class="ttname"><a href="sheet_8c.html#ac34c0bdc69d9a0935feceff6194011c5">get_op_mode</a></div><div class="ttdeci">int get_op_mode(char **input_array, int array_len)</div><div class="ttdef"><b>Definition:</b> sheet.c:234</div></div>
-<div class="ttc" id="asheet_8c_html_ac03eb417e28fa05731f79a9c185f28e4"><div class="ttname"><a href="sheet_8c.html#ac03eb417e28fa05731f79a9c185f28e4">NUMBER_OF_SELECTOR_COMS</a></div><div class="ttdeci">#define NUMBER_OF_SELECTOR_COMS</div><div class="ttdef"><b>Definition:</b> sheet.c:27</div></div>
-<div class="ttc" id="astruct_selector_html_a9fdd8bc67e7de5f29985c9882c4ae5e9"><div class="ttname"><a href="struct_selector.html#a9fdd8bc67e7de5f29985c9882c4ae5e9">Selector::ai1</a></div><div class="ttdeci">int ai1</div><div class="ttdef"><b>Definition:</b> sheet.c:109</div></div>
-<div class="ttc" id="asheet_8c_html_a71aace6c507a4576b730283055d5bcc1"><div class="ttname"><a href="sheet_8c.html#a71aace6c507a4576b730283055d5bcc1">MultiCellFunction</a></div><div class="ttdeci">MultiCellFunction</div><div class="ttdoc">Flags for functions to edit multiple cells in row.</div><div class="ttdef"><b>Definition:</b> sheet.c:68</div></div>
-<div class="ttc" id="asheet_8c_html_a3878e89dc5c88d823f4f923ef90dbcb3a017f029e48bf0045faef93f0d703abfc"><div class="ttname"><a href="sheet_8c.html#a3878e89dc5c88d823f4f923ef90dbcb3a017f029e48bf0045faef93f0d703abfc">ARG_ERROR</a></div><div class="ttdeci">@ ARG_ERROR</div><div class="ttdef"><b>Definition:</b> sheet.c:50</div></div>
-<div class="ttc" id="astruct_selector_html_a3e6c64a4b8fd9c31b174ce283f0a8bbf"><div class="ttname"><a href="struct_selector.html#a3e6c64a4b8fd9c31b174ce283f0a8bbf">Selector::str</a></div><div class="ttdeci">char * str</div><div class="ttdef"><b>Definition:</b> sheet.c:108</div></div>
-<div class="ttc" id="asheet_8c_html_adcf92595fc841e78047b612ce64e3c4f"><div class="ttname"><a href="sheet_8c.html#adcf92595fc841e78047b612ce64e3c4f">get_start_of_substring</a></div><div class="ttdeci">int get_start_of_substring(Line *line, int index)</div><div class="ttdef"><b>Definition:</b> sheet.c:459</div></div>
-<div class="ttc" id="asheet_8c_html_a4f2b4052ff6ccaa98f9dc69ca934290f"><div class="ttname"><a href="sheet_8c.html#a4f2b4052ff6ccaa98f9dc69ca934290f">row_sequence_gen</a></div><div class="ttdeci">void row_sequence_gen(Line *line, int start_index, int end_index, int start_value)</div><div class="ttdef"><b>Definition:</b> sheet.c:1611</div></div>
+<div class="ttc" id="asheet_8c_html_af9009abc8afad5df16c8d176ec17ad4f"><div class="ttname"><a href="sheet_8c.html#af9009abc8afad5df16c8d176ec17ad4f">insert_string_to_line</a></div><div class="ttdeci">int insert_string_to_line(Line *line, char *insert_string, int index)</div><div class="ttdef"><b>Definition:</b> sheet.c:841</div></div>
+<div class="ttc" id="asheet_8c_html_ad4dec4e5d215155820750a43c62b7ad3"><div class="ttname"><a href="sheet_8c.html#ad4dec4e5d215155820750a43c62b7ad3">is_last_row</a></div><div class="ttdeci">int is_last_row()</div><div class="ttdef"><b>Definition:</b> sheet.c:1850</div></div>
+<div class="ttc" id="asheet_8c_html_abf44a4aeabe8fa9735aeabdd99cbff70"><div class="ttname"><a href="sheet_8c.html#abf44a4aeabe8fa9735aeabdd99cbff70">argument_to_int</a></div><div class="ttdeci">int argument_to_int(char *input_array[], int array_len, int index)</div><div class="ttdef"><b>Definition:</b> sheet.c:753</div></div>
+<div class="ttc" id="asheet_8c_html_ac34c0bdc69d9a0935feceff6194011c5"><div class="ttname"><a href="sheet_8c.html#ac34c0bdc69d9a0935feceff6194011c5">get_op_mode</a></div><div class="ttdeci">int get_op_mode(char **input_array, int array_len)</div><div class="ttdef"><b>Definition:</b> sheet.c:235</div></div>
+<div class="ttc" id="asheet_8c_html_ac03eb417e28fa05731f79a9c185f28e4"><div class="ttname"><a href="sheet_8c.html#ac03eb417e28fa05731f79a9c185f28e4">NUMBER_OF_SELECTOR_COMS</a></div><div class="ttdeci">#define NUMBER_OF_SELECTOR_COMS</div><div class="ttdef"><b>Definition:</b> sheet.c:28</div></div>
+<div class="ttc" id="astruct_selector_html_a9fdd8bc67e7de5f29985c9882c4ae5e9"><div class="ttname"><a href="struct_selector.html#a9fdd8bc67e7de5f29985c9882c4ae5e9">Selector::ai1</a></div><div class="ttdeci">int ai1</div><div class="ttdef"><b>Definition:</b> sheet.c:110</div></div>
+<div class="ttc" id="asheet_8c_html_a71aace6c507a4576b730283055d5bcc1"><div class="ttname"><a href="sheet_8c.html#a71aace6c507a4576b730283055d5bcc1">MultiCellFunction</a></div><div class="ttdeci">MultiCellFunction</div><div class="ttdoc">Flags for functions to edit multiple cells in row.</div><div class="ttdef"><b>Definition:</b> sheet.c:69</div></div>
+<div class="ttc" id="asheet_8c_html_a3878e89dc5c88d823f4f923ef90dbcb3a017f029e48bf0045faef93f0d703abfc"><div class="ttname"><a href="sheet_8c.html#a3878e89dc5c88d823f4f923ef90dbcb3a017f029e48bf0045faef93f0d703abfc">ARG_ERROR</a></div><div class="ttdeci">@ ARG_ERROR</div><div class="ttdef"><b>Definition:</b> sheet.c:51</div></div>
+<div class="ttc" id="astruct_selector_html_a3e6c64a4b8fd9c31b174ce283f0a8bbf"><div class="ttname"><a href="struct_selector.html#a3e6c64a4b8fd9c31b174ce283f0a8bbf">Selector::str</a></div><div class="ttdeci">char * str</div><div class="ttdef"><b>Definition:</b> sheet.c:109</div></div>
+<div class="ttc" id="asheet_8c_html_adcf92595fc841e78047b612ce64e3c4f"><div class="ttname"><a href="sheet_8c.html#adcf92595fc841e78047b612ce64e3c4f">get_start_of_substring</a></div><div class="ttdeci">int get_start_of_substring(Line *line, int index)</div><div class="ttdef"><b>Definition:</b> sheet.c:447</div></div>
+<div class="ttc" id="asheet_8c_html_a4f2b4052ff6ccaa98f9dc69ca934290f"><div class="ttname"><a href="sheet_8c.html#a4f2b4052ff6ccaa98f9dc69ca934290f">row_sequence_gen</a></div><div class="ttdeci">void row_sequence_gen(Line *line, int start_index, int end_index, int start_value)</div><div class="ttdef"><b>Definition:</b> sheet.c:1594</div></div>
 <div class="ttc" id="asheet_8c_html_afbf61e862e9860fe93c74ddcbd1946fb"><div class="ttname"><a href="sheet_8c.html#afbf61e862e9860fe93c74ddcbd1946fb">MAX_CELL_LEN</a></div><div class="ttdeci">#define MAX_CELL_LEN</div><div class="ttdef"><b>Definition:</b> sheet.c:17</div></div>
-<div class="ttc" id="asheet_8c_html_abf5a095def1cdb863545429e49d0916d"><div class="ttname"><a href="sheet_8c.html#abf5a095def1cdb863545429e49d0916d">is_cell_index_valid</a></div><div class="ttdeci">int is_cell_index_valid(Line *line, int index)</div><div class="ttdef"><b>Definition:</b> sheet.c:1063</div></div>
-<div class="ttc" id="asheet_8c_html_a71aace6c507a4576b730283055d5bcc1a82c030bf31e2d975e6a85cf67ba88bb4"><div class="ttname"><a href="sheet_8c.html#a71aace6c507a4576b730283055d5bcc1a82c030bf31e2d975e6a85cf67ba88bb4">SUM</a></div><div class="ttdeci">@ SUM</div><div class="ttdef"><b>Definition:</b> sheet.c:69</div></div>
-<div class="ttc" id="asheet_8c_html_aa497039a173a79107b2c39b40f514843"><div class="ttname"><a href="sheet_8c.html#aa497039a173a79107b2c39b40f514843">SingleCellFunction</a></div><div class="ttdeci">SingleCellFunction</div><div class="ttdoc">Flags for functions to edit single cell.</div><div class="ttdef"><b>Definition:</b> sheet.c:57</div></div>
-<div class="ttc" id="asheet_8c_html_ae306b3353ed3d62bb2e6de130b3c9eaaa0afa825567e442a46d131be6c71cb40f"><div class="ttname"><a href="sheet_8c.html#ae306b3353ed3d62bb2e6de130b3c9eaaa0afa825567e442a46d131be6c71cb40f">PASS</a></div><div class="ttdeci">@ PASS</div><div class="ttdef"><b>Definition:</b> sheet.c:34</div></div>
-<div class="ttc" id="asheet_8c_html_ae9f66aa4498eeda20fb2ec497307d501"><div class="ttname"><a href="sheet_8c.html#ae9f66aa4498eeda20fb2ec497307d501">table_edit</a></div><div class="ttdeci">void table_edit(Line *line, int argc, char *argv[], int com_index)</div><div class="ttdef"><b>Definition:</b> sheet.c:1637</div></div>
-<div class="ttc" id="asheet_8c_html_ace5bc271847ba57d7872f5b7f7129cce"><div class="ttname"><a href="sheet_8c.html#ace5bc271847ba57d7872f5b7f7129cce">insert_empty_cell</a></div><div class="ttdeci">int insert_empty_cell(Line *line, int index)</div><div class="ttdef"><b>Definition:</b> sheet.c:965</div></div>
-<div class="ttc" id="asheet_8c_html_ae306b3353ed3d62bb2e6de130b3c9eaaae143169407608efdef47cf7b4305cc2c"><div class="ttname"><a href="sheet_8c.html#ae306b3353ed3d62bb2e6de130b3c9eaaae143169407608efdef47cf7b4305cc2c">DATA_EDIT</a></div><div class="ttdeci">@ DATA_EDIT</div><div class="ttdef"><b>Definition:</b> sheet.c:36</div></div>
-<div class="ttc" id="asheet_8c_html_a0de9cb3cabbcf448f8ab8a2c93a0fb4e"><div class="ttname"><a href="sheet_8c.html#a0de9cb3cabbcf448f8ab8a2c93a0fb4e">get_delims</a></div><div class="ttdeci">char * get_delims(char *input_array[], int array_len)</div><div class="ttdef"><b>Definition:</b> sheet.c:316</div></div>
-<div class="ttc" id="asheet_8c_html_a6fabb1f4cfaa8596c39cd4b883123cf2"><div class="ttname"><a href="sheet_8c.html#a6fabb1f4cfaa8596c39cd4b883123cf2">delete_rows_in_interval</a></div><div class="ttdeci">void delete_rows_in_interval(Line *line, int start_index, int end_index)</div><div class="ttdef"><b>Definition:</b> sheet.c:1327</div></div>
-<div class="ttc" id="asheet_8c_html_a6a6a3a7e1a63ed7dd561a237bc3c5ea8"><div class="ttname"><a href="sheet_8c.html#a6a6a3a7e1a63ed7dd561a237bc3c5ea8">NUMBER_OF_DATA_COMS</a></div><div class="ttdeci">#define NUMBER_OF_DATA_COMS</div><div class="ttdef"><b>Definition:</b> sheet.c:25</div></div>
-<div class="ttc" id="asheet_8c_html_ae3e368928d0328684619c9d3439b8481"><div class="ttname"><a href="sheet_8c.html#ae3e368928d0328684619c9d3439b8481">normalize_delims</a></div><div class="ttdeci">void normalize_delims(char *string, const char *delims)</div><div class="ttdef"><b>Definition:</b> sheet.c:344</div></div>
-<div class="ttc" id="asheet_8c_html_af0bc4aec4706cb472d6be59053a23da9"><div class="ttname"><a href="sheet_8c.html#af0bc4aec4706cb472d6be59053a23da9">check_line_sanity</a></div><div class="ttdeci">int check_line_sanity(Line *line)</div><div class="ttdef"><b>Definition:</b> sheet.c:574</div></div>
-<div class="ttc" id="astruct_selector_html_ab0b5d3902619b0fbbe90037a7df8a281"><div class="ttname"><a href="struct_selector.html#ab0b5d3902619b0fbbe90037a7df8a281">Selector::ai2</a></div><div class="ttdeci">int ai2</div><div class="ttdef"><b>Definition:</b> sheet.c:110</div></div>
-<div class="ttc" id="asheet_8c_html_a8ae19d2928ca0c20c1483e0fec848558"><div class="ttname"><a href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558">process_line</a></div><div class="ttdeci">void process_line(Line *line, Selector *selector, int argc, char *argv[], int operating_mode)</div><div class="ttdef"><b>Definition:</b> sheet.c:1792</div></div>
-<div class="ttc" id="asheet_8c_html_a780a65564a03a94864883fc7735076c1"><div class="ttname"><a href="sheet_8c.html#a780a65564a03a94864883fc7735076c1">process_row_values</a></div><div class="ttdeci">int process_row_values(Line *line, int start_index, int end_index, double *ret_val, int function_flag)</div><div class="ttdef"><b>Definition:</b> sheet.c:1219</div></div>
-<div class="ttc" id="asheet_8c_html_ae306b3353ed3d62bb2e6de130b3c9eaaa73ea6a2242db43fbdba7c4e20e26e4e9"><div class="ttname"><a href="sheet_8c.html#ae306b3353ed3d62bb2e6de130b3c9eaaa73ea6a2242db43fbdba7c4e20e26e4e9">TABLE_EDIT</a></div><div class="ttdeci">@ TABLE_EDIT</div><div class="ttdef"><b>Definition:</b> sheet.c:35</div></div>
-<div class="ttc" id="astruct_line_html_abc22a72d751fd7b9edfd17ce47da5651"><div class="ttname"><a href="struct_line.html#abc22a72d751fd7b9edfd17ce47da5651">Line::error_flag</a></div><div class="ttdeci">int error_flag</div><div class="ttdef"><b>Definition:</b> sheet.c:94</div></div>
-<div class="ttc" id="asheet_8c_html_ac343905c8f1b216084684be243c96bff"><div class="ttname"><a href="sheet_8c.html#ac343905c8f1b216084684be243c96bff">insert_to_cell</a></div><div class="ttdeci">int insert_to_cell(Line *line, int index, char *string)</div><div class="ttdef"><b>Definition:</b> sheet.c:942</div></div>
-<div class="ttc" id="asheet_8c_html_a124b0e4c07e2ed4651d62734e70b4bc0"><div class="ttname"><a href="sheet_8c.html#a124b0e4c07e2ed4651d62734e70b4bc0">insert_empty_cell_at</a></div><div class="ttdeci">void insert_empty_cell_at(Line *line, int index)</div><div class="ttdef"><b>Definition:</b> sheet.c:1350</div></div>
-<div class="ttc" id="astruct_line_html_aacdb627afef6c30e46914ffd68de38a6"><div class="ttname"><a href="struct_line.html#aacdb627afef6c30e46914ffd68de38a6">Line::line_index</a></div><div class="ttdeci">int line_index</div><div class="ttdef"><b>Definition:</b> sheet.c:86</div></div>
-<div class="ttc" id="astruct_line_html_ae316b90e5a4363bf1403414e8a23e23b"><div class="ttname"><a href="struct_line.html#ae316b90e5a4363bf1403414e8a23e23b">Line::line_buffer</a></div><div class="ttdeci">char line_buffer[MAX_LINE_LEN+2]</div><div class="ttdef"><b>Definition:</b> sheet.c:83</div></div>
-<div class="ttc" id="asheet_8c_html_a7758424074e3a28c8c32dca241dca81d"><div class="ttname"><a href="sheet_8c.html#a7758424074e3a28c8c32dca241dca81d">delete_line_content</a></div><div class="ttdeci">void delete_line_content(Line *line)</div><div class="ttdef"><b>Definition:</b> sheet.c:836</div></div>
-<div class="ttc" id="astruct_line_html_a3cb0d95aa820737d010fdfaccac92ec3"><div class="ttname"><a href="struct_line.html#a3cb0d95aa820737d010fdfaccac92ec3">Line::deleted</a></div><div class="ttdeci">int deleted</div><div class="ttdef"><b>Definition:</b> sheet.c:92</div></div>
-<div class="ttc" id="asheet_8c_html_afeeef5904f5eea75df453e0fde5be447"><div class="ttname"><a href="sheet_8c.html#afeeef5904f5eea75df453e0fde5be447">clear_cell</a></div><div class="ttdeci">int clear_cell(Line *line, int index)</div><div class="ttdef"><b>Definition:</b> sheet.c:1039</div></div>
-<div class="ttc" id="asheet_8c_html_a26c0706c5ee7fd9d3f1a45cb39d5a18a"><div class="ttname"><a href="sheet_8c.html#a26c0706c5ee7fd9d3f1a45cb39d5a18a">DATA_COMS</a></div><div class="ttdeci">const char * DATA_COMS[]</div><div class="ttdef"><b>Definition:</b> sheet.c:24</div></div>
-<div class="ttc" id="asheet_8c_html_af4c8a57de74d0106b6eb7af97fa1d2ff"><div class="ttname"><a href="sheet_8c.html#af4c8a57de74d0106b6eb7af97fa1d2ff">round_double</a></div><div class="ttdeci">int round_double(double val)</div><div class="ttdef"><b>Definition:</b> sheet.c:113</div></div>
-<div class="ttc" id="asheet_8c_html_a6e3cf69448ee1e98d54bae469cfe8675"><div class="ttname"><a href="sheet_8c.html#a6e3cf69448ee1e98d54bae469cfe8675">TABLE_COMS</a></div><div class="ttdeci">const char * TABLE_COMS[]</div><div class="ttdef"><b>Definition:</b> sheet.c:22</div></div>
-<div class="ttc" id="asheet_8c_html_a2589649a1badfea4b1ab63d0f46aaa28"><div class="ttname"><a href="sheet_8c.html#a2589649a1badfea4b1ab63d0f46aaa28">get_number_of_cells</a></div><div class="ttdeci">int get_number_of_cells(Line *line)</div><div class="ttdef"><b>Definition:</b> sheet.c:406</div></div>
-<div class="ttc" id="asheet_8c_html_a52a0721a487ee826d1b54932aa4529d7"><div class="ttname"><a href="sheet_8c.html#a52a0721a487ee826d1b54932aa4529d7">move_cell_to</a></div><div class="ttdeci">void move_cell_to(Line *line, int source_index, int target_index)</div><div class="ttdef"><b>Definition:</b> sheet.c:1521</div></div>
-<div class="ttc" id="asheet_8c_html_a71aace6c507a4576b730283055d5bcc1ac5fc183b66f3ffdfb243c13f4aa5804d"><div class="ttname"><a href="sheet_8c.html#a71aace6c507a4576b730283055d5bcc1ac5fc183b66f3ffdfb243c13f4aa5804d">AVG</a></div><div class="ttdeci">@ AVG</div><div class="ttdef"><b>Definition:</b> sheet.c:72</div></div>
-<div class="ttc" id="asheet_8c_html_a3c599f3f858d466601d20436a4774111"><div class="ttname"><a href="sheet_8c.html#a3c599f3f858d466601d20436a4774111">string_to_int</a></div><div class="ttdeci">int string_to_int(char *string, int *val)</div><div class="ttdef"><b>Definition:</b> sheet.c:686</div></div>
-<div class="ttc" id="asheet_8c_html_ab092c211262e7e820682abb6f10a3562"><div class="ttname"><a href="sheet_8c.html#ab092c211262e7e820682abb6f10a3562">generate_empty_row</a></div><div class="ttdeci">void generate_empty_row(Line *line)</div><div class="ttdef"><b>Definition:</b> sheet.c:785</div></div>
-<div class="ttc" id="asheet_8c_html_a0ceaca96fe8567999bd020d95d52dc3e"><div class="ttname"><a href="sheet_8c.html#a0ceaca96fe8567999bd020d95d52dc3e">data_edit</a></div><div class="ttdeci">void data_edit(Line *line, int argc, char *argv[], int com_index)</div><div class="ttdef"><b>Definition:</b> sheet.c:1696</div></div>
-<div class="ttc" id="asheet_8c_html_a71aace6c507a4576b730283055d5bcc1ad7e097bda6d981de2520f49fe74c25b7"><div class="ttname"><a href="sheet_8c.html#a71aace6c507a4576b730283055d5bcc1ad7e097bda6d981de2520f49fe74c25b7">MAX</a></div><div class="ttdeci">@ MAX</div><div class="ttdef"><b>Definition:</b> sheet.c:71</div></div>
-<div class="ttc" id="asheet_8c_html_abb83f2fe0ee623830639de8ce065b501"><div class="ttname"><a href="sheet_8c.html#abb83f2fe0ee623830639de8ce065b501">row_values_processing</a></div><div class="ttdeci">void row_values_processing(Line *line, int output_index, int start_index, int end_index, int function_flag)</div><div class="ttdef"><b>Definition:</b> sheet.c:1567</div></div>
-<div class="ttc" id="asheet_8c_html_a08f36508bd6b5fe1b068501e86c0808d"><div class="ttname"><a href="sheet_8c.html#a08f36508bd6b5fe1b068501e86c0808d">get_position_of_character</a></div><div class="ttdeci">int get_position_of_character(char *string, char ch, int index)</div><div class="ttdef"><b>Definition:</b> sheet.c:426</div></div>
-<div class="ttc" id="astruct_line_html_a4134965817588a8a4b6051b3f2be2abf"><div class="ttname"><a href="struct_line.html#a4134965817588a8a4b6051b3f2be2abf">Line::last_line_flag</a></div><div class="ttdeci">int last_line_flag</div><div class="ttdef"><b>Definition:</b> sheet.c:91</div></div>
-<div class="ttc" id="astruct_selector_html_a1ce2a6eae3738346f7af4e84fbaa84bd"><div class="ttname"><a href="struct_selector.html#a1ce2a6eae3738346f7af4e84fbaa84bd">Selector::selector_type</a></div><div class="ttdeci">int selector_type</div><div class="ttdef"><b>Definition:</b> sheet.c:105</div></div>
-<div class="ttc" id="asheet_8c_html_a4ffee82f2e083a29bf0e4cdda584661e"><div class="ttname"><a href="sheet_8c.html#a4ffee82f2e083a29bf0e4cdda584661e">string_conversion</a></div><div class="ttdeci">void string_conversion(char *string, int conversion_flag)</div><div class="ttdef"><b>Definition:</b> sheet.c:730</div></div>
-<div class="ttc" id="asheet_8c_html_aa497039a173a79107b2c39b40f514843a8f87273d546201a938e7a27476a7b00e"><div class="ttname"><a href="sheet_8c.html#aa497039a173a79107b2c39b40f514843a8f87273d546201a938e7a27476a7b00e">ROUND</a></div><div class="ttdeci">@ ROUND</div><div class="ttdef"><b>Definition:</b> sheet.c:60</div></div>
-<div class="ttc" id="asheet_8c_html_ae0b2a63d2423834f59e3c0c568fd4ad4"><div class="ttname"><a href="sheet_8c.html#ae0b2a63d2423834f59e3c0c568fd4ad4">set_value_in_cell</a></div><div class="ttdeci">int set_value_in_cell(Line *line, int index, char *value)</div><div class="ttdef"><b>Definition:</b> sheet.c:1390</div></div>
-<div class="ttc" id="asheet_8c_html_a3878e89dc5c88d823f4f923ef90dbcb3adf2bad4dc1c2c73ab1884145adaf45be"><div class="ttname"><a href="sheet_8c.html#a3878e89dc5c88d823f4f923ef90dbcb3adf2bad4dc1c2c73ab1884145adaf45be">MAX_CELL_LEN_EXCEDED</a></div><div class="ttdeci">@ MAX_CELL_LEN_EXCEDED</div><div class="ttdef"><b>Definition:</b> sheet.c:48</div></div>
-<div class="ttc" id="asheet_8c_html_a3878e89dc5c88d823f4f923ef90dbcb3abf350750d0d4fabd8954c0f1e9bbae94"><div class="ttname"><a href="sheet_8c.html#a3878e89dc5c88d823f4f923ef90dbcb3abf350750d0d4fabd8954c0f1e9bbae94">NO_ERROR</a></div><div class="ttdeci">@ NO_ERROR</div><div class="ttdef"><b>Definition:</b> sheet.c:46</div></div>
-<div class="ttc" id="asheet_8c_html_aa07ea2f97f9f1649fe0151ffbfff5bbc"><div class="ttname"><a href="sheet_8c.html#aa07ea2f97f9f1649fe0151ffbfff5bbc">get_data_com_index</a></div><div class="ttdeci">int get_data_com_index(char *com)</div><div class="ttdef"><b>Definition:</b> sheet.c:209</div></div>
+<div class="ttc" id="asheet_8c_html_abf5a095def1cdb863545429e49d0916d"><div class="ttname"><a href="sheet_8c.html#abf5a095def1cdb863545429e49d0916d">is_cell_index_valid</a></div><div class="ttdeci">int is_cell_index_valid(Line *line, int index)</div><div class="ttdef"><b>Definition:</b> sheet.c:1051</div></div>
+<div class="ttc" id="asheet_8c_html_a71aace6c507a4576b730283055d5bcc1a82c030bf31e2d975e6a85cf67ba88bb4"><div class="ttname"><a href="sheet_8c.html#a71aace6c507a4576b730283055d5bcc1a82c030bf31e2d975e6a85cf67ba88bb4">SUM</a></div><div class="ttdeci">@ SUM</div><div class="ttdef"><b>Definition:</b> sheet.c:70</div></div>
+<div class="ttc" id="asheet_8c_html_aa497039a173a79107b2c39b40f514843"><div class="ttname"><a href="sheet_8c.html#aa497039a173a79107b2c39b40f514843">SingleCellFunction</a></div><div class="ttdeci">SingleCellFunction</div><div class="ttdoc">Flags for functions to edit single cell.</div><div class="ttdef"><b>Definition:</b> sheet.c:58</div></div>
+<div class="ttc" id="asheet_8c_html_ae306b3353ed3d62bb2e6de130b3c9eaaa0afa825567e442a46d131be6c71cb40f"><div class="ttname"><a href="sheet_8c.html#ae306b3353ed3d62bb2e6de130b3c9eaaa0afa825567e442a46d131be6c71cb40f">PASS</a></div><div class="ttdeci">@ PASS</div><div class="ttdef"><b>Definition:</b> sheet.c:35</div></div>
+<div class="ttc" id="asheet_8c_html_ae9f66aa4498eeda20fb2ec497307d501"><div class="ttname"><a href="sheet_8c.html#ae9f66aa4498eeda20fb2ec497307d501">table_edit</a></div><div class="ttdeci">void table_edit(Line *line, int argc, char *argv[], int com_index)</div><div class="ttdef"><b>Definition:</b> sheet.c:1620</div></div>
+<div class="ttc" id="asheet_8c_html_ace5bc271847ba57d7872f5b7f7129cce"><div class="ttname"><a href="sheet_8c.html#ace5bc271847ba57d7872f5b7f7129cce">insert_empty_cell</a></div><div class="ttdeci">int insert_empty_cell(Line *line, int index)</div><div class="ttdef"><b>Definition:</b> sheet.c:953</div></div>
+<div class="ttc" id="asheet_8c_html_ae306b3353ed3d62bb2e6de130b3c9eaaae143169407608efdef47cf7b4305cc2c"><div class="ttname"><a href="sheet_8c.html#ae306b3353ed3d62bb2e6de130b3c9eaaae143169407608efdef47cf7b4305cc2c">DATA_EDIT</a></div><div class="ttdeci">@ DATA_EDIT</div><div class="ttdef"><b>Definition:</b> sheet.c:37</div></div>
+<div class="ttc" id="asheet_8c_html_a0de9cb3cabbcf448f8ab8a2c93a0fb4e"><div class="ttname"><a href="sheet_8c.html#a0de9cb3cabbcf448f8ab8a2c93a0fb4e">get_delims</a></div><div class="ttdeci">char * get_delims(char *input_array[], int array_len)</div><div class="ttdef"><b>Definition:</b> sheet.c:317</div></div>
+<div class="ttc" id="asheet_8c_html_a6fabb1f4cfaa8596c39cd4b883123cf2"><div class="ttname"><a href="sheet_8c.html#a6fabb1f4cfaa8596c39cd4b883123cf2">delete_rows_in_interval</a></div><div class="ttdeci">void delete_rows_in_interval(Line *line, int start_index, int end_index)</div><div class="ttdef"><b>Definition:</b> sheet.c:1310</div></div>
+<div class="ttc" id="asheet_8c_html_a6a6a3a7e1a63ed7dd561a237bc3c5ea8"><div class="ttname"><a href="sheet_8c.html#a6a6a3a7e1a63ed7dd561a237bc3c5ea8">NUMBER_OF_DATA_COMS</a></div><div class="ttdeci">#define NUMBER_OF_DATA_COMS</div><div class="ttdef"><b>Definition:</b> sheet.c:26</div></div>
+<div class="ttc" id="asheet_8c_html_ae3e368928d0328684619c9d3439b8481"><div class="ttname"><a href="sheet_8c.html#ae3e368928d0328684619c9d3439b8481">normalize_delims</a></div><div class="ttdeci">void normalize_delims(char *string, const char *delims)</div><div class="ttdef"><b>Definition:</b> sheet.c:332</div></div>
+<div class="ttc" id="asheet_8c_html_af0bc4aec4706cb472d6be59053a23da9"><div class="ttname"><a href="sheet_8c.html#af0bc4aec4706cb472d6be59053a23da9">check_line_sanity</a></div><div class="ttdeci">int check_line_sanity(Line *line)</div><div class="ttdef"><b>Definition:</b> sheet.c:562</div></div>
+<div class="ttc" id="astruct_selector_html_ab0b5d3902619b0fbbe90037a7df8a281"><div class="ttname"><a href="struct_selector.html#ab0b5d3902619b0fbbe90037a7df8a281">Selector::ai2</a></div><div class="ttdeci">int ai2</div><div class="ttdef"><b>Definition:</b> sheet.c:111</div></div>
+<div class="ttc" id="asheet_8c_html_a8ae19d2928ca0c20c1483e0fec848558"><div class="ttname"><a href="sheet_8c.html#a8ae19d2928ca0c20c1483e0fec848558">process_line</a></div><div class="ttdeci">void process_line(Line *line, Selector *selector, int argc, char *argv[], int operating_mode)</div><div class="ttdef"><b>Definition:</b> sheet.c:1775</div></div>
+<div class="ttc" id="asheet_8c_html_a780a65564a03a94864883fc7735076c1"><div class="ttname"><a href="sheet_8c.html#a780a65564a03a94864883fc7735076c1">process_row_values</a></div><div class="ttdeci">int process_row_values(Line *line, int start_index, int end_index, double *ret_val, int function_flag)</div><div class="ttdef"><b>Definition:</b> sheet.c:1202</div></div>
+<div class="ttc" id="asheet_8c_html_ae306b3353ed3d62bb2e6de130b3c9eaaa73ea6a2242db43fbdba7c4e20e26e4e9"><div class="ttname"><a href="sheet_8c.html#ae306b3353ed3d62bb2e6de130b3c9eaaa73ea6a2242db43fbdba7c4e20e26e4e9">TABLE_EDIT</a></div><div class="ttdeci">@ TABLE_EDIT</div><div class="ttdef"><b>Definition:</b> sheet.c:36</div></div>
+<div class="ttc" id="astruct_line_html_abc22a72d751fd7b9edfd17ce47da5651"><div class="ttname"><a href="struct_line.html#abc22a72d751fd7b9edfd17ce47da5651">Line::error_flag</a></div><div class="ttdeci">int error_flag</div><div class="ttdef"><b>Definition:</b> sheet.c:95</div></div>
+<div class="ttc" id="asheet_8c_html_ac343905c8f1b216084684be243c96bff"><div class="ttname"><a href="sheet_8c.html#ac343905c8f1b216084684be243c96bff">insert_to_cell</a></div><div class="ttdeci">int insert_to_cell(Line *line, int index, char *string)</div><div class="ttdef"><b>Definition:</b> sheet.c:930</div></div>
+<div class="ttc" id="asheet_8c_html_a124b0e4c07e2ed4651d62734e70b4bc0"><div class="ttname"><a href="sheet_8c.html#a124b0e4c07e2ed4651d62734e70b4bc0">insert_empty_cell_at</a></div><div class="ttdeci">void insert_empty_cell_at(Line *line, int index)</div><div class="ttdef"><b>Definition:</b> sheet.c:1333</div></div>
+<div class="ttc" id="astruct_line_html_aacdb627afef6c30e46914ffd68de38a6"><div class="ttname"><a href="struct_line.html#aacdb627afef6c30e46914ffd68de38a6">Line::line_index</a></div><div class="ttdeci">int line_index</div><div class="ttdef"><b>Definition:</b> sheet.c:87</div></div>
+<div class="ttc" id="astruct_line_html_ae316b90e5a4363bf1403414e8a23e23b"><div class="ttname"><a href="struct_line.html#ae316b90e5a4363bf1403414e8a23e23b">Line::line_buffer</a></div><div class="ttdeci">char line_buffer[MAX_LINE_LEN+2]</div><div class="ttdef"><b>Definition:</b> sheet.c:84</div></div>
+<div class="ttc" id="asheet_8c_html_a7758424074e3a28c8c32dca241dca81d"><div class="ttname"><a href="sheet_8c.html#a7758424074e3a28c8c32dca241dca81d">delete_line_content</a></div><div class="ttdeci">void delete_line_content(Line *line)</div><div class="ttdef"><b>Definition:</b> sheet.c:824</div></div>
+<div class="ttc" id="astruct_line_html_a3cb0d95aa820737d010fdfaccac92ec3"><div class="ttname"><a href="struct_line.html#a3cb0d95aa820737d010fdfaccac92ec3">Line::deleted</a></div><div class="ttdeci">int deleted</div><div class="ttdef"><b>Definition:</b> sheet.c:93</div></div>
+<div class="ttc" id="asheet_8c_html_afeeef5904f5eea75df453e0fde5be447"><div class="ttname"><a href="sheet_8c.html#afeeef5904f5eea75df453e0fde5be447">clear_cell</a></div><div class="ttdeci">int clear_cell(Line *line, int index)</div><div class="ttdef"><b>Definition:</b> sheet.c:1027</div></div>
+<div class="ttc" id="asheet_8c_html_a26c0706c5ee7fd9d3f1a45cb39d5a18a"><div class="ttname"><a href="sheet_8c.html#a26c0706c5ee7fd9d3f1a45cb39d5a18a">DATA_COMS</a></div><div class="ttdeci">const char * DATA_COMS[]</div><div class="ttdef"><b>Definition:</b> sheet.c:25</div></div>
+<div class="ttc" id="asheet_8c_html_af4c8a57de74d0106b6eb7af97fa1d2ff"><div class="ttname"><a href="sheet_8c.html#af4c8a57de74d0106b6eb7af97fa1d2ff">round_double</a></div><div class="ttdeci">int round_double(double val)</div><div class="ttdef"><b>Definition:</b> sheet.c:114</div></div>
+<div class="ttc" id="asheet_8c_html_a6e3cf69448ee1e98d54bae469cfe8675"><div class="ttname"><a href="sheet_8c.html#a6e3cf69448ee1e98d54bae469cfe8675">TABLE_COMS</a></div><div class="ttdeci">const char * TABLE_COMS[]</div><div class="ttdef"><b>Definition:</b> sheet.c:23</div></div>
+<div class="ttc" id="asheet_8c_html_a2589649a1badfea4b1ab63d0f46aaa28"><div class="ttname"><a href="sheet_8c.html#a2589649a1badfea4b1ab63d0f46aaa28">get_number_of_cells</a></div><div class="ttdeci">int get_number_of_cells(Line *line)</div><div class="ttdef"><b>Definition:</b> sheet.c:394</div></div>
+<div class="ttc" id="asheet_8c_html_a52a0721a487ee826d1b54932aa4529d7"><div class="ttname"><a href="sheet_8c.html#a52a0721a487ee826d1b54932aa4529d7">move_cell_to</a></div><div class="ttdeci">void move_cell_to(Line *line, int source_index, int target_index)</div><div class="ttdef"><b>Definition:</b> sheet.c:1504</div></div>
+<div class="ttc" id="asheet_8c_html_a71aace6c507a4576b730283055d5bcc1ac5fc183b66f3ffdfb243c13f4aa5804d"><div class="ttname"><a href="sheet_8c.html#a71aace6c507a4576b730283055d5bcc1ac5fc183b66f3ffdfb243c13f4aa5804d">AVG</a></div><div class="ttdeci">@ AVG</div><div class="ttdef"><b>Definition:</b> sheet.c:73</div></div>
+<div class="ttc" id="asheet_8c_html_a3c599f3f858d466601d20436a4774111"><div class="ttname"><a href="sheet_8c.html#a3c599f3f858d466601d20436a4774111">string_to_int</a></div><div class="ttdeci">int string_to_int(char *string, int *val)</div><div class="ttdef"><b>Definition:</b> sheet.c:674</div></div>
+<div class="ttc" id="asheet_8c_html_a2e9e037c07846d365953598a77560d01"><div class="ttname"><a href="sheet_8c.html#a2e9e037c07846d365953598a77560d01">get_selector</a></div><div class="ttdeci">void get_selector(Selector *selector, int argc, char *argv[])</div><div class="ttdef"><b>Definition:</b> sheet.c:1065</div></div>
+<div class="ttc" id="asheet_8c_html_ab092c211262e7e820682abb6f10a3562"><div class="ttname"><a href="sheet_8c.html#ab092c211262e7e820682abb6f10a3562">generate_empty_row</a></div><div class="ttdeci">void generate_empty_row(Line *line)</div><div class="ttdef"><b>Definition:</b> sheet.c:773</div></div>
+<div class="ttc" id="asheet_8c_html_a0ceaca96fe8567999bd020d95d52dc3e"><div class="ttname"><a href="sheet_8c.html#a0ceaca96fe8567999bd020d95d52dc3e">data_edit</a></div><div class="ttdeci">void data_edit(Line *line, int argc, char *argv[], int com_index)</div><div class="ttdef"><b>Definition:</b> sheet.c:1679</div></div>
+<div class="ttc" id="asheet_8c_html_a71aace6c507a4576b730283055d5bcc1ad7e097bda6d981de2520f49fe74c25b7"><div class="ttname"><a href="sheet_8c.html#a71aace6c507a4576b730283055d5bcc1ad7e097bda6d981de2520f49fe74c25b7">MAX</a></div><div class="ttdeci">@ MAX</div><div class="ttdef"><b>Definition:</b> sheet.c:72</div></div>
+<div class="ttc" id="asheet_8c_html_abb83f2fe0ee623830639de8ce065b501"><div class="ttname"><a href="sheet_8c.html#abb83f2fe0ee623830639de8ce065b501">row_values_processing</a></div><div class="ttdeci">void row_values_processing(Line *line, int output_index, int start_index, int end_index, int function_flag)</div><div class="ttdef"><b>Definition:</b> sheet.c:1550</div></div>
+<div class="ttc" id="asheet_8c_html_a08f36508bd6b5fe1b068501e86c0808d"><div class="ttname"><a href="sheet_8c.html#a08f36508bd6b5fe1b068501e86c0808d">get_position_of_character</a></div><div class="ttdeci">int get_position_of_character(char *string, char ch, int index)</div><div class="ttdef"><b>Definition:</b> sheet.c:414</div></div>
+<div class="ttc" id="astruct_line_html_a4134965817588a8a4b6051b3f2be2abf"><div class="ttname"><a href="struct_line.html#a4134965817588a8a4b6051b3f2be2abf">Line::last_line_flag</a></div><div class="ttdeci">int last_line_flag</div><div class="ttdef"><b>Definition:</b> sheet.c:92</div></div>
+<div class="ttc" id="astruct_selector_html_a1ce2a6eae3738346f7af4e84fbaa84bd"><div class="ttname"><a href="struct_selector.html#a1ce2a6eae3738346f7af4e84fbaa84bd">Selector::selector_type</a></div><div class="ttdeci">int selector_type</div><div class="ttdef"><b>Definition:</b> sheet.c:106</div></div>
+<div class="ttc" id="asheet_8c_html_a4ffee82f2e083a29bf0e4cdda584661e"><div class="ttname"><a href="sheet_8c.html#a4ffee82f2e083a29bf0e4cdda584661e">string_conversion</a></div><div class="ttdeci">void string_conversion(char *string, int conversion_flag)</div><div class="ttdef"><b>Definition:</b> sheet.c:718</div></div>
+<div class="ttc" id="asheet_8c_html_aa497039a173a79107b2c39b40f514843a8f87273d546201a938e7a27476a7b00e"><div class="ttname"><a href="sheet_8c.html#aa497039a173a79107b2c39b40f514843a8f87273d546201a938e7a27476a7b00e">ROUND</a></div><div class="ttdeci">@ ROUND</div><div class="ttdef"><b>Definition:</b> sheet.c:61</div></div>
+<div class="ttc" id="asheet_8c_html_ae0b2a63d2423834f59e3c0c568fd4ad4"><div class="ttname"><a href="sheet_8c.html#ae0b2a63d2423834f59e3c0c568fd4ad4">set_value_in_cell</a></div><div class="ttdeci">int set_value_in_cell(Line *line, int index, char *value)</div><div class="ttdef"><b>Definition:</b> sheet.c:1373</div></div>
+<div class="ttc" id="asheet_8c_html_a3878e89dc5c88d823f4f923ef90dbcb3adf2bad4dc1c2c73ab1884145adaf45be"><div class="ttname"><a href="sheet_8c.html#a3878e89dc5c88d823f4f923ef90dbcb3adf2bad4dc1c2c73ab1884145adaf45be">MAX_CELL_LEN_EXCEDED</a></div><div class="ttdeci">@ MAX_CELL_LEN_EXCEDED</div><div class="ttdef"><b>Definition:</b> sheet.c:49</div></div>
+<div class="ttc" id="asheet_8c_html_a3878e89dc5c88d823f4f923ef90dbcb3abf350750d0d4fabd8954c0f1e9bbae94"><div class="ttname"><a href="sheet_8c.html#a3878e89dc5c88d823f4f923ef90dbcb3abf350750d0d4fabd8954c0f1e9bbae94">NO_ERROR</a></div><div class="ttdeci">@ NO_ERROR</div><div class="ttdef"><b>Definition:</b> sheet.c:47</div></div>
+<div class="ttc" id="asheet_8c_html_aa07ea2f97f9f1649fe0151ffbfff5bbc"><div class="ttname"><a href="sheet_8c.html#aa07ea2f97f9f1649fe0151ffbfff5bbc">get_data_com_index</a></div><div class="ttdeci">int get_data_com_index(char *com)</div><div class="ttdef"><b>Definition:</b> sheet.c:210</div></div>
 <div class="ttc" id="asheet_8c_html_a0ddf1224851353fc92bfbff6f499fa97"><div class="ttname"><a href="sheet_8c.html#a0ddf1224851353fc92bfbff6f499fa97">main</a></div><div class="ttdeci">int main(int argc, char *argv[])</div><div class="ttdef"><b>Definition:</b> sheet.c:1867</div></div>
-<div class="ttc" id="asheet_8c_html_a3878e89dc5c88d823f4f923ef90dbcb3"><div class="ttname"><a href="sheet_8c.html#a3878e89dc5c88d823f4f923ef90dbcb3">ErrorCodes</a></div><div class="ttdeci">ErrorCodes</div><div class="ttdoc">Error flags.</div><div class="ttdef"><b>Definition:</b> sheet.c:45</div></div>
-<div class="ttc" id="asheet_8c_html_a3b4fb6abdb21969590515a3545bb1edc"><div class="ttname"><a href="sheet_8c.html#a3b4fb6abdb21969590515a3545bb1edc">swap_cell_values</a></div><div class="ttdeci">void swap_cell_values(Line *line, int index1, int index2)</div><div class="ttdef"><b>Definition:</b> sheet.c:1492</div></div>
-<div class="ttc" id="asheet_8c_html_a71aace6c507a4576b730283055d5bcc1a2addb49878f50c95dc669e5fdbd130a2"><div class="ttname"><a href="sheet_8c.html#a71aace6c507a4576b730283055d5bcc1a2addb49878f50c95dc669e5fdbd130a2">COUNT</a></div><div class="ttdeci">@ COUNT</div><div class="ttdef"><b>Definition:</b> sheet.c:73</div></div>
+<div class="ttc" id="asheet_8c_html_a3878e89dc5c88d823f4f923ef90dbcb3"><div class="ttname"><a href="sheet_8c.html#a3878e89dc5c88d823f4f923ef90dbcb3">ErrorCodes</a></div><div class="ttdeci">ErrorCodes</div><div class="ttdoc">Error flags.</div><div class="ttdef"><b>Definition:</b> sheet.c:46</div></div>
+<div class="ttc" id="asheet_8c_html_a3b4fb6abdb21969590515a3545bb1edc"><div class="ttname"><a href="sheet_8c.html#a3b4fb6abdb21969590515a3545bb1edc">swap_cell_values</a></div><div class="ttdeci">void swap_cell_values(Line *line, int index1, int index2)</div><div class="ttdef"><b>Definition:</b> sheet.c:1475</div></div>
+<div class="ttc" id="asheet_8c_html_a71aace6c507a4576b730283055d5bcc1a2addb49878f50c95dc669e5fdbd130a2"><div class="ttname"><a href="sheet_8c.html#a71aace6c507a4576b730283055d5bcc1a2addb49878f50c95dc669e5fdbd130a2">COUNT</a></div><div class="ttdeci">@ COUNT</div><div class="ttdef"><b>Definition:</b> sheet.c:74</div></div>
 <div class="ttc" id="asheet_8c_html_a09a3b394b8602092d58347b791158062"><div class="ttname"><a href="sheet_8c.html#a09a3b394b8602092d58347b791158062">MAX_LINE_LEN</a></div><div class="ttdeci">#define MAX_LINE_LEN</div><div class="ttdef"><b>Definition:</b> sheet.c:18</div></div>
-<div class="ttc" id="asheet_8c_html_af367ca46185ef96d3bba2a7a2de30e42"><div class="ttname"><a href="sheet_8c.html#af367ca46185ef96d3bba2a7a2de30e42">delete_cells_in_interval</a></div><div class="ttdeci">void delete_cells_in_interval(Line *line, int start_index, int end_index)</div><div class="ttdef"><b>Definition:</b> sheet.c:1366</div></div>
-<div class="ttc" id="asheet_8c_html_a6998df58b5c488429d8cd3f9632ba8e4"><div class="ttname"><a href="sheet_8c.html#a6998df58b5c488429d8cd3f9632ba8e4">get_end_of_substring</a></div><div class="ttdeci">int get_end_of_substring(Line *line, int index)</div><div class="ttdef"><b>Definition:</b> sheet.c:485</div></div>
-<div class="ttc" id="asheet_8c_html_a337ab9d379373a9a6ae4b3ad353d977a"><div class="ttname"><a href="sheet_8c.html#a337ab9d379373a9a6ae4b3ad353d977a">SELECTOR_COMS</a></div><div class="ttdeci">const char * SELECTOR_COMS[]</div><div class="ttdef"><b>Definition:</b> sheet.c:26</div></div>
-<div class="ttc" id="asheet_8c_html_a71aace6c507a4576b730283055d5bcc1a957e8250f68e7b5677b22397c2c1b51e"><div class="ttname"><a href="sheet_8c.html#a71aace6c507a4576b730283055d5bcc1a957e8250f68e7b5677b22397c2c1b51e">MIN</a></div><div class="ttdeci">@ MIN</div><div class="ttdef"><b>Definition:</b> sheet.c:70</div></div>
+<div class="ttc" id="asheet_8c_html_af367ca46185ef96d3bba2a7a2de30e42"><div class="ttname"><a href="sheet_8c.html#af367ca46185ef96d3bba2a7a2de30e42">delete_cells_in_interval</a></div><div class="ttdeci">void delete_cells_in_interval(Line *line, int start_index, int end_index)</div><div class="ttdef"><b>Definition:</b> sheet.c:1349</div></div>
+<div class="ttc" id="asheet_8c_html_a6998df58b5c488429d8cd3f9632ba8e4"><div class="ttname"><a href="sheet_8c.html#a6998df58b5c488429d8cd3f9632ba8e4">get_end_of_substring</a></div><div class="ttdeci">int get_end_of_substring(Line *line, int index)</div><div class="ttdef"><b>Definition:</b> sheet.c:473</div></div>
+<div class="ttc" id="asheet_8c_html_a337ab9d379373a9a6ae4b3ad353d977a"><div class="ttname"><a href="sheet_8c.html#a337ab9d379373a9a6ae4b3ad353d977a">SELECTOR_COMS</a></div><div class="ttdeci">const char * SELECTOR_COMS[]</div><div class="ttdef"><b>Definition:</b> sheet.c:27</div></div>
+<div class="ttc" id="asheet_8c_html_a71aace6c507a4576b730283055d5bcc1a957e8250f68e7b5677b22397c2c1b51e"><div class="ttname"><a href="sheet_8c.html#a71aace6c507a4576b730283055d5bcc1a957e8250f68e7b5677b22397c2c1b51e">MIN</a></div><div class="ttdeci">@ MIN</div><div class="ttdef"><b>Definition:</b> sheet.c:71</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="http://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.20

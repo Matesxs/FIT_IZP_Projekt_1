@@ -1,17 +1,10 @@
 var searchData=
 [
-  ['selector_85',['Selector',['../struct_selector.html',1,'']]],
-  ['selector_5fcoms_86',['SELECTOR_COMS',['../sheet_8c.html#a337ab9d379373a9a6ae4b3ad353d977a',1,'sheet.c']]],
-  ['selector_5ftype_87',['selector_type',['../struct_selector.html#a1ce2a6eae3738346f7af4e84fbaa84bd',1,'Selector']]],
-  ['set_5fvalue_5fin_5fcell_88',['set_value_in_cell',['../sheet_8c.html#ae0b2a63d2423834f59e3c0c568fd4ad4',1,'sheet.c']]],
-  ['sheet_2ec_89',['sheet.c',['../sheet_8c.html',1,'']]],
-  ['singlecellfunction_90',['SingleCellFunction',['../sheet_8c.html#aa497039a173a79107b2c39b40f514843',1,'sheet.c']]],
-  ['str_91',['str',['../struct_selector.html#a3e6c64a4b8fd9c31b174ce283f0a8bbf',1,'Selector']]],
-  ['string_5fconversion_92',['string_conversion',['../sheet_8c.html#a4ffee82f2e083a29bf0e4cdda584661e',1,'sheet.c']]],
-  ['string_5fstart_5fwith_93',['string_start_with',['../sheet_8c.html#acc49ae10bcdb95413360b50582b00943',1,'sheet.c']]],
-  ['string_5fto_5fdouble_94',['string_to_double',['../sheet_8c.html#a88b41b214f5e2c42d6ac59d97027e3fd',1,'sheet.c']]],
-  ['string_5fto_5fint_95',['string_to_int',['../sheet_8c.html#a3c599f3f858d466601d20436a4774111',1,'sheet.c']]],
-  ['strings_5fequal_96',['strings_equal',['../sheet_8c.html#a96b028118ce1383a5fbbdf7c07e0acc8',1,'sheet.c']]],
-  ['sum_97',['SUM',['../sheet_8c.html#a71aace6c507a4576b730283055d5bcc1a82c030bf31e2d975e6a85cf67ba88bb4',1,'sheet.c']]],
-  ['swap_5fcell_5fvalues_98',['swap_cell_values',['../sheet_8c.html#a3b4fb6abdb21969590515a3545bb1edc',1,'sheet.c']]]
+  ['remove_5fcell_80',['remove_cell',['../sheet_8c.html#afb8e301f09ca3e3649006404767a8900',1,'sheet.c']]],
+  ['remove_5fsubstring_81',['remove_substring',['../sheet_8c.html#aa266498a5516e986422a2a213d46acf9',1,'sheet.c']]],
+  ['rm_5fnewline_5fchars_82',['rm_newline_chars',['../sheet_8c.html#a82bf3c8a53884d9aa6bdaa102ce6aff9',1,'sheet.c']]],
+  ['round_83',['ROUND',['../sheet_8c.html#aa497039a173a79107b2c39b40f514843a8f87273d546201a938e7a27476a7b00e',1,'sheet.c']]],
+  ['round_5fdouble_84',['round_double',['../sheet_8c.html#af4c8a57de74d0106b6eb7af97fa1d2ff',1,'sheet.c']]],
+  ['row_5fsequence_5fgen_85',['row_sequence_gen',['../sheet_8c.html#a4f2b4052ff6ccaa98f9dc69ca934290f',1,'sheet.c']]],
+  ['row_5fvalues_5fprocessing_86',['row_values_processing',['../sheet_8c.html#abb83f2fe0ee623830639de8ce065b501',1,'sheet.c']]]
 ];

@@ -1,14 +1,15 @@
 var searchData=
 [
-  ['input_5ferror_40',['INPUT_ERROR',['../sheet_8c.html#a3878e89dc5c88d823f4f923ef90dbcb3aec1024879d398de584d1722ebbe0a5c9',1,'sheet.c']]],
-  ['insert_5fempty_5fcell_41',['insert_empty_cell',['../sheet_8c.html#ace5bc271847ba57d7872f5b7f7129cce',1,'sheet.c']]],
-  ['insert_5fempty_5fcell_5fat_42',['insert_empty_cell_at',['../sheet_8c.html#a124b0e4c07e2ed4651d62734e70b4bc0',1,'sheet.c']]],
-  ['insert_5fstring_5fto_5fline_43',['insert_string_to_line',['../sheet_8c.html#af9009abc8afad5df16c8d176ec17ad4f',1,'sheet.c']]],
-  ['insert_5fto_5fcell_44',['insert_to_cell',['../sheet_8c.html#ac343905c8f1b216084684be243c96bff',1,'sheet.c']]],
-  ['int_45',['INT',['../sheet_8c.html#aa497039a173a79107b2c39b40f514843afd5a5f51ce25953f3db2c7e93eb7864a',1,'sheet.c']]],
-  ['is_5fcell_5findex_5fvalid_46',['is_cell_index_valid',['../sheet_8c.html#abf5a095def1cdb863545429e49d0916d',1,'sheet.c']]],
-  ['is_5fdouble_5fint_47',['is_double_int',['../sheet_8c.html#adf1d66ba3e5fd35b66ac2c307f8c43c8',1,'sheet.c']]],
-  ['is_5fline_5fempty_48',['is_line_empty',['../sheet_8c.html#aa54ab37a5fe79da240bbfb0a9530b8bc',1,'sheet.c']]],
-  ['is_5fstring_5fdouble_49',['is_string_double',['../sheet_8c.html#a91860656a5d2d09a65c22e0beab0759f',1,'sheet.c']]],
-  ['is_5fstring_5fint_50',['is_string_int',['../sheet_8c.html#aac2c29a3140c52c285ac7c7bc827fe63',1,'sheet.c']]]
+  ['generate_5fempty_5frow_29',['generate_empty_row',['../sheet_8c.html#ab092c211262e7e820682abb6f10a3562',1,'sheet.c']]],
+  ['get_5fdata_5fcom_5findex_30',['get_data_com_index',['../sheet_8c.html#aa07ea2f97f9f1649fe0151ffbfff5bbc',1,'sheet.c']]],
+  ['get_5fdelims_31',['get_delims',['../sheet_8c.html#a0de9cb3cabbcf448f8ab8a2c93a0fb4e',1,'sheet.c']]],
+  ['get_5fend_5fof_5fsubstring_32',['get_end_of_substring',['../sheet_8c.html#a6998df58b5c488429d8cd3f9632ba8e4',1,'sheet.c']]],
+  ['get_5fnumber_5fof_5fcells_33',['get_number_of_cells',['../sheet_8c.html#a2589649a1badfea4b1ab63d0f46aaa28',1,'sheet.c']]],
+  ['get_5fop_5fmode_34',['get_op_mode',['../sheet_8c.html#ac34c0bdc69d9a0935feceff6194011c5',1,'sheet.c']]],
+  ['get_5fopt_35',['get_opt',['../sheet_8c.html#aad4a7feab0ee38f3f6021fa3cfd9eed5',1,'sheet.c']]],
+  ['get_5fposition_5fof_5fcharacter_36',['get_position_of_character',['../sheet_8c.html#a08f36508bd6b5fe1b068501e86c0808d',1,'sheet.c']]],
+  ['get_5fselector_37',['get_selector',['../sheet_8c.html#a2e9e037c07846d365953598a77560d01',1,'sheet.c']]],
+  ['get_5fstart_5fof_5fsubstring_38',['get_start_of_substring',['../sheet_8c.html#adcf92595fc841e78047b612ce64e3c4f',1,'sheet.c']]],
+  ['get_5ftable_5fcom_5findex_39',['get_table_com_index',['../sheet_8c.html#ad60d134cb87a1cd6e34e48ae30d73632',1,'sheet.c']]],
+  ['get_5fvalue_5fof_5fcell_40',['get_value_of_cell',['../sheet_8c.html#a020097e6a7804697ff1dc1ba4e45c796',1,'sheet.c']]]
 ];

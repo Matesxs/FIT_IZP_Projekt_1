@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['unedited_5fline_5fstring_102',['unedited_line_string',['../struct_line.html#a2206f140bd4ba67241ca0939be754c5c',1,'Line']]],
-  ['upper_103',['UPPER',['../sheet_8c.html#aa497039a173a79107b2c39b40f514843ae704d5d328a8522a6193aa3efb28c724',1,'sheet.c']]]
+  ['table_5fcoms_101',['TABLE_COMS',['../sheet_8c.html#a6e3cf69448ee1e98d54bae469cfe8675',1,'sheet.c']]],
+  ['table_5fedit_102',['table_edit',['../sheet_8c.html#ae9f66aa4498eeda20fb2ec497307d501',1,'table_edit(Line *line, int argc, char *argv[], int com_index):&#160;sheet.c'],['../sheet_8c.html#ae306b3353ed3d62bb2e6de130b3c9eaaa73ea6a2242db43fbdba7c4e20e26e4e9',1,'TABLE_EDIT():&#160;sheet.c']]],
+  ['todo_20list_103',['Todo List',['../todo.html',1,'']]]
 ];

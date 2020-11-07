@@ -18,7 +18,7 @@
 #define MAX_LINE_LEN 10240 /**< Maximum length of one whole line (row) */
 
 #define DEFAULT_DELIM " " /**< Default delim used when no delim is passed as argument */
-#define BLACKLISTED_DELIMS "\r\n"
+#define BLACKLISTED_DELIMS "\r\n" /**< Character that are not allowed to use as delim character */
 
 const char *TABLE_COMS[] = {"irow", "arow", "drow", "drows", "icol", "acol", "dcol", "dcols"}; /**< Reference array of implemented table editing commands */
 #define NUMBER_OF_TABLE_COMS 8 /**< Number of implemented table editing commands */
