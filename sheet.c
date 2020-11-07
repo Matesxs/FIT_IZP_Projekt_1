@@ -1937,6 +1937,13 @@ int main(int argc, char *argv[])
             return line_holder.error_flag;
     }
 
+    // If line index here is still 0 then no data was inputed
+    if (line_holder.line_index == 0)
+    {
+        fprintf(stderr, "Input cant be empty!");
+        return INPUT_ERROR;
+    }
+
 #ifdef DEBUG
     printf("\n\nDebug:\n");
 
