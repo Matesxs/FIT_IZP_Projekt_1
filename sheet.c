@@ -6,7 +6,7 @@
  * @brief Program to process tables from standard input and outputs it to standard output
  */
 
-#define DEBUG /**< Debug flag, comment to dont print additional information of each line */
+// #define DEBUG /**< Debug flag, comment to dont print additional information of each line */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -121,7 +121,7 @@ int round_double(double val)
      * @return Rounded value (int)
      */
 
-    return (int)(val + 0.5);
+    return val < 0 ? (int)(val - 0.5) : (int)(val + 0.5);
 }
 
 int strings_equal(const char *s1, const char *s2)
@@ -740,9 +740,9 @@ void string_conversion(char *string, int conversion_flag)
             if ((*string >= 'a' && *string <= 'z') || (*string >= 'A' && *string <= 'Z'))
             {
                 if (conversion_flag == UPPER)
-                    *string = (char)toupper(*string);
+                    *string = toupper(*string);
                 else
-                    *string = (char)tolower(*string);
+                    *string = tolower(*string);
             }
 
             string++;
@@ -851,7 +851,7 @@ int insert_string_to_line(Line *line, char *insert_string, int index)
      *
      * @return - 0 on success, -1 on error
      *
-     * @todo Split to working with string and working with line itself
+     * @todo Split to work with strings not whole line
      */
 
     size_t base_string_length = strlen(line->line_string);
@@ -1627,8 +1627,6 @@ void table_edit(Line *line, int argc, char *argv[], int com_index)
      * @param argc Lenght of argument array
      * @param argv Argument array
      * @param com_index Index of current processing argument
-     *
-     * @todo Make row indexing consistent after removing/adding lines
      */
 
     if (line->error_flag)
@@ -1940,7 +1938,7 @@ int main(int argc, char *argv[])
     // If line index here is still 0 then no data was inputed
     if (line_holder.line_index == 0)
     {
-        fprintf(stderr, "Input cant be empty!");
+        fprintf(stderr, "Input cant be empty!\n");
         return INPUT_ERROR;
     }
 
@@ -1956,9 +1954,8 @@ int main(int argc, char *argv[])
     {
         printf("%s ", argv[i]);
     }
-#endif
-
     printf("\n");
+#endif
 
     return 0;
 }
