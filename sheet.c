@@ -1159,11 +1159,6 @@ void validate_line_processing(Line *line, Selector *selector)
                     }
                 }
             }
-            else
-            {
-                fprintf(stderr, "Invalid row index in beginswith command\n");
-                line->error_flag = ARG_ERROR;
-            }
 
             break;
 
@@ -1184,11 +1179,6 @@ void validate_line_processing(Line *line, Selector *selector)
                         return;
                     }
                 }
-            }
-            else
-            {
-                fprintf(stderr, "Invalid row index in contains command\n");
-                line->error_flag = ARG_ERROR;
             }
 
             break;
