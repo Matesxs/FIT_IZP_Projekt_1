@@ -17,7 +17,6 @@
 #define MAX_CELL_LEN 100 /**< Maximum number of normal characters of one cell or one argument */
 #define MAX_LINE_LEN 10240 /**< Maximum length of one whole line (row) */
 
-#define DEFAULT_DELIM " " /**< Default delim used when no delim is passed as argument */
 #define BLACKLISTED_DELIMS "\r\n" /**< Character that are not allowed to use as delim character */
 
 const char *TABLE_COMS[] = {"irow", "arow", "drow", "drows", "icol", "acol", "dcol", "dcols"}; /**< Reference array of implemented table editing commands */
@@ -282,7 +281,7 @@ void rm_newline_chars(char *s) {
     *s = 0;
 }
 
-char *get_opt(int argc, char *argv[], char *opt_flag)
+int get_opt(int argc, char *argv[], char *opt_flag, char **param_output)
 {
     /**
      * @brief Get optional argument from array of arguments
@@ -294,11 +293,8 @@ char *get_opt(int argc, char *argv[], char *opt_flag)
      * @param argv Array of arguments
      * @param opt_flag Flag of optional argument to look for
      *
-     * @return Argument found after the flag or NULL if @p opt_flag is NULL, flag not found or there is no argument after the flag
+     * @return 0 when there is no flag found or found with value, -1 when flag found without value
      */
-
-    if (opt_flag == NULL)
-        return NULL;
 
     for (int i = 0; i < argc; i++)
     {
@@ -306,27 +302,15 @@ char *get_opt(int argc, char *argv[], char *opt_flag)
         {
             if ((i + 1) < argc)
             {
-                return argv[i + 1];
+                (*param_output) = argv[i + 1];
+                return 0;
             }
+
+            return -1;
         }
     }
 
-    return NULL;
-}
-
-char *get_delims(char *input_array[], int array_len)
-{
-    /**
-     * @brief Get delims for current input data from argument of program or from DEFAULT_DELIM
-     *
-     * @param input_array Array of strings (args)
-     * @param array_len Number of args
-     *
-     * @return Array of delim chars to use
-     */
-
-    char *arg_delims = get_opt(array_len, input_array, "-d");
-    return arg_delims == NULL ? DEFAULT_DELIM : arg_delims;
+    return 0;
 }
 
 void normalize_delims(char *string, const char* delims)
@@ -737,13 +721,10 @@ void string_conversion(char *string, int conversion_flag)
         // iterate over string
         while (*string)
         {
-            if ((*string >= 'a' && *string <= 'z') || (*string >= 'A' && *string <= 'Z'))
-            {
-                if (conversion_flag == UPPER)
-                    *string = toupper(*string);
-                else
-                    *string = tolower(*string);
-            }
+            if (conversion_flag == UPPER)
+                *string = toupper(*string);
+            else
+                *string = tolower(*string);
 
             string++;
         }
@@ -1062,7 +1043,7 @@ int is_cell_index_valid(Line *line, int index)
     return ((index > 0) && (index <= line->final_cols));
 }
 
-void get_selector(Selector *selector, int argc, char *argv[])
+int get_selector(Selector *selector, int argc, char *argv[])
 {
     /**
      * @brief Extract selector from arguments
@@ -1074,6 +1055,8 @@ void get_selector(Selector *selector, int argc, char *argv[])
      * @param selector Structor to save params for selector
      * @param argc Length of argument array
      * @param argv Argument array
+     *
+     * @return 0 on success, -1 on error
      */
 
     // Offset -2 to be sure that there will be another 2 args after the selector flag
@@ -1081,7 +1064,7 @@ void get_selector(Selector *selector, int argc, char *argv[])
     {
         for (int j = 0; j < NUMBER_OF_SELECTOR_COMS; j++)
         {
-            if (strcmp(argv[i], SELECTOR_COMS[j]) == 0)
+            if (strings_equal(argv[i], SELECTOR_COMS[j]))
             {
                 switch (j)
                 {
@@ -1093,7 +1076,8 @@ void get_selector(Selector *selector, int argc, char *argv[])
                             if (is_string_int(argv[i+1]) && is_string_int(argv[i+2]) &&
                                 (argument_to_int(argv, argc, i+1) > argument_to_int(argv, argc, i+2)))
                             {
-                                break;
+                                fprintf(stderr, "Invalid arguments for command rows\n");
+                                return -1;
                             }
 
                             selector->selector_type = j;
@@ -1101,9 +1085,11 @@ void get_selector(Selector *selector, int argc, char *argv[])
                             selector->a2 = argv[i+2];
                             selector->ai1 = argument_to_int(argv, argc, i+1);
                             selector->ai2 = argument_to_int(argv, argc, i+2);
-                            return;
+                            return 0;
                         }
-                        break;
+
+                        fprintf(stderr, "Invalid arguments for command rows\n");
+                        return -1;
 
                     case 1:
                     case 2:
@@ -1113,9 +1099,11 @@ void get_selector(Selector *selector, int argc, char *argv[])
                             selector->a1 = argv[i+1];
                             selector->ai1 = argument_to_int(argv, argc, i+1);
                             selector->str = argv[i+2];
-                            return;
+                            return 0;
                         }
-                        break;
+
+                        fprintf(stderr, "Invalid arguments for command %s\n", j == 1 ? "beginswith" : "contains");
+                        return -1;
 
                     default:
                         break;
@@ -1126,6 +1114,7 @@ void get_selector(Selector *selector, int argc, char *argv[])
 
     // If valid selector not found set selector type to -1
     selector->selector_type = -1;
+    return 0;
 }
 
 void validate_line_processing(Line *line, Selector *selector)
@@ -1147,16 +1136,20 @@ void validate_line_processing(Line *line, Selector *selector)
             // If arg 1 is larger than 0 and arg 2 is - then check if current line index is larger or equal arg 1
             // If both args are numbers larger than 0 then check if current line index is between or equal
             if ((strings_equal(selector->a1, "-") && strings_equal(selector->a2, "-") && line->last_line_flag) ||
-                (selector->ai1 > 0 && strings_equal(selector->a2, "-") && line->line_index >= (selector->ai1 - 1)) ||
-                (selector->ai1 > 0 && selector->ai2 > 0 && line->line_index >= (selector->ai1 - 1) && line->line_index <= (selector->ai2 - 1)))
+                (strings_equal(selector->a2, "-") && line->line_index >= (selector->ai1 - 1) && !strings_equal(selector->a1, "-")) ||
+                (line->line_index >= (selector->ai1 - 1) && line->line_index <= (selector->ai2 - 1)))
             {
                 line->process_flag = 1;
                 return;
             }
+
             break;
 
         case 1:
             // beginswith C STR
+            if (strings_equal(selector->a1, "-") && selector->ai1 == 0)
+                selector->ai1 = line->final_cols;
+
             if (is_cell_index_valid(line, selector->ai1))
             {
                 char substr[MAX_CELL_LEN + 1];
@@ -1170,10 +1163,19 @@ void validate_line_processing(Line *line, Selector *selector)
                     }
                 }
             }
+            else
+            {
+                fprintf(stderr, "Invalid row index in beginswith command\n");
+                line->error_flag = ARG_ERROR;
+            }
+
             break;
 
         case 2:
             // contains C STR
+            if (strings_equal(selector->a1, "-") && selector->ai1 == 0)
+                selector->ai1 = line->final_cols;
+
             if (is_cell_index_valid(line, selector->ai1))
             {
                 char substr[MAX_CELL_LEN + 1];
@@ -1187,6 +1189,12 @@ void validate_line_processing(Line *line, Selector *selector)
                     }
                 }
             }
+            else
+            {
+                fprintf(stderr, "Invalid row index in contains command\n");
+                line->error_flag = ARG_ERROR;
+            }
+
             break;
 
         default:
@@ -1195,7 +1203,6 @@ void validate_line_processing(Line *line, Selector *selector)
             return;
     }
 
-    // If selector contains some garbage or the current line is not valid by selector then set processing flag to 0
     line->process_flag = 0;
 }
 
@@ -1884,7 +1891,12 @@ int main(int argc, char *argv[])
         return error_flag;
 
     // Extract delims from args
-    char *delims = get_delims(argv, argc);
+    char *delims = " ";
+    if (get_opt(argc, argv, "-d", &delims) != 0)
+    {
+        fprintf(stderr, "Found -d flag without value!\n");
+        return ARG_ERROR;
+    }
 
     size_t number_of_delims = strlen(delims);
     size_t number_of_blacklisted_delims = strlen(BLACKLISTED_DELIMS);
@@ -1895,7 +1907,7 @@ int main(int argc, char *argv[])
         {
             if (delims[i] == BLACKLISTED_DELIMS[j])
             {
-                fprintf(stderr, "\nFound invalid delimiter!\n");
+                fprintf(stderr, "Found invalid delimiter!\n");
                 return ARG_ERROR;
             }
         }
@@ -1905,8 +1917,10 @@ int main(int argc, char *argv[])
     int operating_mode = get_op_mode(argv, argc);
 
     // Get selector
-    Selector selector;
-    get_selector(&selector, argc, argv);
+    Selector selector = { .selector_type = -1 };
+    if (operating_mode == DATA_EDIT)
+        if (get_selector(&selector, argc, argv) != 0)
+            return ARG_ERROR;
 
     // Init line hodler
     Line line_holder = { .delim = delims[0],
