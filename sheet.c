@@ -525,12 +525,6 @@ int get_value_of_cell(Line *line, int index, char *substring)
         return -1;
     }
 
-    /*
-        for (int i=0; i < (MAX_CELL_LEN + 1) && start_index + i <= end_index; i++)
-            substring[i] = line->line_string[start_index+i];
-        substring[end_index-start_index+1] = '\0';
-     */
-
     // Save wanted substring to substring array
     int length = end_index - start_index + 1;
 
@@ -538,7 +532,9 @@ int get_value_of_cell(Line *line, int index, char *substring)
     if (length < 0)
         return -1;
 
-    strncpy(substring, &(line->line_string[start_index]), length);
+    for (int i=0; i < (MAX_CELL_LEN + 1) && start_index + i <= end_index; i++)
+        substring[i] = line->line_string[start_index+i];
+    substring[end_index-start_index+1] = '\0';
 
     return 0;
 }
