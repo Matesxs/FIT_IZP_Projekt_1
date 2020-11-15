@@ -294,6 +294,7 @@ int get_opt(int argc, char *argv[], char *opt_flag, char **param_output)
      * @param argc Number of arguments
      * @param argv Array of arguments
      * @param opt_flag Flag of optional argument to look for
+     * @param param_output Output pointer of value from flag
      *
      * @return 0 when there is no flag found or found with value, -1 when flag found without value
      */
@@ -1317,9 +1318,15 @@ void delete_rows_in_interval(Line *line, int start_index, int end_index)
      * @param end_index End of row index interval
      */
 
-    if (start_index > 0 && end_index > 0 &&
-        start_index <= end_index)
+    if (start_index > 0 && end_index > 0)
     {
+        if (start_index > end_index)
+        {
+            fprintf(stderr, "Drows start index must be lower or equal than end index");
+            line->error_flag = ARG_ERROR;
+            return;
+        }
+
         // If line index is in interval delete it
         if (start_index <= (line->line_index + 1) && end_index >= (line->line_index + 1))
         {
@@ -1356,8 +1363,15 @@ void delete_cells_in_interval(Line *line, int start_index, int end_index)
      * @param end_index End of cell index interval
      */
 
-    if (is_cell_index_valid(line, start_index) && end_index > 0 && start_index <= end_index)
+    if (is_cell_index_valid(line, start_index) && end_index > 0)
     {
+        if (start_index > end_index)
+        {
+            fprintf(stderr, "Dcols start index must be lower or equal than end index");
+            line->error_flag = ARG_ERROR;
+            return;
+        }
+
         // I am lazy to count number of loops
         for (int j = start_index; j <= end_index; j++)
         {
@@ -1991,6 +2005,7 @@ int main(int argc, char *argv[])
         return ARG_ERROR;
     }
 
+    // Filtr blacklisted delims
     size_t number_of_delims = strlen(delims);
     size_t number_of_blacklisted_delims = strlen(BLACKLISTED_DELIMS);
 
