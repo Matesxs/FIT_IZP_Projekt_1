@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['max_5fcell_5flen_210',['MAX_CELL_LEN',['../sheet_8c.html#afbf61e862e9860fe93c74ddcbd1946fb',1,'sheet.c']]],
-  ['max_5fline_5flen_211',['MAX_LINE_LEN',['../sheet_8c.html#a09a3b394b8602092d58347b791158062',1,'sheet.c']]]
+  ['number_5fof_5fdata_5fcoms_212',['NUMBER_OF_DATA_COMS',['../sheet_8c.html#a6a6a3a7e1a63ed7dd561a237bc3c5ea8',1,'sheet.c']]],
+  ['number_5fof_5fselector_5fcoms_213',['NUMBER_OF_SELECTOR_COMS',['../sheet_8c.html#ac03eb417e28fa05731f79a9c185f28e4',1,'sheet.c']]],
+  ['number_5fof_5ftable_5fcoms_214',['NUMBER_OF_TABLE_COMS',['../sheet_8c.html#a5f1c68ad012e7a49adb800fbcbe8aed5',1,'sheet.c']]]
 ];

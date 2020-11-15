@@ -156,31 +156,6 @@ int string_start_with(const char *base_string, const char *start_string)
     return strncmp(start_string, base_string, strlen(start_string)) == 0;
 }
 
-int chck_args(int argc, char **argv)
-{
-    /**
-     * @brief Check if lenght of every single argument is in limit
-     *
-     * Iterate over all arguments in @p argv and check if leng of every single argument is less or equal than MAX_CELL_LEN
-     *
-     * @param argc Length of argument array
-     * @param argv Array of arguments
-     *
-     * @return Error flag - NO_ERROR if all arguments are not larger than MAX_CELL_LENGTH else MAX_CELL_LEN_EXCEDED
-     */
-
-    for (int i = 1; i < argc; i++)
-    {
-        if (strlen(argv[i]) > MAX_CELL_LEN)
-        {
-            fprintf(stderr, "Argument %d exceded maximum allowed size! Maximum size is %d characters\n", i, MAX_CELL_LEN);
-            return MAX_CELL_LEN_EXCEDED;
-        }
-    }
-
-    return NO_ERROR;
-}
-
 // command_selectors
 int get_table_com_index(char *com)
 {
@@ -281,6 +256,33 @@ void rm_newline_chars(char *s) {
     *s = 0;
 }
 
+int is_flag_present(int argc, char *argv[], char *flag)
+{
+    /**
+     * @brief Check if flag is present in argument array
+     *
+     * Check if flag is present in arguments
+     * Should be without value
+     *
+     * @param argc Number of arguments
+     * @param argv Array of arguments
+     * @param flag Flag we want to look for
+     *
+     * @return 1 flag is presented in arguments and 0 if not
+     */
+
+    if (flag == NULL)
+        return 0;
+
+    for (int i = 1; i < argc; i++)
+    {
+        if (strings_equal(argv[i], flag))
+            return 1;
+    }
+
+    return 0;
+}
+
 int get_opt(int argc, char *argv[], char *opt_flag, char **param_output)
 {
     /**
@@ -296,7 +298,10 @@ int get_opt(int argc, char *argv[], char *opt_flag, char **param_output)
      * @return 0 when there is no flag found or found with value, -1 when flag found without value
      */
 
-    for (int i = 0; i < argc; i++)
+    if (!is_flag_present(argc, argv, opt_flag))
+        return 0;
+
+    for (int i = 1; i < argc; i++)
     {
         if (strings_equal(argv[i], opt_flag))
         {
@@ -1836,6 +1841,108 @@ void process_line(Line *line, Selector *selector, int argc, char *argv[], int op
             }
         }
     }
+}
+
+int check_command_argument_value(int argument_value, char *com_name, int argument_index)
+{
+    /**
+     * @brief Check if argument value is larger than 0
+     *
+     * @param argument_value Int value to test
+     * @param com_name Name of command we are testing arguments for (only for printing error message)
+     * @param argument_index Index of value in argument array
+     *
+     * @return 0 if arguments are valid, 1 if not
+     */
+
+    if (argument_value > 0)
+        return 0;
+
+    fprintf(stderr, "Value of command %s in place %d in argument array should not be smaller than 0\n", com_name, argument_index);
+    return 1;
+}
+
+int chck_args(int argc, char **argv)
+{
+    /**
+     * @brief Check if all arguments are valid
+     *
+     * Iterate over all arguments in @p argv and check if leng and valid params of each command
+     *
+     * @param argc Length of argument array
+     * @param argv Array of arguments
+     *
+     * @return Error flag - NO_ERROR if all arguments are valid or error flag
+     */
+
+    for (int i = 1; i < argc; i++)
+    {
+        // Check length of argument
+        if (strlen(argv[i]) > MAX_CELL_LEN)
+        {
+            fprintf(stderr, "Argument %d exceded maximum allowed size! Maximum size is %d characters\n", i, MAX_CELL_LEN);
+            return MAX_CELL_LEN_EXCEDED;
+        }
+
+        // Validate if arguments of commands are larger than 0
+        switch (get_table_com_index(argv[i]))
+        {
+            case 0:
+            case 2:
+            case 4:
+            case 6:
+                if (check_command_argument_value(argument_to_int(argv, argc, i + 1), argv[i], i + 1))
+                    return ARG_ERROR;
+                break;
+
+            case 3:
+            case 7:
+                if (check_command_argument_value(argument_to_int(argv, argc, i + 1), argv[i], i + 1) ||
+                    check_command_argument_value(argument_to_int(argv, argc, i + 2), argv[i], i + 2))
+                    return ARG_ERROR;
+                break;
+
+            default:
+                break;
+        }
+
+        switch (get_data_com_index(argv[i]))
+        {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+                if (check_command_argument_value(argument_to_int(argv, argc, i + 1), argv[i], i + 1))
+                    return ARG_ERROR;
+                break;
+
+            case 5:
+            case 6:
+            case 7:
+            case 13:
+                if (check_command_argument_value(argument_to_int(argv, argc, i + 1), argv[i], i + 1) ||
+                    check_command_argument_value(argument_to_int(argv, argc, i + 2), argv[i], i + 2))
+                    return ARG_ERROR;
+                break;
+
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+                if (check_command_argument_value(argument_to_int(argv, argc, i + 1), argv[i], i + 1) ||
+                    check_command_argument_value(argument_to_int(argv, argc, i + 2), argv[i], i + 2) ||
+                    check_command_argument_value(argument_to_int(argv, argc, i + 3), argv[i], i + 3))
+                    return ARG_ERROR;
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    return NO_ERROR;
 }
 
 int is_last_row()
