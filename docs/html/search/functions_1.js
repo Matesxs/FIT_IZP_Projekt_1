@@ -2,7 +2,7 @@ var searchData=
 [
   ['cell_5fvalue_5fediting_113',['cell_value_editing',['../sheet_8c.html#a1b464b12708c45a8e52811496a946a5c',1,'sheet.c']]],
   ['chck_5fargs_114',['chck_args',['../sheet_8c.html#a0b3ede433ec6c8f24b24b0c02bf2177f',1,'sheet.c']]],
-  ['check_5fargument_115',['check_argument',['../sheet_8c.html#ad944fb6e2e9994df9a475b0de80f75e3',1,'sheet.c']]],
+  ['check_5fcommand_5fargument_5fvalue_115',['check_command_argument_value',['../sheet_8c.html#ac15456b5d6d89706ea512da77cc90941',1,'sheet.c']]],
   ['check_5fline_5fsanity_116',['check_line_sanity',['../sheet_8c.html#af0bc4aec4706cb472d6be59053a23da9',1,'sheet.c']]],
   ['clear_5fcell_117',['clear_cell',['../sheet_8c.html#afeeef5904f5eea75df453e0fde5be447',1,'sheet.c']]],
   ['copy_5fcell_5fvalue_5fto_118',['copy_cell_value_to',['../sheet_8c.html#aef5fa0c336d48eb38803d9b031a23ed0',1,'sheet.c']]],
